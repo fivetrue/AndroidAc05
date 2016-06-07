@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorPrimary">#ff7171</color>
+    <color name="colorPrimaryDark">#FF1212</color>
+    <color name="colorAccent">#FF4081</color>
+
+    <color name="actionbar_background">#ff7171</color>
+
+
+    <color name="black">#000000</color>
+    <color name="white">#ffffff</color>
+    <color name="empty_white">#00ffffff</color>
+    <color name="color_black_alpha_10">#19000000</color>
+    <color name="color_black_alpha_30">#4C000000</color>
+
+
+    <color name="divider_color">#aaaaaa</color>
+    <color name="ed_txt_bg_color">#26aaaaaa</color>
+    <color name="ed_hint_txt_color">#b2b2b2</color>
+    <color name="kakao_color">#ffeb00</color>
+    <color name="facebook_color">#3a5795</color>
+</resources>
