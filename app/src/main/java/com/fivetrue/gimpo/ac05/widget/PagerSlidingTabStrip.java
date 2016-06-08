@@ -144,7 +144,7 @@ public class PagerSlidingTabStrip extends HorizontalScrollView {
         tabBackgroundColor = a.getColor(R.styleable.PagerSlidingTabStrip_tabsBackgroundColor, getResources().getColor(tabBackgroundColor));
         shouldExpand = a.getBoolean(R.styleable.PagerSlidingTabStrip_shouldExpand, shouldExpand);
         scrollOffset = a.getDimensionPixelSize(R.styleable.PagerSlidingTabStrip_scrollOffset, scrollOffset);
-        textAllCaps = a.getBoolean(R.styleable.PagerSlidingTabStrip_tabTextAllCaps, textAllCaps);
+        textAllCaps = a.getBoolean(R.styleable.PagerSlidingTabStrip_tabsTextAllCaps, textAllCaps);
         textOutline = a.getBoolean(R.styleable.PagerSlidingTabStrip_tabsTextOutline, textOutline);
         tabTextSize = a.getDimensionPixelSize(R.styleable.PagerSlidingTabStrip_tabsTextSize, tabTextSize);
         tabTextColor = a.getColor(R.styleable.PagerSlidingTabStrip_tabsTextColor, tabTextColor);

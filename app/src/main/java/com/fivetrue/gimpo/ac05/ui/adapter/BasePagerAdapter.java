@@ -3,10 +3,9 @@ package com.fivetrue.gimpo.ac05.ui.adapter;
 import android.support.v4.view.PagerAdapter;
 
 /**
- * Created by kwonojin on 15. 8. 31..
+ * Created by ojin.kwon on 2016-04-03.
  */
-
-abstract public class BasePagerAdapter extends PagerAdapter {
+abstract public class BasePagerAdapter extends PagerAdapter{
 
     protected static final int INVALID_VALUE = -1;
 

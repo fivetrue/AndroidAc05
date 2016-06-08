@@ -4,13 +4,21 @@ import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
+import android.view.View;
+import android.view.ViewGroup;
+import android.view.animation.AlphaAnimation;
+import android.view.animation.Animation;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.android.volley.VolleyError;
+import com.android.volley.toolbox.ImageLoader;
+import com.android.volley.toolbox.NetworkImageView;
 import com.fivetrue.gimpo.ac05.ApplicationEX;
 import com.fivetrue.gimpo.ac05.R;
+import com.fivetrue.gimpo.ac05.image.ImageLoadManager;
 import com.fivetrue.gimpo.ac05.manager.NaverApiManager;
 import com.fivetrue.gimpo.ac05.net.BaseApiResponse;
 import com.fivetrue.gimpo.ac05.net.NetworkManager;
@@ -43,8 +51,12 @@ public class SplashActivity extends BaseActivity {
     private RegisterUserRequest mRegisterUserRequest = null;
     private ConfigPreferenceManager mConfigPref = null;
 
-    private TextView mTvLoading = null;
+    private TextView mLoadingMessage = null;
     private ProgressBar mProgress = null;
+
+    private LinearLayout mUserLayout = null;
+    private NetworkImageView mUserImage = null;
+    private TextView mUserNickname = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -56,7 +68,14 @@ public class SplashActivity extends BaseActivity {
     }
 
     private void initView(){
-        mTvLoading = (TextView) findViewById(R.id.tv_splash_loading);
+        setActionbarVisible(false);
+        mLoadingMessage = (TextView) findViewById(R.id.tv_splash_loading);
+
+        mUserLayout = (LinearLayout) findViewById(R.id.layout_splash_user_info);
+        mUserNickname = (TextView) findViewById(R.id.tv_splash_user);
+        mUserImage = (NetworkImageView) findViewById(R.id.iv_splash_user);
+
+        mProgress = (ProgressBar) findViewById(R.id.pb_splash);
     }
 
     private void initModels(){
@@ -79,39 +98,51 @@ public class SplashActivity extends BaseActivity {
      */
     private void registerDevice(final AppConfig appConfig){
         Log.i(TAG, "registerDevice: start");
-        mTvLoading.setText(R.string.config_data_register);
-        new AsyncTask<Void, Void, String>() {
-            @Override
-            protected String doInBackground(Void... params) {
-                String regId = mConfigPref.getGcmDeviceId();
-                if(appConfig != null){
-                    Log.i(TAG, "appConfig = " + appConfig.toString());
-                    ((ApplicationEX)getApplicationContext()).setAppConfig(appConfig);
-                    if(regId == null && appConfig.getSenderId() != null){
-                        GoogleCloudMessaging gcm =  GoogleCloudMessaging.getInstance(getApplicationContext());
-                        try {
-                            regId = gcm.register(appConfig.getSenderId());
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
-                    }
-                }
-                return regId;
-            }
+        mLoadingMessage.setText(R.string.config_data_register);
+        if(appConfig != null){
+            Log.i(TAG, "appConfig = " + appConfig.toString());
+            ((ApplicationEX)getApplicationContext()).setAppConfig(appConfig);
+            Log.i(TAG, "registerDevice: init NaverApiManager start");
+            NaverApiManager.init(SplashActivity.this, appConfig.getNaverClientId(), appConfig.getNaverClientSecret(),
+                    getString(R.string.app_name));
 
-            @Override
-            protected void onPostExecute(String value) {
-                super.onPostExecute(value);
-                if(value != null){
-                    mConfigPref.setGcmDeviceId(value);
-                    NaverApiManager.init(SplashActivity.this, appConfig.getNaverClientId(), appConfig.getNaverClientSecret(),
-                            getString(R.string.app_name));
-                    loginNaver();
-                }else{
-                    //TODO : gcm error
-                }
+            String regId = mConfigPref.getGcmDeviceId();
+            if(regId != null){
+                loginNaver();
+            }else{
+                new AsyncTask<String, Void, String>() {
+                    @Override
+                    protected String doInBackground(String... params) {
+                        String regId = null;
+                        if(params != null && params.length > 0){
+                            String senderId = params[0];
+                            GoogleCloudMessaging gcm =  GoogleCloudMessaging.getInstance(getApplicationContext());
+                            try {
+                                regId = gcm.register(senderId);
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                            }
+                        }
+                        return regId;
+                    }
+
+                    @Override
+                    protected void onPostExecute(String value) {
+                        super.onPostExecute(value);
+                        if(value != null){
+                            mConfigPref.setGcmDeviceId(value);
+                            loginNaver();
+                        }else{
+                            Log.e(TAG, "registerDevice Gcm register error");
+                        }
+
+                    }
+                }.execute(appConfig.getSenderId());
             }
-        }.execute();
+        }else{
+            //TODO : AppCOnfig error
+            Log.e(TAG, "registerDevice AppConfig is null");
+        }
     }
 
     /**
@@ -119,7 +150,7 @@ public class SplashActivity extends BaseActivity {
      */
     private void loginNaver(){
         Log.i(TAG, "loginNaver: start");
-        mTvLoading.setText(R.string.config_data_auto_login);
+        mLoadingMessage.setText(R.string.config_data_auto_login);
         NaverApiManager.getInstance().startOauthLoginActivity(SplashActivity.this, onOAuthLoginListener);
     }
 
@@ -156,20 +187,31 @@ public class SplashActivity extends BaseActivity {
                     + " / expiresAt = " + expiresAt
                     + " / state = " + state
                     + " / tokenType = " + tokenType);
-
-            apiManager.reqeustUserProfile(new NaverApiManager.OnRequestResponseListener() {
-                @Override
-                public void onResponse(String response) {
-                    mTvLoading.setText(R.string.config_user_info_register);
-                    Log.i(TAG, "Userinfo  onRequest response = " + response);
-                    NaverUserInfo userInfo = NaverUserInfoParser.parse(response);
-                    Log.i(TAG, "Userinfo  onRequest userInfo = " + userInfo.toString());
-                    userInfo.setGcmId(mConfigPref.getGcmDeviceId());
-                    userInfo.setDevice(Build.MODEL);
-                    mRegisterUserRequest.setNaverUserInfo(userInfo);
-                    NetworkManager.getInstance().request(mRegisterUserRequest);
-                }
-            });
+            /**
+             * 유저 정보 등록
+             */
+            mLoadingMessage.setText(R.string.config_user_info_register);
+            String userInfo = mConfigPref.getNaverUserInfo();
+            if(userInfo != null){
+                NaverUserInfo naverUserInfo = NaverUserInfoParser.parse(userInfo);
+                naverUserInfo.setGcmId(mConfigPref.getGcmDeviceId());
+                naverUserInfo.setDevice(Build.MODEL);
+                mRegisterUserRequest.setNaverUserInfo(naverUserInfo);
+                NetworkManager.getInstance().request(mRegisterUserRequest);
+            }else{
+                apiManager.reqeustUserProfile(new NaverApiManager.OnRequestResponseListener() {
+                    @Override
+                    public void onResponse(String response) {
+                        Log.i(TAG, "Userinfo  onRequest response = " + response);
+                        NaverUserInfo naverUserInfo = NaverUserInfoParser.parse(response);
+                        Log.i(TAG, "Userinfo  onRequest userInfo = " + naverUserInfo.toString());
+                        naverUserInfo.setGcmId(mConfigPref.getGcmDeviceId());
+                        naverUserInfo.setDevice(Build.MODEL);
+                        mRegisterUserRequest.setNaverUserInfo(naverUserInfo);
+                        NetworkManager.getInstance().request(mRegisterUserRequest);
+                    }
+                });
+            }
         }
 
         @Override
@@ -186,13 +228,7 @@ public class SplashActivity extends BaseActivity {
         public void onResponse(BaseApiResponse<NaverUserInfo> response) {
             Log.i(TAG, "onRegisterUserRequest onResponse: " + response.toString());
             if(response != null && response.getData() != null){
-                mTvLoading.setText(response.getData().getNickname() + " 로그인 하였습니다 ");
-                mTvLoading.postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        startApplication();
-                    }
-                }, 300L);
+                startApplication(response.getData());
             }else{
                 if(RETRY_COUNT > mRetryCount){
                     NetworkManager.getInstance().request(mRegisterUserRequest);
@@ -206,13 +242,62 @@ public class SplashActivity extends BaseActivity {
             if(RETRY_COUNT > mRetryCount){
                 NetworkManager.getInstance().request(mRegisterUserRequest);
                 mRetryCount++;
+            }else{
+                Log.i(TAG, "onRegisterUserRequest error : " + error.toString());
+                startApplication(NaverUserInfoParser.parse(mConfigPref.getNaverUserInfo()));
             }
         }
     };
 
-    private void startApplication(){
-        mTvLoading.setText(R.string.config_data_auto_login);
+    private void startApplication(NaverUserInfo naverUserInfo){
+        Log.i(TAG, "startApplication: start");
+        mLoadingMessage.setVisibility(View.GONE);
+        mProgress.setVisibility(View.GONE);
+        if(naverUserInfo != null){
+            Log.i(TAG, "startApplication: naverUserInfo = " + naverUserInfo.toString());
+            mUserNickname.setText(naverUserInfo.getNickname());
+            mUserImage.setImageUrl(naverUserInfo.getProfileImage(), ImageLoadManager.getImageLoader());
+
+            AlphaAnimation anim = new AlphaAnimation(0f, 1f);
+            anim.setDuration(1000L);
+
+            mUserLayout.setAnimation(anim);
+            mUserLayout.setVisibility(View.VISIBLE);
+
+            anim.setAnimationListener(new Animation.AnimationListener() {
+                @Override
+                public void onAnimationStart(Animation animation) {
+                    Log.i(TAG, "startApplication: animation start");
+                }
+
+                @Override
+                public void onAnimationEnd(Animation animation) {
+                    Log.i(TAG, "startApplication: animation end");
+                    mUserLayout.postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            startMainActivity();
+                        }
+                    }, 1500L);
+                }
+
+                @Override
+                public void onAnimationRepeat(Animation animation) {
+
+                }
+            });
+        }
+    }
+
+    private void startMainActivity(){
+        Log.i(TAG, "startMainActivity: start");
         startActivity(new Intent(this, MainActivity.class));
         finish();
+    }
+
+    @Override
+    public void finish() {
+        super.finish();
+        overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
     }
 }

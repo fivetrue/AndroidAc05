@@ -6,11 +6,12 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.ListAdapter;
 
 import java.util.List;
 
 /**
- * Created by kwonojin on 15. 8. 31..
+ * Created by ojin.kwon on 2016-04-03.
  */
 
 /**
@@ -18,7 +19,7 @@ import java.util.List;
  * @param <T> List에 사용할 Data type을 Subclass에서 정의한다.
  * @param <H> ViewHolder로 사용할 Class를 Subclass에서 정의 한다.
  */
-abstract public class BaseListAdapter <T, H> extends BaseAdapter{
+abstract public class BaseListAdapter <T, H> extends BaseAdapter implements ListAdapter, IBaseAdapter<T> {
 
     protected static final int INVALID_VALUE = -1;
 
@@ -68,6 +69,7 @@ abstract public class BaseListAdapter <T, H> extends BaseAdapter{
      * @param position
      * @return
      */
+    @Override
     public boolean isSelected(int position){
         return mSelectedArray.get(position);
     }
@@ -83,6 +85,7 @@ abstract public class BaseListAdapter <T, H> extends BaseAdapter{
      * 특정 위치의 선택 여부를 toggle할 때 사용된다
      * @param position
      */
+    @Override
     public void toggleSelected(int position){
         selectItem(position, !mSelectedArray.get(position));
     }
@@ -92,6 +95,7 @@ abstract public class BaseListAdapter <T, H> extends BaseAdapter{
      * @param position
      * @param isSelected
      */
+    @Override
     public void selectItem(int position, boolean isSelected){
         if(isSelected){
             mSelectedArray.put(position, isSelected);
@@ -103,6 +107,7 @@ abstract public class BaseListAdapter <T, H> extends BaseAdapter{
     /**
      * SparseBooleanArray의 값들을 초기화한다
      */
+    @Override
     public void clearSelections(){
         mSelectedArray.clear();
         notifyDataSetChanged();
@@ -111,7 +116,7 @@ abstract public class BaseListAdapter <T, H> extends BaseAdapter{
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
         if(convertView == null){
-            convertView = mInflater.inflate(mResourceId, parent, false);
+            convertView = mInflater.inflate(mResourceId, null);
             mHolder = makeHolder(convertView);
             convertView.setTag(mHolder);
         }else{
@@ -121,7 +126,7 @@ abstract public class BaseListAdapter <T, H> extends BaseAdapter{
                 convertView.setTag(mHolder);
             }
         }
-        initView(mHolder, position);
+        initView(mHolder, position, convertView, parent);
         return convertView;
     }
 
@@ -161,7 +166,7 @@ abstract public class BaseListAdapter <T, H> extends BaseAdapter{
      * @param holder makeHolder로 인해 생성된 holder가 전달된다
      * @param position 다시 그려질 view의 position이 전달된다
      */
-    protected abstract void initView(H holder, int position);
+    protected abstract void initView(H holder, int position, View convertView, ViewGroup parent);
 
     protected H getViewHolder(){
         return mHolder;

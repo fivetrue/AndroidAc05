@@ -2,6 +2,7 @@ package com.fivetrue.gimpo.ac05;
 
 import android.app.Application;
 
+import com.fivetrue.gimpo.ac05.image.ImageLoadManager;
 import com.fivetrue.gimpo.ac05.manager.NaverApiManager;
 import com.fivetrue.gimpo.ac05.net.NetworkManager;
 import com.fivetrue.gimpo.ac05.vo.config.AppConfig;
@@ -19,7 +20,7 @@ public class ApplicationEX extends Application {
         super.onCreate();
 //        Fabric.with(this, new Crashlytics());
         NetworkManager.init(this);
-//        ImageLoadManager.init(NetworkManager.getInstance().getRequestQueue());
+        ImageLoadManager.init(NetworkManager.getInstance().getRequestQueue());
 //        UserInfoManager.init(this);
 //        FacebookSdk.sdkInitialize(getApplicationContext());
 //        Session.initialize(this, AuthType.KAKAO_TALK);

@@ -13,6 +13,7 @@ public class ConfigPreferenceManager {
     private static final String GCM_DEVICE = "gcm_dvice_id";
 
     private static final String SETTING_PUSH = "setting_push";
+    private static final String USER_INFO = "user_info";
 
     private SharedPreferenceHelper mHelper = null;
 
@@ -52,6 +53,16 @@ public class ConfigPreferenceManager {
 
     public boolean isSettingPush(){
         return mHelper.getData(SETTING_PUSH, false);
+    }
+
+    public void setNaverUserInfo(String xml){
+        if(xml != null){
+            mHelper.putData(USER_INFO, xml);
+        }
+    }
+
+    public String getNaverUserInfo(){
+        return mHelper.getData(USER_INFO, null);
     }
 
 }

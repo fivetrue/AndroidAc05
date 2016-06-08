@@ -32,4 +32,27 @@
         android:layout_centerHorizontal="true"
         android:layout_marginTop="15dp"
         />
+
+    <LinearLayout
+        android:id="@+id/layout_splash_user_info"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/pb_splash"
+        android:orientation="vertical"
+        android:visibility="gone"
+        android:layout_margin="10dp"
+        android:gravity="center">
+        
+        <com.android.volley.toolbox.NetworkImageView
+            android:id="@+id/iv_splash_user"
+            android:layout_width="50dp"
+            android:layout_height="50dp" />
+
+        <TextView
+            android:id="@+id/tv_splash_user"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"/>
+
+    </LinearLayout>
 </RelativeLayout>

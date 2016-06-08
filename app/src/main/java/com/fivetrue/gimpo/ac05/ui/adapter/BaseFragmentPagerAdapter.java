@@ -8,12 +8,11 @@ import android.view.View;
 import android.view.ViewGroup;
 
 /**
- * Created by kwonojin on 15. 8. 31..
+ * Created by ojin.kwon on 2016-04-03.
  */
 public abstract class BaseFragmentPagerAdapter extends BasePagerAdapter {
 
     private static final String TAG = "BaseFragmentPagerAdapter";
-    public static final int LOOP_SIZE = 1000;
 
     private final FragmentManager mFragmentManager;
     private FragmentTransaction mCurTransaction = null;
@@ -23,14 +22,9 @@ public abstract class BaseFragmentPagerAdapter extends BasePagerAdapter {
         mFragmentManager = fm;
     }
 
+    public abstract int getRealCount();
 
-    public int getVirtualPosition(int position){
-        return position;
-    }
-
-    public int getRealCount(){
-        return getCount();
-    }
+    public abstract int getVirtualPosition(int position);
 
 
     @Override
@@ -130,15 +124,11 @@ public abstract class BaseFragmentPagerAdapter extends BasePagerAdapter {
         return position;
     }
 
-    protected String makeFragmentName(int viewId, long id) {
+    private static String makeFragmentName(int viewId, long id) {
         return "android:switcher:" + viewId + ":" + id;
     }
 
     protected boolean ignoreDestroyObject(int position, Object object){
         return false;
-    }
-
-    protected FragmentManager getFragmentManager(){
-        return mFragmentManager;
     }
 }

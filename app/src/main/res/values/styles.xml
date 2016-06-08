@@ -8,11 +8,20 @@
     </style>
 
     <style name="TextDropdownType">
-        <item name="android:typeface">sans</item>
+        <item name="android:typeface">monospace</item>
         <item name="android:shadowColor">@color/color_black_alpha_30</item>
         <item name="android:shadowRadius">20</item>
         <item name="android:shadowDx">5</item>
         <item name="android:shadowDy">5</item>
+    </style>
+
+    <style name="CommonListType">
+        <item name="android:divider">@null</item>
+        <item name="android:dividerHeight">0dp</item>
+    </style>
+
+    <style name="CommonListType.SmallGrid">
+        <item name="android:choiceMode">none</item>
     </style>
 
     <style name="TextDropdownType.Big">
@@ -44,36 +53,6 @@
         <item name="android:gravity">center</item>
         <item name="android:typeface">sans</item>
         <item name="android:textSize">@dimen/large_text_text_size</item>
-    </style>
-
-    <style name="Button">
-        <item name="android:layout_height">wrap_content</item>
-        <item name="android:layout_margin">2dip</item>
-    </style>
-
-    <style name="Button.Menu" parent="Button">
-        <item name="android:layout_width">match_parent</item>
-        <item name="android:layout_weight">1</item>
-        <item name="android:ellipsize">marquee</item>
-        <item name="android:layout_gravity">center</item>
-        <item name="android:lines">1</item>
-        <item name="android:onClick">onButtonClick</item>
-    </style>
-
-    <style name="Button.Settings" parent="Button">
-        <item name="android:layout_width">wrap_content</item>
-        <item name="android:onClick">onClearClick</item>
-        <item name="android:textSize">14sp</item>
-        <item name="android:layout_height">wrap_content</item>
-    </style>
-
-    <style name="EditText">
-        <item name="android:paddingLeft">8sp</item>
-        <item name="android:paddingTop">0sp</item>
-        <item name="android:paddingBottom">0sp</item>
-        <item name="android:layout_height">wrap_content</item>
-        <item name="android:textSize">14sp</item>
-        <item name="android:gravity">center_vertical</item>
     </style>
 
 </resources>
