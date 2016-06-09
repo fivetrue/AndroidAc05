@@ -4,7 +4,10 @@
     <color name="colorPrimaryDark">#3887fa</color>
     <color name="colorAccent">#ecedf5</color>
 
-    <color name="actionbar_background">#77ffffff</color>
+    <color name="color_primary_alpha_10">#1987b4f6</color>
+    <color name="color_primary_alpha_30">#4C87b4f6</color>
+
+    <color name="actionbar_background">@color/color_primary_alpha_30</color>
 
 
     <color name="black">#000000</color>

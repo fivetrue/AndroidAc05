@@ -1,7 +1,7 @@
 package com.fivetrue.gimpo.ac05.parser;
 
 import com.fivetrue.gimpo.ac05.utils.Log;
-import com.fivetrue.gimpo.ac05.vo.naver.NaverUserInfo;
+import com.fivetrue.gimpo.ac05.vo.user.UserInfo;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -41,8 +41,8 @@ public class NaverUserInfoParser {
 /*
  <?xml version="1.0" encoding="UTF-8" ?><data><result><resultcode>00</resultcode><>success</message></result><response><email><![CDATA[dudrpdjwls@naver.com]]></email><nickname><![CDATA[고구마감자]]></nickname><enc_id><![CDATA[6cea3f02bbbed6a2142142ca77fd3a457c66e0019007de3fbedb5e1fa1522e6d]]></enc_id><profile_image><![CDATA[https://ssl.pstatic.net/static/pwe/address/nodata_33x33.gif]]></profile_image><age><![CDATA[30-39]]></age><gender>M</gender><id><![CDATA[15262827]]></id><name><![CDATA[권오진]]></name><birthday><![CDATA[11-01]]></birthday></response></data>
  */
-    public static NaverUserInfo parse(String xml){
-        NaverUserInfo info = null;
+    public static UserInfo parse(String xml){
+        UserInfo info = null;
         if(xml != null){
             Document doc = null;
             DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
@@ -58,7 +58,7 @@ public class NaverUserInfoParser {
                 // now get the NodeList of root elements
                 NodeList resultList = docElement.getElementsByTagName(ELEMENT_RESULT_TAG);
                 if(resultList != null && resultList.getLength() > 0){
-                    info = new NaverUserInfo();
+                    info = new UserInfo();
                     Element result = (Element) resultList.item(0);
                     info.setResultCode(getElementValue(result, ELEMENT_RESULT_CODE_TAG));
                     info.setMessage(getElementValue(result, ELEMENT_MESSAGE_TAG));

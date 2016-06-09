@@ -1,14 +1,18 @@
 package com.fivetrue.gimpo.ac05.ui;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.RelativeLayout;
 
 import com.fivetrue.gimpo.ac05.R;
+import com.fivetrue.gimpo.ac05.ui.fragment.BaseFragment;
 import com.fivetrue.gimpo.ac05.widget.FTActionBar;
 
 
@@ -16,6 +20,8 @@ import com.fivetrue.gimpo.ac05.widget.FTActionBar;
  * Created by ojin.kwon on 2016-02-03.
  */
 public class BaseActivity extends FragmentActivity {
+
+    private static final String TAG = "BaseActivity";
 
     private FTActionBar mActionbar = null;
     private View mActionbarShadow = null;
@@ -43,6 +49,15 @@ public class BaseActivity extends FragmentActivity {
                 onClickActionBarHome(v, mActionbar.isHomeAsUp());
             }
         });
+
+        mActionbar.showDrawerIcon(isVisibleDrawerIcon());
+
+        if(!isBlendingActionBar()){
+            RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) mBaseContainer.getLayoutParams();
+            if(params != null){
+                params.addRule(RelativeLayout.BELOW, mActionbar.getId());
+            }
+        }
 
         if(!isBlendingActionBar()){
             RelativeLayout.LayoutParams params  = (RelativeLayout.LayoutParams) mBaseContainer.getLayoutParams();
@@ -121,6 +136,91 @@ public class BaseActivity extends FragmentActivity {
     }
 
     protected boolean isBlendingActionBar(){
+        return false;
+    }
+
+
+    protected void onClickActionBarMore(View view){
+
+    }
+
+    protected void onClickActionBarTextButton(View view){
+
+    }
+
+    protected boolean isVisibleDrawerIcon(){
+        return true;
+    }
+
+    public FragmentManager getCurrentFragmentManager(){
+        return getSupportFragmentManager();
+    }
+
+    protected int getFragmentAnchorLayoutID(){
+        return R.id.layout_base_container;
+    }
+
+    protected boolean popFragment(FragmentManager fm){
+        boolean b = fm.popBackStackImmediate();
+        if(doChangeActionbarTitleByFragment()){
+            if(fm.getBackStackEntryCount() > 0){
+                getFtActionBar().setTitle(fm.getBackStackEntryAt(fm.getBackStackEntryCount() - 1).getBreadCrumbTitleRes());
+            }else{
+                getFtActionBar().setTitle(getDefaultActionbarTitle());
+            }
+        }
+        return b;
+    }
+
+    public void addFragment(Class< ? extends BaseFragment> cls, Bundle arguments, int anchorLayout, boolean addBackstack){
+        addFragment(cls, arguments, anchorLayout, 0, 0, addBackstack);
+    }
+
+    public void addFragment(Class< ? extends BaseFragment> cls, Bundle arguments, boolean addBackstack){
+        addFragment(cls, arguments, getFragmentAnchorLayoutID(), 0, 0, addBackstack);
+    }
+
+    public void addFragment(Class< ? extends BaseFragment> cls, Bundle arguments, int anchorLayout, int enterAnim, int exitAnim, boolean addBackstack){
+        BaseFragment f = null;
+        try {
+            f = cls.newInstance();
+        } catch (InstantiationException e) {
+            e.printStackTrace();
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+        }
+        if(f != null){
+            if(arguments != null){
+                f.setArguments(arguments);
+            }
+            FragmentTransaction ft = getCurrentFragmentManager().beginTransaction();
+            ft.setCustomAnimations(enterAnim, exitAnim, enterAnim, exitAnim)
+                    .replace(anchorLayout, f, f.getFragmentTag());
+            if(addBackstack){
+                ft.addToBackStack(f.getFragmentTag());
+                ft.setBreadCrumbTitle(f.getFragmentNameResource());
+            }
+            ft.commitAllowingStateLoss();
+
+            if(doChangeActionbarTitleByFragment() && addBackstack){
+                getFtActionBar().setTitle(f.getFragmentNameResource());
+            }
+        }
+    }
+
+    @Override
+    public void onBackPressed() {
+        if(popFragment(getCurrentFragmentManager())){
+            return;
+        }
+        super.onBackPressed();
+    }
+
+    protected String getDefaultActionbarTitle(){
+        return getString(R.string.app_name);
+    }
+
+    protected boolean doChangeActionbarTitleByFragment(){
         return false;
     }
 }

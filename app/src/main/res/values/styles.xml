@@ -7,6 +7,28 @@
         <item name="windowNoTitle">true</item>
     </style>
 
+    <style name="CommonButton">
+        <item name="android:typeface">sans</item>
+        <item name="android:background">@drawable/selector_common_button</item>
+        <item name="android:textColor">@color/colorAccent</item>
+    </style>
+
+    <style name="CommonText" parent="TextAppearance.AppCompat">
+        <item name="android:typeface">sans</item>
+    </style>
+
+    <style name="CommonText.Large">
+        <item name="android:textSize">25dp</item>
+    </style>
+
+    <style name="CommonText.Small">
+        <item name="android:textSize">10dp</item>
+    </style>
+
+    <style name="CommonText.Medium">
+        <item name="android:textSize">17dp</item>
+    </style>
+
     <style name="TextDropdownType">
         <item name="android:typeface">monospace</item>
         <item name="android:shadowColor">@color/color_black_alpha_30</item>

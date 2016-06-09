@@ -5,16 +5,13 @@ import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.animation.AlphaAnimation;
 import android.view.animation.Animation;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.android.volley.VolleyError;
-import com.android.volley.toolbox.ImageLoader;
 import com.android.volley.toolbox.NetworkImageView;
 import com.fivetrue.gimpo.ac05.ApplicationEX;
 import com.fivetrue.gimpo.ac05.R;
@@ -28,7 +25,7 @@ import com.fivetrue.gimpo.ac05.parser.NaverUserInfoParser;
 import com.fivetrue.gimpo.ac05.preferences.ConfigPreferenceManager;
 import com.fivetrue.gimpo.ac05.utils.Log;
 import com.fivetrue.gimpo.ac05.vo.config.AppConfig;
-import com.fivetrue.gimpo.ac05.vo.naver.NaverUserInfo;
+import com.fivetrue.gimpo.ac05.vo.user.UserInfo;
 import com.google.android.gms.gcm.GoogleCloudMessaging;
 
 import java.io.IOException;
@@ -193,21 +190,21 @@ public class SplashActivity extends BaseActivity {
             mLoadingMessage.setText(R.string.config_user_info_register);
             String userInfo = mConfigPref.getNaverUserInfo();
             if(userInfo != null){
-                NaverUserInfo naverUserInfo = NaverUserInfoParser.parse(userInfo);
+                UserInfo naverUserInfo = NaverUserInfoParser.parse(userInfo);
                 naverUserInfo.setGcmId(mConfigPref.getGcmDeviceId());
                 naverUserInfo.setDevice(Build.MODEL);
-                mRegisterUserRequest.setNaverUserInfo(naverUserInfo);
+                mRegisterUserRequest.setObject(naverUserInfo);
                 NetworkManager.getInstance().request(mRegisterUserRequest);
             }else{
                 apiManager.reqeustUserProfile(new NaverApiManager.OnRequestResponseListener() {
                     @Override
                     public void onResponse(String response) {
                         Log.i(TAG, "Userinfo  onRequest response = " + response);
-                        NaverUserInfo naverUserInfo = NaverUserInfoParser.parse(response);
+                        UserInfo naverUserInfo = NaverUserInfoParser.parse(response);
                         Log.i(TAG, "Userinfo  onRequest userInfo = " + naverUserInfo.toString());
                         naverUserInfo.setGcmId(mConfigPref.getGcmDeviceId());
                         naverUserInfo.setDevice(Build.MODEL);
-                        mRegisterUserRequest.setNaverUserInfo(naverUserInfo);
+                        mRegisterUserRequest.setObject(naverUserInfo);
                         NetworkManager.getInstance().request(mRegisterUserRequest);
                     }
                 });
@@ -220,12 +217,12 @@ public class SplashActivity extends BaseActivity {
         }
     };
 
-    private BaseApiResponse.OnResponseListener<NaverUserInfo> onRegisterUserRequest = new BaseApiResponse.OnResponseListener<NaverUserInfo>() {
+    private BaseApiResponse.OnResponseListener<UserInfo> onRegisterUserRequest = new BaseApiResponse.OnResponseListener<UserInfo>() {
 
         private int mRetryCount = 0;
 
         @Override
-        public void onResponse(BaseApiResponse<NaverUserInfo> response) {
+        public void onResponse(BaseApiResponse<UserInfo> response) {
             Log.i(TAG, "onRegisterUserRequest onResponse: " + response.toString());
             if(response != null && response.getData() != null){
                 startApplication(response.getData());
@@ -249,7 +246,7 @@ public class SplashActivity extends BaseActivity {
         }
     };
 
-    private void startApplication(NaverUserInfo naverUserInfo){
+    private void startApplication(final UserInfo naverUserInfo){
         Log.i(TAG, "startApplication: start");
         mLoadingMessage.setVisibility(View.GONE);
         mProgress.setVisibility(View.GONE);
@@ -276,7 +273,7 @@ public class SplashActivity extends BaseActivity {
                     mUserLayout.postDelayed(new Runnable() {
                         @Override
                         public void run() {
-                            startMainActivity();
+                            startMainActivity(naverUserInfo);
                         }
                     }, 1500L);
                 }
@@ -289,9 +286,11 @@ public class SplashActivity extends BaseActivity {
         }
     }
 
-    private void startMainActivity(){
+    private void startMainActivity(UserInfo info){
         Log.i(TAG, "startMainActivity: start");
-        startActivity(new Intent(this, MainActivity.class));
+        Intent intent = new Intent(this, MainActivity.class);
+        intent.putExtra(UserInfo.class.getName(), info);
+        startActivity(intent);
         finish();
     }
 

@@ -1,9 +1,12 @@
-package com.fivetrue.gimpo.ac05.vo.naver;
+package com.fivetrue.gimpo.ac05.vo.user;
+
+import android.os.Parcel;
+import android.os.Parcelable;
 
 /**
  * Created by kwonojin on 16. 6. 7..
  */
-public class NaverUserInfo {
+public class UserInfo implements Parcelable{
 
     private String resultCode =  null;
     private String message = null;
@@ -20,6 +23,12 @@ public class NaverUserInfo {
 
     private String gcmId = null;
     private String device = null;
+
+    private String apartDong = null;
+
+    public UserInfo(){
+
+    }
 
     public String getResultCode() {
         return resultCode;
@@ -125,9 +134,17 @@ public class NaverUserInfo {
         this.device = device;
     }
 
+    public String getApartDong() {
+        return apartDong;
+    }
+
+    public void setApartDong(String apartDong) {
+        this.apartDong = apartDong;
+    }
+
     @Override
     public String toString() {
-        return "NaverUserInfo{" +
+        return "UserInfo{" +
                 "resultCode='" + resultCode + '\'' +
                 ", message='" + message + '\'' +
                 ", email='" + email + '\'' +
@@ -141,6 +158,57 @@ public class NaverUserInfo {
                 ", birthday='" + birthday + '\'' +
                 ", gcmId='" + gcmId + '\'' +
                 ", device='" + device + '\'' +
+                ", apartDong='" + apartDong + '\'' +
                 '}';
     }
+
+    public UserInfo(Parcel p){
+        resultCode = p.readString();
+        message = p.readString();
+        email = p.readString();
+        nickname = p.readString();
+        encId = p.readString();
+        age = p.readString();
+        gender = p.readString();
+        id = p.readString();
+        name = p.readString();
+        birthday = p.readString();
+        gcmId = p.readString();
+        device = p.readString();
+        apartDong = p.readString();
+    }
+
+    @Override
+    public int describeContents() {
+        return hashCode();
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(resultCode);
+        dest.writeString(message);
+        dest.writeString(email);
+        dest.writeString(nickname);
+        dest.writeString(encId);
+        dest.writeString(age);
+        dest.writeString(gender);
+        dest.writeString(id);
+        dest.writeString(name);
+        dest.writeString(birthday);
+        dest.writeString(gcmId);
+        dest.writeString(device);
+        dest.writeString(apartDong);
+    }
+
+    public static final Creator<UserInfo> CREATOR = new Creator<UserInfo>() {
+        @Override
+        public UserInfo createFromParcel(Parcel in) {
+            return new UserInfo(in);
+        }
+
+        @Override
+        public UserInfo[] newArray(int size) {
+            return new UserInfo[size];
+        }
+    };
 }

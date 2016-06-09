@@ -62,4 +62,8 @@ public class BaseFragment extends Fragment {
         return getView().getId();
     }
 
+    public int getFragmentNameResource(){
+        return 0;
+    }
+
 }

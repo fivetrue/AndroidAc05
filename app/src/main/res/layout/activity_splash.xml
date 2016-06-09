@@ -1,7 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:background="@drawable/splash_bg">
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@drawable/rect_primary_alpha30_color"/>
 
     <TextView
         android:id="@+id/tv_splash_main"
@@ -9,7 +15,7 @@
         android:layout_height="wrap_content"
         android:text="@string/app_name"
         style="@style/TextDropdownType.Big"
-        android:textColor="@color/colorPrimaryDark"
+        android:textColor="@color/colorAccent"
         android:layout_centerInParent="true"/>
 
     <TextView
@@ -21,7 +27,7 @@
         android:layout_marginTop="15dp"
         android:text="@string/config_data_check"
         style="@style/TextDropdownType.Small"
-        android:textColor="@color/colorPrimary"
+        android:textColor="@color/colorAccent"
         />
 
     <ProgressBar
@@ -52,7 +58,8 @@
             android:id="@+id/tv_splash_user"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"/>
+            android:layout_marginTop="10dp"
+            android:textColor="@color/colorAccent"/>
 
     </LinearLayout>
 </RelativeLayout>

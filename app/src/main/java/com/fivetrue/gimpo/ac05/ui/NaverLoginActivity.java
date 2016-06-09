@@ -8,7 +8,7 @@ import com.fivetrue.gimpo.ac05.R;
 import com.fivetrue.gimpo.ac05.manager.NaverApiManager;
 import com.fivetrue.gimpo.ac05.parser.NaverUserInfoParser;
 import com.fivetrue.gimpo.ac05.utils.Log;
-import com.fivetrue.gimpo.ac05.vo.naver.NaverUserInfo;
+import com.fivetrue.gimpo.ac05.vo.user.UserInfo;
 
 /**
  * Created by kwonojin on 16. 6. 1..
@@ -108,7 +108,7 @@ public class NaverLoginActivity extends BaseActivity{
 //                        }catch(Throwable t) {
 //                        }
                         Log.i(TAG, response);
-                        NaverUserInfo info = NaverUserInfoParser.parse(response);
+                        UserInfo info = NaverUserInfoParser.parse(response);
                         if(info != null){
                             Log.i(TAG, info.toString());
                         }
