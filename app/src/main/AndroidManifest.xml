@@ -27,6 +27,11 @@
         </activity>
 
         <activity
+            android:name=".ui.NaverLoginActivity"
+            android:screenOrientation="portrait"
+            android:theme="@android:style/Theme.Translucent"/>
+
+        <activity
             android:name=".ui.MainActivity"
             android:screenOrientation="portrait"/>
 

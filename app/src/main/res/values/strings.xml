@@ -13,6 +13,9 @@
     <string name="config_user_info_register">사용자 정보 등록 중 입니다</string>
     <string name="config_user_info_verify">사용자 정보 확인 중 입니다</string>
 
+
+    <string name="fail_auth_user_info">사용자 정보를 확인 할 수 없어 종료 됩니다</string>
+
     <!-- Left Menu-->
     <string name="main">메인</string>
     <string name="cafe">카페</string>

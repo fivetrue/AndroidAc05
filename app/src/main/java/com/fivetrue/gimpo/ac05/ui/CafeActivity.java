@@ -30,6 +30,11 @@ public class CafeActivity extends DrawerActivity implements WebViewFragment.OnSh
     }
 
     @Override
+    public void onCallback(String response) {
+
+    }
+
+    @Override
     public void onBackPressed() {
         Fragment f = getCurrentFragmentManager().findFragmentById(getFragmentAnchorLayoutID());
         if(f != null && f instanceof WebViewFragment){

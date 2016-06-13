@@ -1,6 +1,7 @@
 package com.fivetrue.gimpo.ac05.ui.fragment;
 
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
@@ -13,8 +14,6 @@ import android.webkit.WebViewClient;
 import com.fivetrue.gimpo.ac05.R;
 import com.fivetrue.gimpo.ac05.utils.Log;
 
-import java.util.UUID;
-
 /**
  * Created by kwonojin on 16. 6. 10..
  */
@@ -24,7 +23,7 @@ public class WebViewFragment extends BaseFragment{
 
     public interface OnShouldOverrideUrlLoadingListener {
         boolean onOverride(String url);
-//        void onCallback(String response);
+        void onCallback(String response);
     }
 
     private WebView mWebView = null;
@@ -66,23 +65,23 @@ public class WebViewFragment extends BaseFragment{
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-//        mWebView.addJavascriptInterface(this, "Android");
+        mWebView.addJavascriptInterface(this, "Android");
         mWebView.setWebViewClient(webViewClient);
-        Log.i(TAG, "load url = " + mUrl);
         mWebView.loadUrl(mUrl);
     }
 
-//    @JavascriptInterface
-//    public void onCallback(final String response){
-//        getActivity().runOnUiThread(new Runnable() {
-//            @Override
-//            public void run() {
-//                if(mOnShouldOverrideUrlLoadingListener != null){
-//                    mOnShouldOverrideUrlLoadingListener.onCallback(response);
-//                }
-//            }
-//        });
-//    }
+    @JavascriptInterface
+    public void onCallback(final String response){
+        Log.i(TAG, "onCallback = " + response);
+        getActivity().runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                if (mOnShouldOverrideUrlLoadingListener != null) {
+                    mOnShouldOverrideUrlLoadingListener.onCallback(response);
+                }
+            }
+        });
+    }
 
     private WebViewClient webViewClient = new WebViewClient(){
         @Override
@@ -92,6 +91,21 @@ public class WebViewFragment extends BaseFragment{
             }else{
                 return super.shouldOverrideUrlLoading(view, url);
             }
+        }
+
+        @Override
+        public void onPageFinished(WebView view, String url) {
+            super.onPageFinished(view, url);
+        }
+
+        @Override
+        public void onPageCommitVisible(WebView view, String url) {
+            super.onPageCommitVisible(view, url);
+        }
+
+        @Override
+        public void onPageStarted(WebView view, String url, Bitmap favicon) {
+            super.onPageStarted(view, url, favicon);
         }
     };
 

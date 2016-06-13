@@ -10,6 +10,7 @@ import android.view.animation.Animation;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.NetworkImageView;
@@ -25,6 +26,7 @@ import com.fivetrue.gimpo.ac05.parser.NaverUserInfoParser;
 import com.fivetrue.gimpo.ac05.preferences.ConfigPreferenceManager;
 import com.fivetrue.gimpo.ac05.utils.Log;
 import com.fivetrue.gimpo.ac05.vo.config.AppConfig;
+import com.fivetrue.gimpo.ac05.vo.config.Token;
 import com.fivetrue.gimpo.ac05.vo.user.UserInfo;
 import com.google.android.gms.gcm.GoogleCloudMessaging;
 import com.google.gson.reflect.TypeToken;
@@ -42,6 +44,8 @@ import java.io.IOException;
 public class SplashActivity extends BaseActivity {
 
     private static final String TAG = "SplashActivity";
+
+    private static final int REQUEST_LOGIN_CODE = 0x33;
 
     private static final int RETRY_COUNT = 3;
 
@@ -149,7 +153,7 @@ public class SplashActivity extends BaseActivity {
     private void loginNaver(){
         Log.i(TAG, "loginNaver: start");
         mLoadingMessage.setText(R.string.config_data_auto_login);
-        NaverApiManager.getInstance().startOauthLoginActivity(SplashActivity.this, onOAuthLoginListener);
+        startActivityForResult(new Intent(this, NaverLoginActivity.class), REQUEST_LOGIN_CODE);
     }
 
     private BaseApiResponse<AppConfig> onConfigResponseListener = new BaseApiResponse<>(new BaseApiResponse.OnResponseListener<AppConfig>() {
@@ -178,45 +182,34 @@ public class SplashActivity extends BaseActivity {
         }
     }, new TypeToken<AppConfig>(){}.getType());
 
-
-    private NaverApiManager.OnOAuthLoginListener onOAuthLoginListener = new NaverApiManager.OnOAuthLoginListener() {
-        @Override
-        public void onSuccess(NaverApiManager apiManager, String accessToken, String refreshToken, long expiresAt, String tokenType, String state) {
-            Log.i(TAG, "Login onSuccess accessToken = " + accessToken + " / refreshToken = " + refreshToken
-                    + " / expiresAt = " + expiresAt
-                    + " / state = " + state
-                    + " / tokenType = " + tokenType);
-            /**
-             * 유저 정보 등록
-             */
-            mLoadingMessage.setText(R.string.config_user_info_register);
-            UserInfo userInfo = mConfigPref.getNaverUserInfo();
-            if(userInfo != null){
-                userInfo.setGcmId(mConfigPref.getGcmDeviceId());
-                userInfo.setDevice(Build.MODEL);
-                mRegisterUserRequest.setObject(userInfo);
-                NetworkManager.getInstance().request(mRegisterUserRequest);
-            }else{
-                apiManager.reqeustUserProfile(new NaverApiManager.OnRequestResponseListener() {
-                    @Override
-                    public void onResponse(String response) {
-                        Log.i(TAG, "Userinfo  onRequest response = " + response);
-                        UserInfo naverUserInfo = NaverUserInfoParser.parse(response);
-                        Log.i(TAG, "Userinfo  onRequest userInfo = " + naverUserInfo.toString());
-                        naverUserInfo.setGcmId(mConfigPref.getGcmDeviceId());
-                        naverUserInfo.setDevice(Build.MODEL);
-                        mRegisterUserRequest.setObject(naverUserInfo);
-                        NetworkManager.getInstance().request(mRegisterUserRequest);
-                    }
-                });
-            }
+    private void getUserProfile(Token token){
+        Log.i(TAG, "getUserProfile: token = " + token.toString());
+        /**
+         * 유저 정보 등록
+         */
+        mLoadingMessage.setText(R.string.config_user_info_register);
+        UserInfo userInfo = mConfigPref.getuserInfo();
+        if(userInfo != null){
+            userInfo.setGcmId(mConfigPref.getGcmDeviceId());
+            userInfo.setDevice(Build.MODEL);
+            mRegisterUserRequest.setObject(userInfo);
+            NetworkManager.getInstance().request(mRegisterUserRequest);
+        }else{
+            NaverApiManager.getInstance().reqeustUserProfile(new NaverApiManager.OnRequestResponseListener() {
+                @Override
+                public void onResponse(String response) {
+                    Log.i(TAG, "Userinfo  onRequest response = " + response);
+                    UserInfo naverUserInfo = NaverUserInfoParser.parse(response);
+                    Log.i(TAG, "Userinfo  onRequest userInfo = " + naverUserInfo.toString());
+                    naverUserInfo.setGcmId(mConfigPref.getGcmDeviceId());
+                    naverUserInfo.setDevice(Build.MODEL);
+                    mRegisterUserRequest.setObject(naverUserInfo);
+                    NetworkManager.getInstance().request(mRegisterUserRequest);
+                }
+            });
         }
+    }
 
-        @Override
-        public void onError(NaverApiManager apiManager, String errorCode, String errorDescription) {
-            Log.i(TAG, "errorCode = " + errorCode + " / errorDesc = " + errorDescription);
-        }
-    };
 
     private BaseApiResponse<UserInfo> onRegisterUserInfoResponse = new BaseApiResponse<>(new BaseApiResponse.OnResponseListener<UserInfo>() {
 
@@ -242,7 +235,7 @@ public class SplashActivity extends BaseActivity {
                 mRetryCount++;
             }else{
                 Log.i(TAG, "onRegisterUserInfoResponse error : " + error.toString());
-                startApplication(mConfigPref.getNaverUserInfo());
+                startApplication(mConfigPref.getuserInfo());
             }
         }
     }, new TypeToken<UserInfo>(){}.getType());
@@ -300,4 +293,30 @@ public class SplashActivity extends BaseActivity {
         super.finish();
         overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
     }
+
+    private void failedLogin(){
+        Toast.makeText(this, R.string.fail_auth_user_info, Toast.LENGTH_SHORT).show();
+        getBaseLayoutContainer().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                finish();
+            }
+        }, 1000L);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if(resultCode == RESULT_OK){
+            if(requestCode == REQUEST_LOGIN_CODE){
+                if(data != null){
+                    Token token = data.getParcelableExtra(Token.class.getName());
+                    getUserProfile(token);
+                }
+            }
+        }else{
+            failedLogin();
+        }
+    }
+
 }

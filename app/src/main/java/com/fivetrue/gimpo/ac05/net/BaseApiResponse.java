@@ -18,6 +18,8 @@ public class BaseApiResponse<DATA> {
 
     private static final String TAG = "BaseApiResponse";
 
+    public static final int RETRY_COUNT = 3;
+
     public interface OnResponseListener<DATA>{
         void onResponse(BaseApiResponse<DATA> response);
         void onError(VolleyError error);

@@ -1,126 +1,183 @@
 package com.fivetrue.gimpo.ac05.ui;
 
+
+import android.content.Intent;
 import android.os.Bundle;
-import android.view.View;
-import android.widget.Button;
 
+import com.android.volley.VolleyError;
+import com.fivetrue.gimpo.ac05.ApplicationEX;
+import com.fivetrue.gimpo.ac05.Constants;
 import com.fivetrue.gimpo.ac05.R;
-import com.fivetrue.gimpo.ac05.manager.NaverApiManager;
-import com.fivetrue.gimpo.ac05.parser.NaverUserInfoParser;
+import com.fivetrue.gimpo.ac05.net.BaseApiResponse;
+import com.fivetrue.gimpo.ac05.net.NetworkManager;
+import com.fivetrue.gimpo.ac05.net.request.TokenRequest;
+import com.fivetrue.gimpo.ac05.net.response.TokenApiResponse;
+import com.fivetrue.gimpo.ac05.preferences.ConfigPreferenceManager;
+import com.fivetrue.gimpo.ac05.ui.fragment.BaseFragment;
+import com.fivetrue.gimpo.ac05.ui.fragment.WebViewFragment;
 import com.fivetrue.gimpo.ac05.utils.Log;
-import com.fivetrue.gimpo.ac05.vo.user.UserInfo;
+import com.fivetrue.gimpo.ac05.vo.config.AppConfig;
+import com.fivetrue.gimpo.ac05.vo.config.AuthLoginResult;
+import com.fivetrue.gimpo.ac05.vo.config.Token;
+import com.google.gson.Gson;
 
-/**
- * Created by kwonojin on 16. 6. 1..
- */
-public class NaverLoginActivity extends BaseActivity{
+import java.util.UUID;
 
-    private static final String TAG = "OAuthSampleActivity";
+public class NaverLoginActivity extends BaseActivity implements WebViewFragment.OnShouldOverrideUrlLoadingListener{
 
+    private static final String TAG = "NaverLoginActivity";
 
-    /** UI 요소들 */
-    private Button mLoginButton = null;
+    private static final String API = Constants.API_SERVER_HOST + "/api/naver/login?state=";
 
+    private ConfigPreferenceManager mConfigPref = null;
+    private UUID mUid = null;
+
+    private TokenRequest mAccessTokenRequest = null;
+    private TokenRequest mRefreshTokenRequest = null;
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_login);
+        setContentView(R.layout.activity_cafe);
+        initData();
         initView();
     }
 
-    private void initView() {
-        mLoginButton = (Button) findViewById(R.id.btn_login);
-        mLoginButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                NaverApiManager.getInstance().startOauthLoginActivity(NaverLoginActivity.this, new NaverApiManager.OnOAuthLoginListener() {
-                    @Override
-                    public void onSuccess(NaverApiManager apiManager, String accessToken, String refreshToken, long expiresAt, String tokenType, String state) {
+    private void initData(){
+        mConfigPref = new ConfigPreferenceManager(this);
+        mUid = UUID.randomUUID();
+        mAccessTokenRequest = new TokenRequest(this, accessTokenApiResponse);
+        mRefreshTokenRequest = new TokenRequest(this, refreshTokenResponse);
+    }
 
+    private void initView(){
+        setActionbarVisible(false);
+        checkCachedTokenForLogin();
+    }
 
-                    }
-
-                    @Override
-                    public void onError(NaverApiManager apiManager, String errorCode, String errorDescription) {
-
-                    }
-                });
+    private void checkCachedTokenForLogin(){
+        Token token = mConfigPref.getToken();
+        if(token == null){
+            Log.i(TAG, "checkCachedTokenForLogin: showLoginWebView");
+            showLoginWebView();
+        }else{
+            boolean isExpried = token.isExpired();
+            AppConfig config = ((ApplicationEX)getApplicationContext()).getAppConfig();
+            Log.i(TAG, "checkCachedTokenForLogin: isExpried = " + isExpried);
+            if(isExpried){
+                mRefreshTokenRequest.requestRefreshToken(config, token);
+                NetworkManager.getInstance().request(mRefreshTokenRequest);
+            }else{
+                successLogin(token);
             }
-        });
+        }
+    }
 
-
-        findViewById(R.id.btn_loginout).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                NaverApiManager.getInstance().logout();
-
-            }
-        });
-
-        findViewById(R.id.btn_delete_token).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                NaverApiManager.getInstance().requestDeleteAccessToken(new NaverApiManager.OnErrorCodeListener() {
-                    @Override
-                    public void onError(NaverApiManager apiManager, String errorCode, String errorDescription) {
-
-                    }
-                });
-            }
-        });
-
-        findViewById(R.id.btn_refresh_token).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                NaverApiManager.getInstance().requestRefreshAccessToken(new NaverApiManager.OnOAuthLoginListener() {
-                    @Override
-                    public void onSuccess(NaverApiManager apiManager, String accessToken, String refreshToken, long expiresAt, String tokenType, String state) {
-
-                    }
-
-                    @Override
-                    public void onError(NaverApiManager apiManager, String errorCode, String errorDescription) {
-
-                    }
-                });
-            }
-        });
-
-        findViewById(R.id.btn_request_profile).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                NaverApiManager.getInstance().reqeustUserProfile(new NaverApiManager.OnRequestResponseListener() {
-                    @Override
-                    public void onResponse(String response) {
-
-//                        try{
-//                            XmlPullParser parser =
-//
-//                            while(parser.getEventType() != XmlPullParser.END_DOCUMENT) {
-//                                if(parser.getEventType() == XmlPullParser.START_TAG) {
-//                                    if(parser.getName().equals("content")) {
-//                                        items.add(parser.getAttributeValue(0));
-//                                    }
-//                                }
-//                                parser.next();
-//                            }
-//                        }catch(Throwable t) {
-//                        }
-                        Log.i(TAG, response);
-                        UserInfo info = NaverUserInfoParser.parse(response);
-                        if(info != null){
-                            Log.i(TAG, info.toString());
-                        }
-                    }
-                });
-            }
-        });
+    private void showLoginWebView(){
+        Bundle b = new Bundle();
+        b.putString("url", API + mUid.toString());
+        addFragment(WebViewFragment.class, b, false);
     }
 
     @Override
-    protected void onResume() {
-        super.onResume();
-
+    public boolean onOverride(String url) {
+        return false;
     }
+
+    @Override
+    public void onCallback(String response) {
+        Log.i(TAG, "onCallback: " + response);
+        if(response != null){
+            AuthLoginResult result = new Gson().fromJson(response, AuthLoginResult.class);
+            if(result != null){
+                AppConfig config = ((ApplicationEX)getApplicationContext()).getAppConfig();
+                if(config != null){
+                    mAccessTokenRequest.requestAccessToken(config, result);
+                    NetworkManager.getInstance().request(mAccessTokenRequest);
+                }
+            }
+        }
+    }
+
+    private TokenApiResponse accessTokenApiResponse = new TokenApiResponse(new BaseApiResponse.OnResponseListener<Token>() {
+        private int mRetry = 0;
+        @Override
+        public void onResponse(BaseApiResponse<Token> response) {
+            Log.i(TAG, "onResponse: " + response);
+            if(response != null && response.getData() != null){
+                response.getData().setUpdateTime(System.currentTimeMillis());
+                successLogin(response.getData());
+            }else{
+                if(mRetry < BaseApiResponse.RETRY_COUNT){
+                    NetworkManager.getInstance().request(mAccessTokenRequest);
+                    mRetry ++;
+                }else{
+                    failedLogin();
+                }
+            }
+
+        }
+
+        @Override
+        public void onError(VolleyError error) {
+            Log.e(TAG, error.toString());
+            if(mRetry < BaseApiResponse.RETRY_COUNT){
+                NetworkManager.getInstance().request(mAccessTokenRequest);
+                mRetry ++;
+            }else{
+                failedLogin();
+            }
+        }
+    });
+
+    private TokenApiResponse refreshTokenResponse = new TokenApiResponse(new BaseApiResponse.OnResponseListener<Token>() {
+        private int mRetry = 0;
+        @Override
+        public void onResponse(BaseApiResponse<Token> response) {
+            Log.i(TAG, "onResponse: " + response);
+            if(response != null && response.getData() != null){
+                response.getData().setUpdateTime(System.currentTimeMillis());
+                successLogin(response.getData());
+            }else{
+                if(mRetry < BaseApiResponse.RETRY_COUNT){
+                    NetworkManager.getInstance().request(mRefreshTokenRequest);
+                    mRetry ++;
+                }else{
+                    failedLogin();
+                }
+            }
+
+        }
+
+        @Override
+        public void onError(VolleyError error) {
+            Log.e(TAG, error.toString());
+            if(mRetry < BaseApiResponse.RETRY_COUNT){
+                NetworkManager.getInstance().request(mRefreshTokenRequest);
+                mRetry ++;
+            }else{
+                failedLogin();
+            }
+        }
+    });
+
+    private void successLogin(Token token){
+        if(token != null){
+            mConfigPref.setToken(token);
+            Log.i(TAG, "successLogin: " + token.toString());
+            Intent intent = new Intent();
+            intent.putExtra(Token.class.getName(), token);
+            setResult(RESULT_OK, intent);
+        }else{
+            setResult(-1);
+        }
+        finish();
+    }
+
+    private void failedLogin(){
+        Log.i(TAG, "failedLogin: ");
+        setResult(-1);
+        finish();
+    }
+
 }

@@ -2,6 +2,7 @@ package com.fivetrue.gimpo.ac05.preferences;
 
 import android.content.Context;
 
+import com.fivetrue.gimpo.ac05.vo.config.Token;
 import com.fivetrue.gimpo.ac05.vo.user.UserInfo;
 import com.google.gson.Gson;
 
@@ -62,18 +63,37 @@ public class ConfigPreferenceManager {
         return mHelper.getData(SETTING_PUSH, false);
     }
 
-    public void setNaverUserInfo(UserInfo userinfo){
+    public void setUserInfo(UserInfo userinfo){
         if(userinfo != null){
             mHelper.putData(USER_INFO, mGson.toJson(userinfo));
+        }else{
+            mHelper.putData(USER_INFO, null);
         }
     }
 
-    public UserInfo getNaverUserInfo(){
+    public UserInfo getuserInfo(){
         UserInfo userinfo = null;
         String info = mHelper.getData(USER_INFO, null);
         if(info != null){
             userinfo = mGson.fromJson(info, UserInfo.class);
         }
         return userinfo;
+    }
+
+    public void setToken(Token token){
+        if(token != null){
+            mHelper.putData(USER_TOKEN, mGson.toJson(token));
+        }else{
+            mHelper.putData(USER_TOKEN, null);
+        }
+    }
+
+    public Token getToken(){
+        Token token = null;
+        String info = mHelper.getData(USER_TOKEN, null);
+        if(info != null){
+            token = mGson.fromJson(info, Token.class);
+        }
+        return token;
     }
 }

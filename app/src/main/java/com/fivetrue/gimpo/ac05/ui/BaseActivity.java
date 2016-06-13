@@ -172,15 +172,15 @@ public class BaseActivity extends FragmentActivity {
         return b;
     }
 
-    public void addFragment(Class< ? extends BaseFragment> cls, Bundle arguments, int anchorLayout, boolean addBackstack){
-        addFragment(cls, arguments, anchorLayout, 0, 0, addBackstack);
+    public BaseFragment addFragment(Class< ? extends BaseFragment> cls, Bundle arguments, int anchorLayout, boolean addBackstack){
+        return addFragment(cls, arguments, anchorLayout, 0, 0, addBackstack);
     }
 
-    public void addFragment(Class< ? extends BaseFragment> cls, Bundle arguments, boolean addBackstack){
-        addFragment(cls, arguments, getFragmentAnchorLayoutID(), 0, 0, addBackstack);
+    public BaseFragment addFragment(Class< ? extends BaseFragment> cls, Bundle arguments, boolean addBackstack){
+        return addFragment(cls, arguments, getFragmentAnchorLayoutID(), 0, 0, addBackstack);
     }
 
-    public void addFragment(Class< ? extends BaseFragment> cls, Bundle arguments, int anchorLayout, int enterAnim, int exitAnim, boolean addBackstack){
+    public BaseFragment addFragment(Class< ? extends BaseFragment> cls, Bundle arguments, int anchorLayout, int enterAnim, int exitAnim, boolean addBackstack){
         BaseFragment f = null;
         try {
             f = cls.newInstance();
@@ -206,6 +206,7 @@ public class BaseActivity extends FragmentActivity {
                 getFtActionBar().setTitle(f.getFragmentNameResource());
             }
         }
+        return f;
     }
 
     @Override
