@@ -4,6 +4,7 @@ package com.fivetrue.gimpo.ac05.net;
 import android.text.TextUtils;
 
 import com.android.volley.VolleyError;
+import com.fivetrue.gimpo.ac05.utils.Log;
 import com.google.gson.Gson;
 
 import org.json.JSONObject;
@@ -14,6 +15,8 @@ import java.lang.reflect.Type;
  * Created by kwonojin on 16. 3. 15..
  */
 public class BaseApiResponse<DATA> {
+
+    private static final String TAG = "BaseApiResponse";
 
     public interface OnResponseListener<DATA>{
         void onResponse(BaseApiResponse<DATA> response);
@@ -54,8 +57,9 @@ public class BaseApiResponse<DATA> {
             if(!TextUtils.isEmpty(jData) && getType() != null){
                 data = getGson().fromJson(jData, getType());
             }
-            mOnResponseListener.onResponse(this);
         }
+        Log.d(TAG, "setResponse: " + response);
+        mOnResponseListener.onResponse(this);
     }
 
     public void setError(VolleyError error){

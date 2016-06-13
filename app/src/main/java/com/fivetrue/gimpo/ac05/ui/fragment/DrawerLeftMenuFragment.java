@@ -8,6 +8,9 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ListView;
 
+import com.fivetrue.gimpo.ac05.R;
+import com.fivetrue.gimpo.ac05.ui.CafeActivity;
+import com.fivetrue.gimpo.ac05.ui.MainActivity;
 import com.fivetrue.gimpo.ac05.ui.adapter.BaseListAdapter;
 import com.fivetrue.gimpo.ac05.ui.adapter.LeftMenuListAdapter;
 import com.fivetrue.gimpo.ac05.vo.LeftMenu;
@@ -53,12 +56,9 @@ public class DrawerLeftMenuFragment extends  BaseListFragment<LeftMenu> {
 
     private void initData(){
         mLeftMenu = new ArrayList<>();
-//        mLeftMenu.add(new LeftMenu(getString(R.string.home), MainActivity.class));
-//        mLeftMenu.add(new LeftMenu(getString(R.string.hero), HeroesActivity.class));
-//        mLeftMenu.add(new LeftMenu(getString(R.string.item), ItemsActivity.class));
-//        mLeftMenu.add(new LeftMenu(getString(R.string.dungeon), DungeonsActivity.class));
-//        mLeftMenu.add(new LeftMenu(getString(R.string.awaken), MainActivity.class));
-//        mLeftMenu.add(new LeftMenu(getString(R.string.setting), MainActivity.class));
+        mLeftMenu.add(new LeftMenu(getString(R.string.main), MainActivity.class));
+        mLeftMenu.add(new LeftMenu(getString(R.string.cafe), CafeActivity.class));
+        mLeftMenu.add(new LeftMenu(getString(R.string.setting), CafeActivity.class));
     }
 
     @Override

@@ -2,6 +2,9 @@ package com.fivetrue.gimpo.ac05.preferences;
 
 import android.content.Context;
 
+import com.fivetrue.gimpo.ac05.vo.user.UserInfo;
+import com.google.gson.Gson;
+
 /**
  * Created by ojin.kwon on 2016-02-02.
  */
@@ -14,11 +17,15 @@ public class ConfigPreferenceManager {
 
     private static final String SETTING_PUSH = "setting_push";
     private static final String USER_INFO = "user_info";
+    private static final String USER_TOKEN = "user_token";
 
     private SharedPreferenceHelper mHelper = null;
 
+    private Gson mGson = null;
+
     public ConfigPreferenceManager(Context context){
         mHelper = new SharedPreferenceHelper(context, PREF_NAME);
+        mGson = new Gson();
     }
 
     /**
@@ -55,14 +62,18 @@ public class ConfigPreferenceManager {
         return mHelper.getData(SETTING_PUSH, false);
     }
 
-    public void setNaverUserInfo(String xml){
-        if(xml != null){
-            mHelper.putData(USER_INFO, xml);
+    public void setNaverUserInfo(UserInfo userinfo){
+        if(userinfo != null){
+            mHelper.putData(USER_INFO, mGson.toJson(userinfo));
         }
     }
 
-    public String getNaverUserInfo(){
-        return mHelper.getData(USER_INFO, null);
+    public UserInfo getNaverUserInfo(){
+        UserInfo userinfo = null;
+        String info = mHelper.getData(USER_INFO, null);
+        if(info != null){
+            userinfo = mGson.fromJson(info, UserInfo.class);
+        }
+        return userinfo;
     }
-
 }

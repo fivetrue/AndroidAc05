@@ -14,20 +14,20 @@ import java.lang.reflect.Type;
 /**
  * Created by kwonojin on 16. 3. 29..
  */
-public class RegisterUserRequest extends BasicRequest<UserInfo> {
+public class RegisterUserRequest extends BasicRequest {
 
     private static final String TAG = "RegisterUserRequest";
 
     private static final String API = Constants.API_SERVER_HOST + "/api/user/register";
 
 
-    public RegisterUserRequest(Context context, BaseApiResponse.OnResponseListener<UserInfo> responseListener) {
-        super(context, API, responseListener);
+    public RegisterUserRequest(Context context, BaseApiResponse response) {
+        super(context, API, response);
     }
 
-    @Override
-    protected Type getClassType() {
-        return new TypeToken<UserInfo>(){}.getType();
-    }
+//    @Override
+//    protected Type getClassType() {
+//        return new TypeToken<UserInfo>(){}.getType();
+//    }
 
 }

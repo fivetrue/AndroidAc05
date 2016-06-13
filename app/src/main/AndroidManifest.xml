@@ -31,7 +31,7 @@
             android:screenOrientation="portrait"/>
 
         <activity
-            android:name=".ui.NaverLoginActivity"
+            android:name=".ui.CafeActivity"
             android:screenOrientation="portrait"/>
 
         <activity android:name="com.nhn.android.naverlogin.ui.OAuthLoginActivity"

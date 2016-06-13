@@ -1,5 +1,7 @@
 package com.fivetrue.gimpo.ac05.vo.config;
 
+import java.util.ArrayList;
+
 /**
  * Created by kwonojin on 16. 3. 14..
  */
@@ -14,6 +16,11 @@ public class AppConfig {
 
     private String naverClientId = null;
     private String naverClientSecret = null;
+
+    private String clubId = null;
+    private String clubUrl = null;
+
+    private ArrayList<String> districtList = null;
 
 
     public String getAppId() {
@@ -80,6 +87,30 @@ public class AppConfig {
         this.naverClientSecret = naverClientSecret;
     }
 
+    public String getClubId() {
+        return clubId;
+    }
+
+    public void setClubId(String clubId) {
+        this.clubId = clubId;
+    }
+
+    public String getClubUrl() {
+        return clubUrl;
+    }
+
+    public void setClubUrl(String clubUrl) {
+        this.clubUrl = clubUrl;
+    }
+
+    public ArrayList<String> getDistrictList() {
+        return districtList;
+    }
+
+    public void setDistrictList(ArrayList<String> districtList) {
+        this.districtList = districtList;
+    }
+
     @Override
     public String toString() {
         return "AppConfig{" +
@@ -91,6 +122,9 @@ public class AppConfig {
                 ", senderId='" + senderId + '\'' +
                 ", naverClientId='" + naverClientId + '\'' +
                 ", naverClientSecret='" + naverClientSecret + '\'' +
+                ", clubId='" + clubId + '\'' +
+                ", clubUrl='" + clubUrl + '\'' +
+                ", districtList=" + districtList +
                 '}';
     }
 }

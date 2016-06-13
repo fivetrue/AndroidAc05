@@ -27,6 +27,7 @@ import com.fivetrue.gimpo.ac05.utils.Log;
 import com.fivetrue.gimpo.ac05.vo.config.AppConfig;
 import com.fivetrue.gimpo.ac05.vo.user.UserInfo;
 import com.google.android.gms.gcm.GoogleCloudMessaging;
+import com.google.gson.reflect.TypeToken;
 
 import java.io.IOException;
 
@@ -78,7 +79,7 @@ public class SplashActivity extends BaseActivity {
     private void initModels(){
         mConfigPref = new ConfigPreferenceManager(this);
         mConfigReqeust = new ConfigRequest(this, onConfigResponseListener);
-        mRegisterUserRequest = new RegisterUserRequest(this, onRegisterUserRequest);
+        mRegisterUserRequest = new RegisterUserRequest(this, onRegisterUserInfoResponse);
     }
 
     /**
@@ -151,7 +152,7 @@ public class SplashActivity extends BaseActivity {
         NaverApiManager.getInstance().startOauthLoginActivity(SplashActivity.this, onOAuthLoginListener);
     }
 
-    private BaseApiResponse.OnResponseListener<AppConfig> onConfigResponseListener = new BaseApiResponse.OnResponseListener<AppConfig>() {
+    private BaseApiResponse<AppConfig> onConfigResponseListener = new BaseApiResponse<>(new BaseApiResponse.OnResponseListener<AppConfig>() {
 
         private int mRetryCount = 0;
 
@@ -175,7 +176,8 @@ public class SplashActivity extends BaseActivity {
                 mRetryCount++;
             }
         }
-    };
+    }, new TypeToken<AppConfig>(){}.getType());
+
 
     private NaverApiManager.OnOAuthLoginListener onOAuthLoginListener = new NaverApiManager.OnOAuthLoginListener() {
         @Override
@@ -188,12 +190,11 @@ public class SplashActivity extends BaseActivity {
              * 유저 정보 등록
              */
             mLoadingMessage.setText(R.string.config_user_info_register);
-            String userInfo = mConfigPref.getNaverUserInfo();
+            UserInfo userInfo = mConfigPref.getNaverUserInfo();
             if(userInfo != null){
-                UserInfo naverUserInfo = NaverUserInfoParser.parse(userInfo);
-                naverUserInfo.setGcmId(mConfigPref.getGcmDeviceId());
-                naverUserInfo.setDevice(Build.MODEL);
-                mRegisterUserRequest.setObject(naverUserInfo);
+                userInfo.setGcmId(mConfigPref.getGcmDeviceId());
+                userInfo.setDevice(Build.MODEL);
+                mRegisterUserRequest.setObject(userInfo);
                 NetworkManager.getInstance().request(mRegisterUserRequest);
             }else{
                 apiManager.reqeustUserProfile(new NaverApiManager.OnRequestResponseListener() {
@@ -217,13 +218,13 @@ public class SplashActivity extends BaseActivity {
         }
     };
 
-    private BaseApiResponse.OnResponseListener<UserInfo> onRegisterUserRequest = new BaseApiResponse.OnResponseListener<UserInfo>() {
+    private BaseApiResponse<UserInfo> onRegisterUserInfoResponse = new BaseApiResponse<>(new BaseApiResponse.OnResponseListener<UserInfo>() {
 
         private int mRetryCount = 0;
 
         @Override
         public void onResponse(BaseApiResponse<UserInfo> response) {
-            Log.i(TAG, "onRegisterUserRequest onResponse: " + response.toString());
+            Log.i(TAG, "onRegisterUserInfoResponse onResponse: " + response.toString());
             if(response != null && response.getData() != null){
                 startApplication(response.getData());
             }else{
@@ -240,11 +241,11 @@ public class SplashActivity extends BaseActivity {
                 NetworkManager.getInstance().request(mRegisterUserRequest);
                 mRetryCount++;
             }else{
-                Log.i(TAG, "onRegisterUserRequest error : " + error.toString());
-                startApplication(NaverUserInfoParser.parse(mConfigPref.getNaverUserInfo()));
+                Log.i(TAG, "onRegisterUserInfoResponse error : " + error.toString());
+                startApplication(mConfigPref.getNaverUserInfo());
             }
         }
-    };
+    }, new TypeToken<UserInfo>(){}.getType());
 
     private void startApplication(final UserInfo naverUserInfo){
         Log.i(TAG, "startApplication: start");

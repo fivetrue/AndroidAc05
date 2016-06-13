@@ -12,18 +12,18 @@ import java.lang.reflect.Type;
 /**
  * Created by kwonojin on 16. 3. 19..
  */
-public class ConfigRequest extends BasicRequest<AppConfig> {
+public class ConfigRequest extends BasicRequest {
 
     private static final String API = Constants.API_SERVER_HOST + "/api/config/appconfig";
 
-    public ConfigRequest(Context context, BaseApiResponse.OnResponseListener<AppConfig> responseListener) {
-        super(context, API, responseListener);
+    public ConfigRequest(Context context, BaseApiResponse response) {
+        super(context, API, response);
     }
 
-    @Override
-    protected Type getClassType() {
-        return new TypeToken<AppConfig>(){}.getType();
-    }
+//    @Override
+//    protected Type getClassType() {
+//        return new TypeToken<AppConfig>(){}.getType();
+//    }
 
     @Override
     public long getCacheTimeMilliseconds() {
