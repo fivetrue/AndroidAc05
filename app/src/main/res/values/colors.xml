@@ -9,6 +9,10 @@
 
     <color name="actionbar_background">@color/color_primary_alpha_30</color>
 
+    <color name="colorNegative">#FFA900</color>
+    <color name="colorNegativeDark">#D48C00</color>
+    <color name="color_negative_alpha_10">#19FFA900</color>
+    <color name="color_negative_alpha_30">#4CFFA900</color>
 
     <color name="black">#000000</color>
     <color name="white">#ffffff</color>
@@ -22,4 +26,5 @@
     <color name="ed_hint_txt_color">#b2b2b2</color>
     <color name="kakao_color">#ffeb00</color>
     <color name="facebook_color">#3a5795</color>
+
 </resources>

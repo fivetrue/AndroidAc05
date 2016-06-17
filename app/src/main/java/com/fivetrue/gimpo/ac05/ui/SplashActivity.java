@@ -13,7 +13,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.android.volley.VolleyError;
-import com.android.volley.toolbox.NetworkImageView;
 import com.fivetrue.gimpo.ac05.ApplicationEX;
 import com.fivetrue.gimpo.ac05.R;
 import com.fivetrue.gimpo.ac05.image.ImageLoadManager;
@@ -25,6 +24,7 @@ import com.fivetrue.gimpo.ac05.net.request.RegisterUserRequest;
 import com.fivetrue.gimpo.ac05.parser.NaverUserInfoParser;
 import com.fivetrue.gimpo.ac05.preferences.ConfigPreferenceManager;
 import com.fivetrue.gimpo.ac05.utils.Log;
+import com.fivetrue.gimpo.ac05.view.CircleImageView;
 import com.fivetrue.gimpo.ac05.vo.config.AppConfig;
 import com.fivetrue.gimpo.ac05.vo.config.Token;
 import com.fivetrue.gimpo.ac05.vo.user.UserInfo;
@@ -57,7 +57,7 @@ public class SplashActivity extends BaseActivity {
     private ProgressBar mProgress = null;
 
     private LinearLayout mUserLayout = null;
-    private NetworkImageView mUserImage = null;
+    private CircleImageView mUserImage = null;
     private TextView mUserNickname = null;
 
     @Override
@@ -75,7 +75,7 @@ public class SplashActivity extends BaseActivity {
 
         mUserLayout = (LinearLayout) findViewById(R.id.layout_splash_user_info);
         mUserNickname = (TextView) findViewById(R.id.tv_splash_user);
-        mUserImage = (NetworkImageView) findViewById(R.id.iv_splash_user);
+        mUserImage = (CircleImageView) findViewById(R.id.iv_splash_user);
 
         mProgress = (ProgressBar) findViewById(R.id.pb_splash);
     }
@@ -188,26 +188,18 @@ public class SplashActivity extends BaseActivity {
          * 유저 정보 등록
          */
         mLoadingMessage.setText(R.string.config_user_info_register);
-        UserInfo userInfo = mConfigPref.getuserInfo();
-        if(userInfo != null){
-            userInfo.setGcmId(mConfigPref.getGcmDeviceId());
-            userInfo.setDevice(Build.MODEL);
-            mRegisterUserRequest.setObject(userInfo);
-            NetworkManager.getInstance().request(mRegisterUserRequest);
-        }else{
-            NaverApiManager.getInstance().reqeustUserProfile(new NaverApiManager.OnRequestResponseListener() {
-                @Override
-                public void onResponse(String response) {
-                    Log.i(TAG, "Userinfo  onRequest response = " + response);
-                    UserInfo naverUserInfo = NaverUserInfoParser.parse(response);
-                    Log.i(TAG, "Userinfo  onRequest userInfo = " + naverUserInfo.toString());
-                    naverUserInfo.setGcmId(mConfigPref.getGcmDeviceId());
-                    naverUserInfo.setDevice(Build.MODEL);
-                    mRegisterUserRequest.setObject(naverUserInfo);
-                    NetworkManager.getInstance().request(mRegisterUserRequest);
-                }
-            });
-        }
+        NaverApiManager.getInstance().reqeustUserProfile(new NaverApiManager.OnRequestResponseListener() {
+            @Override
+            public void onResponse(String response) {
+                Log.i(TAG, "Userinfo  onRequest response = " + response);
+                UserInfo naverUserInfo = NaverUserInfoParser.parse(response);
+                Log.i(TAG, "Userinfo  onRequest userInfo = " + naverUserInfo.toString());
+                naverUserInfo.setGcmId(mConfigPref.getGcmDeviceId());
+                naverUserInfo.setDevice(Build.MODEL);
+                mRegisterUserRequest.setObject(naverUserInfo);
+                NetworkManager.getInstance().request(mRegisterUserRequest);
+            }
+        });
     }
 
 
@@ -219,6 +211,7 @@ public class SplashActivity extends BaseActivity {
         public void onResponse(BaseApiResponse<UserInfo> response) {
             Log.i(TAG, "onRegisterUserInfoResponse onResponse: " + response.toString());
             if(response != null && response.getData() != null){
+                mConfigPref.setUserInfo(response.getData());
                 startApplication(response.getData());
             }else{
                 if(RETRY_COUNT > mRetryCount){
@@ -235,7 +228,7 @@ public class SplashActivity extends BaseActivity {
                 mRetryCount++;
             }else{
                 Log.i(TAG, "onRegisterUserInfoResponse error : " + error.toString());
-                startApplication(mConfigPref.getuserInfo());
+                startApplication(mConfigPref.getUserInfo());
             }
         }
     }, new TypeToken<UserInfo>(){}.getType());
@@ -247,7 +240,7 @@ public class SplashActivity extends BaseActivity {
         if(naverUserInfo != null){
             Log.i(TAG, "startApplication: naverUserInfo = " + naverUserInfo.toString());
             mUserNickname.setText(naverUserInfo.getNickname());
-            mUserImage.setImageUrl(naverUserInfo.getProfileImage(), ImageLoadManager.getImageLoader());
+            mUserImage.setImageUrl(naverUserInfo.getProfileImage());
 
             AlphaAnimation anim = new AlphaAnimation(0f, 1f);
             anim.setDuration(1000L);

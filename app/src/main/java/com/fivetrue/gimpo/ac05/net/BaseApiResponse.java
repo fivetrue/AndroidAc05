@@ -126,4 +126,15 @@ public class BaseApiResponse<DATA> {
         return mGson;
     }
 
+    @Override
+    public String toString() {
+        return "BaseApiResponse{" +
+                "message='" + message + '\'' +
+                ", errorCode=" + errorCode +
+                ", responseTime=" + responseTime +
+                ", duration=" + duration +
+                ", data=" + data +
+                ", mType=" + mType +
+                '}';
+    }
 }

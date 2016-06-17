@@ -48,12 +48,12 @@ public class SmallItemView extends RelativeLayout {
     private void initAttributeset(Context context, AttributeSet attrs){
         Resources res = context.getResources();
         if(attrs != null) {
-            TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.SmallItemView);
-            mTopHeight = a.getDimension(R.styleable.SmallItemView_topHeight, res.getDimension(R.dimen.small_item_view_default_top_height));
-            mBottomHeight = a.getDimension(R.styleable.SmallItemView_bottomHeight, res.getDimension(R.dimen.small_item_view_default_bottom_height));
-            mWidth = a.getDimension(R.styleable.SmallItemView_width, res.getDimension(R.dimen.small_item_view_default_width));
-            mMargin = a.getDimension(R.styleable.SmallItemView_margin, res.getDimension(R.dimen.small_item_view_default_margin));
-            mColor = a.getColor(R.styleable.SmallItemView_smallviewColor, Color.TRANSPARENT);
+            TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.CustomView);
+            mTopHeight = a.getDimension(R.styleable.CustomView_topHeight, res.getDimension(R.dimen.small_item_view_default_top_height));
+            mBottomHeight = a.getDimension(R.styleable.CustomView_bottomHeight, res.getDimension(R.dimen.small_item_view_default_bottom_height));
+            mWidth = a.getDimension(R.styleable.CustomView_width, res.getDimension(R.dimen.small_item_view_default_width));
+            mMargin = a.getDimension(R.styleable.CustomView_margin, res.getDimension(R.dimen.small_item_view_default_margin));
+            mColor = a.getColor(R.styleable.CustomView_viewColor, Color.TRANSPARENT);
             a.recycle();
         }
     }

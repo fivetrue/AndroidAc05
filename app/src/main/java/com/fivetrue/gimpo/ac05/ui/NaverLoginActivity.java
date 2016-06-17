@@ -65,8 +65,12 @@ public class NaverLoginActivity extends BaseActivity implements WebViewFragment.
             AppConfig config = ((ApplicationEX)getApplicationContext()).getAppConfig();
             Log.i(TAG, "checkCachedTokenForLogin: isExpried = " + isExpried);
             if(isExpried){
-                mRefreshTokenRequest.requestRefreshToken(config, token);
-                NetworkManager.getInstance().request(mRefreshTokenRequest);
+                if(token.getRefresh_token() != null){
+                    mRefreshTokenRequest.requestRefreshToken(config, token);
+                    NetworkManager.getInstance().request(mRefreshTokenRequest);
+                }else{
+                    showLoginWebView();
+                }
             }else{
                 successLogin(token);
             }
@@ -105,7 +109,9 @@ public class NaverLoginActivity extends BaseActivity implements WebViewFragment.
         public void onResponse(BaseApiResponse<Token> response) {
             Log.i(TAG, "onResponse: " + response);
             if(response != null && response.getData() != null){
-                response.getData().setUpdateTime(System.currentTimeMillis());
+                Token token = response.getData();
+                token.setUpdateTime(System.currentTimeMillis());
+                mConfigPref.setToken(token);
                 successLogin(response.getData());
             }else{
                 if(mRetry < BaseApiResponse.RETRY_COUNT){
@@ -136,7 +142,9 @@ public class NaverLoginActivity extends BaseActivity implements WebViewFragment.
         public void onResponse(BaseApiResponse<Token> response) {
             Log.i(TAG, "onResponse: " + response);
             if(response != null && response.getData() != null){
-                response.getData().setUpdateTime(System.currentTimeMillis());
+                Token token = response.getData();
+                token.setUpdateTime(System.currentTimeMillis());
+                mConfigPref.setToken(token);
                 successLogin(response.getData());
             }else{
                 if(mRetry < BaseApiResponse.RETRY_COUNT){
@@ -163,7 +171,6 @@ public class NaverLoginActivity extends BaseActivity implements WebViewFragment.
 
     private void successLogin(Token token){
         if(token != null){
-            mConfigPref.setToken(token);
             Log.i(TAG, "successLogin: " + token.toString());
             Intent intent = new Intent();
             intent.putExtra(Token.class.getName(), token);

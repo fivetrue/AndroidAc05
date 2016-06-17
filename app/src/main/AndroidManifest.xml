@@ -39,13 +39,9 @@
             android:name=".ui.CafeActivity"
             android:screenOrientation="portrait"/>
 
-        <activity android:name="com.nhn.android.naverlogin.ui.OAuthLoginActivity"
-            android:screenOrientation="portrait"
-            android:theme="@android:style/Theme.Translucent.NoTitleBar"/>
-
-        <activity android:name="com.nhn.android.naverlogin.ui.OAuthLoginInAppBrowserActivity"
-            android:screenOrientation="portrait"
-            android:label="OAuth2.0 In-app"/>
+        <activity
+            android:name=".ui.SettingActivity"
+            android:screenOrientation="portrait"/>
 
     </application>
 

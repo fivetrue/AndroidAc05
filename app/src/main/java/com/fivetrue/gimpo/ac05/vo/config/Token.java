@@ -89,10 +89,12 @@ public class Token implements Parcelable{
 
     public boolean isExpired(){
         long expires_in_millis = expires_in * 1000;
+        long current_millis = System.currentTimeMillis();
         Log.i(TAG, "isExpired: updateTime = " + updateTime);
         Log.i(TAG, "isExpired: expries_in = " + expires_in);
         Log.i(TAG, "isExpired: expries_in millis= " + expires_in_millis);
-        boolean b = (updateTime + expires_in_millis) > System.currentTimeMillis();
+        Log.i(TAG, "isExpired: current_millis= " + current_millis);
+        boolean b = (updateTime + expires_in_millis) < current_millis;
         Log.i(TAG, "isExpired: " + b);
         return b;
     }

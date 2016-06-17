@@ -20,6 +20,8 @@ public class AppConfig {
     private String clubId = null;
     private String clubUrl = null;
 
+    private String myInfoUrl = null;
+
     private ArrayList<String> districtList = null;
 
 
@@ -103,6 +105,14 @@ public class AppConfig {
         this.clubUrl = clubUrl;
     }
 
+    public String getMyInfoUrl() {
+        return myInfoUrl;
+    }
+
+    public void setMyInfoUrl(String myInfoUrl) {
+        this.myInfoUrl = myInfoUrl;
+    }
+
     public ArrayList<String> getDistrictList() {
         return districtList;
     }
@@ -124,6 +134,7 @@ public class AppConfig {
                 ", naverClientSecret='" + naverClientSecret + '\'' +
                 ", clubId='" + clubId + '\'' +
                 ", clubUrl='" + clubUrl + '\'' +
+                ", myInfoUrl='" + myInfoUrl + '\'' +
                 ", districtList=" + districtList +
                 '}';
     }

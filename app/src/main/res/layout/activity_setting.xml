@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent" android:layout_height="match_parent"
+    android:background="@color/colorAccent">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/category_text_height"
+            android:text="@string/setting_user_info"
+            style="@style/CategoryText"/>
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="100dp"
+            android:layout_marginLeft="@dimen/common_horizontal_padding"
+            android:layout_marginRight="@dimen/common_horizontal_padding"
+            android:layout_marginTop="@dimen/common_vertical_padding"
+            android:layout_marginBottom="@dimen/common_vertical_padding"
+            android:padding="@dimen/common_horizontal_padding"
+            android:background="@drawable/rect_primary_alpha30_color">
+
+            <com.fivetrue.gimpo.ac05.view.CircleImageView
+                android:id="@+id/iv_setting_user_image"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:layout_alignParentLeft="true"
+                android:layout_centerVertical="true"/>
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"
+                android:layout_toRightOf="@id/iv_setting_user_image"
+                android:gravity="center"
+                android:layout_centerVertical="true">
+                <Button
+                    android:id="@+id/btn_setting_user_info"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/my_info"
+                    android:textColor="@color/colorAccent"
+                    android:textSize="@dimen/setting_category_text_size"
+                    android:layout_marginRight="@dimen/common_horizontal_padding"
+                    android:background="@drawable/selector_common_button"/>
+
+                <Button
+                    android:id="@+id/btn_setting_user_logout"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/btn_setting_user_info"
+                    android:text="@string/logout"
+                    android:textColor="@color/colorAccent"
+                    android:textSize="@dimen/setting_category_text_size"
+                    android:background="@drawable/selector_common_negative_button"/>
+            </LinearLayout>
+        </RelativeLayout>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/category_text_height"
+            android:text="@string/setting_title_push"
+            style="@style/CategoryText"/>
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="@dimen/common_horizontal_padding"
+            android:layout_marginRight="@dimen/common_horizontal_padding"
+            android:layout_marginTop="@dimen/common_vertical_padding"
+            android:layout_marginBottom="@dimen/common_vertical_padding"
+            android:background="@drawable/rect_primary_alpha30_color">
+
+            <android.support.v7.widget.SwitchCompat
+                android:id="@+id/sw_setting_push"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_marginRight="@dimen/common_horizontal_padding"
+                android:layout_alignParentRight="true"/>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/category_text_height"
+                android:text="@string/setting_check_push"
+                android:layout_toLeftOf="@id/sw_setting_push"
+                style="@style/SubItemText"/>
+        </RelativeLayout>
+
+
+    </LinearLayout>
+</ScrollView>

@@ -71,7 +71,7 @@ public class ConfigPreferenceManager {
         }
     }
 
-    public UserInfo getuserInfo(){
+    public UserInfo getUserInfo(){
         UserInfo userinfo = null;
         String info = mHelper.getData(USER_INFO, null);
         if(info != null){

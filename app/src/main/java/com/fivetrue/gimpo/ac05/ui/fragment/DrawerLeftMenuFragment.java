@@ -11,6 +11,7 @@ import android.widget.ListView;
 import com.fivetrue.gimpo.ac05.R;
 import com.fivetrue.gimpo.ac05.ui.CafeActivity;
 import com.fivetrue.gimpo.ac05.ui.MainActivity;
+import com.fivetrue.gimpo.ac05.ui.SettingActivity;
 import com.fivetrue.gimpo.ac05.ui.adapter.BaseListAdapter;
 import com.fivetrue.gimpo.ac05.ui.adapter.LeftMenuListAdapter;
 import com.fivetrue.gimpo.ac05.vo.LeftMenu;
@@ -58,7 +59,7 @@ public class DrawerLeftMenuFragment extends  BaseListFragment<LeftMenu> {
         mLeftMenu = new ArrayList<>();
         mLeftMenu.add(new LeftMenu(getString(R.string.main), MainActivity.class));
         mLeftMenu.add(new LeftMenu(getString(R.string.cafe), CafeActivity.class));
-        mLeftMenu.add(new LeftMenu(getString(R.string.setting), CafeActivity.class));
+        mLeftMenu.add(new LeftMenu(getString(R.string.setting), SettingActivity.class));
     }
 
     @Override

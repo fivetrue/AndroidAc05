@@ -40,7 +40,7 @@ public class TokenRequest extends BaseApiRequest{
         getParams().put("client_id", config.getNaverClientId());
         getParams().put("client_secret", config.getNaverClientSecret());
         getParams().put("access_token", token.getAccess_token());
-        getParams().put("sercive_provider", "NAVER");
+        getParams().put("service_provider", "NAVER");
     }
 
 

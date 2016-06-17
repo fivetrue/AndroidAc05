@@ -7,6 +7,8 @@
     <string name="ok">확인</string>
     <string name="cancel">취소</string>
 
+    <string name="detail">자세히</string>
+
     <string name="config_data_check">데이터 정보를 확인 중 입니다</string>
     <string name="config_data_register">설정 정보를 등록 중 입니다</string>
     <string name="config_data_auto_login">자동 로그인 확인 중 입니다</string>
@@ -37,11 +39,20 @@
     <string name="login_btn_kakaotalk_login">KAKAO</string>
     <string name="login_welcome"> 님 로그인!</string>
     <string name="logout">로그아웃</string>
+    <string name="my_info">내정보</string>
     <string name="login_need">로그인이 필요합니다. 로그인 하시겠습니까?</string>
 
+    <!-- Main -->
+    <string name="town_news">우리동네 소식</string>
+    <string name="gimpo_journal">김포 저널</string>
+    <string name="gimpo_news">김포 뉴스</string>
+
     <!-- Setting  -->
+    <string name="setting_user_info">사용자 정보</string>
     <string name="setting_title_push">PUSH</string>
-    <string name="setting_check_push">댓글 및 추천 알림 서비스 ON/OFF 설정</string>
+    <string name="setting_check_push">알림 서비스 ON/OFF 설정</string>
+
+    <string name="setting_logout_message">로그아웃 시 앱이 종료됩니다.</string>
 
 
     <!-- Drip write-->
