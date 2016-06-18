@@ -1,6 +1,8 @@
 package com.fivetrue.gimpo.ac05.ui;
 
+import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.widget.SwipeRefreshLayout;
@@ -10,6 +12,7 @@ import android.view.ViewTreeObserver;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.ScrollView;
+import android.widget.Toast;
 
 import com.android.volley.VolleyError;
 import com.fivetrue.gimpo.ac05.R;
@@ -44,8 +47,9 @@ public class MainActivity extends DrawerActivity implements BasePageDataFragment
     private ProgressBar mProgressBar = null;
 
     private UserInfo mUserInfo = null;
-
     private PageDataRequest mPageDataReqeust = null;
+
+    private boolean mDoubleClickBack = false;
 
     private int [] layouts = {
             R.id.layout_main_page1,
@@ -79,7 +83,6 @@ public class MainActivity extends DrawerActivity implements BasePageDataFragment
             @Override
             public void onRefresh() {
                 mPageDataReqeust.setCache(false);
-                mProgressBar.setVisibility(View.VISIBLE);
                 NetworkManager.getInstance().request(mPageDataReqeust);
             }
         });
@@ -95,10 +98,9 @@ public class MainActivity extends DrawerActivity implements BasePageDataFragment
     }
 
     private void scrollY(float scrollOffset){
-//        Log.i(TAG, "scrollY: " + scrollOffset);
-//        int backgroundScroll = (int)(mBackground.getHeight() * scrollOffset);
-//        Log.i(TAG, "scrollY: background scroll = " + backgroundScroll);
-//        mBackground.setScrollY(backgroundScroll);
+        int backgroundHeight = mBackground.getHeight();
+        backgroundHeight = (int) (backgroundHeight * 0.1);
+        mBackground.scrollTo(0, (int) -(backgroundHeight * scrollOffset));
     }
 
     private void checkUserInfo(){
@@ -112,20 +114,25 @@ public class MainActivity extends DrawerActivity implements BasePageDataFragment
         }
     }
 
-    private void setData(ArrayList<PageDataEntry> data){
+    private void setData(final ArrayList<PageDataEntry> data){
         if(data != null){
-            for(int i = 0 ; i < data.size() ; i++){
-                if(i < data.size()){
-                    Fragment f = getCurrentFragmentManager().findFragmentById(layouts[i % layouts.length]);
-                    if(f != null && f instanceof BasePageDataFragment){
-                        ((BasePageDataFragment) f).setData(data.get(i));
-                    }else{
-                        Bundle argument = new Bundle();
-                        argument.putParcelable(PageDataEntry.class.getName(), data.get(i));
-                        addFragment(HorizontalListPageDataFragment.class, argument, layouts[ i % layouts.length], R.anim.enter_smooth, 0, false);
+            new Handler().postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    for(int i = 0 ; i < data.size() ; i++){
+                        if(i < data.size()){
+                            Fragment f = getCurrentFragmentManager().findFragmentById(layouts[i % layouts.length]);
+                            if(f != null && f instanceof BasePageDataFragment){
+                                ((BasePageDataFragment) f).setData(data.get(i));
+                            }else{
+                                Bundle argument = new Bundle();
+                                argument.putParcelable(PageDataEntry.class.getName(), data.get(i));
+                                addFragment(HorizontalListPageDataFragment.class, argument, layouts[ i % layouts.length], R.anim.enter_smooth, 0, false);
+                            }
+                        }
                     }
                 }
-            }
+            }, 500L);
         }
     }
 
@@ -162,6 +169,9 @@ public class MainActivity extends DrawerActivity implements BasePageDataFragment
     @Override
     public void onClickPageDetail(PageDataEntry entry) {
         Log.i(TAG, "onClickPageDetail: "  + entry.toString());
+        Intent intent = new Intent(this, PageDataListActivity.class);
+        intent.putExtra(PageDataEntry.class.getName(), entry);
+        startActivity(intent);
     }
 
     @Override
@@ -184,7 +194,22 @@ public class MainActivity extends DrawerActivity implements BasePageDataFragment
     }
 
     @Override
-    protected boolean isBlendingActionBar() {
-        return true;
+    public void onBackPressed() {
+        if(getCurrentFragmentManager().getBackStackEntryCount() > 0){
+            super.onBackPressed();
+        }else{
+            if(!mDoubleClickBack){
+                mDoubleClickBack = true;
+                Toast.makeText(MainActivity.this, R.string.exit_click_back_twice, Toast.LENGTH_SHORT).show();
+                new Handler().postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        mDoubleClickBack = false;
+                    }
+                }, 2000L);
+            }else{
+                super.onBackPressed();
+            }
+        }
     }
 }

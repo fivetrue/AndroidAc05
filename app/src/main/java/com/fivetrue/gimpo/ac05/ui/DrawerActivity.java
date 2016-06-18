@@ -141,9 +141,9 @@ public class DrawerActivity extends BaseActivity{
                 if (getFtActionBar() != null && getFtActionBar().getDrawerButton() != null) {
                     getFtActionBar().getDrawerButton().setRotationOffset(offset);
                 }
-                if(getBaseLayoutContainer() != null && mLeftDrawerFragment != null){
-                    getBaseLayoutContainer().setX(offset * mLeftDrawerFragment.getView().getWidth());
-                }
+//                if(getBaseLayoutContainer() != null && mLeftDrawerFragment != null){
+//                    getBaseLayoutContainer().setX(offset * mLeftDrawerFragment.getView().getWidth());
+//                }
             }
 
             @Override

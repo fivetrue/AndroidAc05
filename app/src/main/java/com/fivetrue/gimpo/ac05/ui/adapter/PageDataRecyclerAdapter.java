@@ -49,6 +49,7 @@ public class PageDataRecyclerAdapter extends BaseRecyclerAdapter<PageData, PageD
             holder.title.setText(data.getPageTitle());
             holder.title.setTextColor(mContentColor);
             holder.layoutTop.setBackgroundColor(mContentBgColor);
+            holder.imageView.setImageBitmap(null);
             if(data.getPageContent() != null){
                 holder.content.setText(Html.fromHtml(data.getPageContent()));
                 String token = "src=\"";
@@ -58,8 +59,7 @@ public class PageDataRecyclerAdapter extends BaseRecyclerAdapter<PageData, PageD
                     imgUrl = imgUrl.substring(0, imgUrl.indexOf("\""));
                     Log.i(TAG, "setPageData: " + imgUrl);
                     holder.imageView.setImageUrl(imgUrl, ImageLoadManager.getImageLoader());
-                }
-            }
+                }            }
             if(data.getPageDate() != null){
                 holder.date.setText(data.getPageDate());
             }

@@ -7,6 +7,7 @@ import com.fivetrue.gimpo.ac05.service.notification.NotificationData;
 import com.fivetrue.gimpo.ac05.ui.SplashActivity;
 import com.fivetrue.gimpo.ac05.utils.Log;
 import com.google.android.gms.gcm.GcmListenerService;
+import com.google.gson.Gson;
 
 /**
  * Created by kwonojin on 16. 3. 28..
@@ -14,7 +15,9 @@ import com.google.android.gms.gcm.GcmListenerService;
 public class GCMService extends GcmListenerService {
 
     private static final String TAG = "GCMService";
-    private static final String DATA_KEY = "msg";
+    private static final String DATA_KEY = "data";
+
+    private static final int DEFAULT_NOTIFICATION_ID = 0x88;
 
     private ConfigPreferenceManager mConfigPref = null;
 
@@ -27,14 +30,12 @@ public class GCMService extends GcmListenerService {
 
         String message = data.getString(DATA_KEY);
         if(message != null && mConfigPref.isSettingPush()){
-            NotificationData notificationData = new NotificationData();
-            notificationData.id = 1;
-            notificationData.message = message;
-            notificationData.targetClass = SplashActivity.class.getName();
-            notificationData.title = "새로운 알림";
-            notificationData.hasLarge = false;
-            notificationData.uri = "drip/1";
-            NotificationService.createNotifcation(this, notificationData);
+            NotificationData noti = new Gson().fromJson(message, NotificationData.class);
+            if(noti.id >= 0){
+                noti.id = DEFAULT_NOTIFICATION_ID;
+            }
+            noti.targetClass = SplashActivity.class.getName();
+            NotificationService.createNotifcation(this, noti);
         }
         Log.d(TAG, "From: " + from);
         Log.d(TAG, "Message: " + message);

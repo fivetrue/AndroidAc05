@@ -16,28 +16,26 @@ public final class NotificationData implements Parcelable {
     public String message = null;
     public String targetClass = null;
     public String uri = null;
-    public int defaultSmallImageResource = -1;
-    public int defaultLargeImageResource = -1;
+    public String imageUrl = null;
     public boolean hasLarge = false;
 
     public NotificationData(){}
 
     public NotificationData(int id, String title, String message, Class< ? extends ContextWrapper> targetCls, String uri){
-        this(id, title, message, targetCls, uri, -1, -1, false);
+        this(id, title, message, targetCls, uri, null, false);
     }
 
-    public NotificationData(int id, String title, String message, Class< ? extends ContextWrapper> targetCls, String uri, int defaultSmallImgRes){
-        this(id, title, message, targetCls, uri, defaultSmallImgRes, -1, false);
+    public NotificationData(int id, String title, String message, Class< ? extends ContextWrapper> targetCls, String uri, String imageUrl){
+        this(id, title, message, targetCls, uri, imageUrl, false);
     }
 
-    public NotificationData(int id, String title, String message, Class< ? extends ContextWrapper> targetCls, String uri, int defaultSmallImgRes, int defaultLargeImgRes, boolean hasLarge){
+    public NotificationData(int id, String title, String message, Class< ? extends ContextWrapper> targetCls, String uri, String imageUrl, boolean hasLarge){
         this.id = id;
         this.title = title;
         this.message = message;
         this.targetClass = targetCls.getName();
         this.uri = uri;
-        this.defaultSmallImageResource = defaultSmallImgRes;
-        this.defaultLargeImageResource = defaultLargeImgRes;
+        this.imageUrl = imageUrl;
         this.hasLarge = hasLarge;
     }
 
@@ -47,8 +45,7 @@ public final class NotificationData implements Parcelable {
         message = parcel.readString();
         targetClass = parcel.readString();
         uri = parcel.readString();
-        defaultSmallImageResource = parcel.readInt();
-        defaultLargeImageResource = parcel.readInt();
+        imageUrl = parcel.readString();
         hasLarge = parcel.readInt() == 1;
     }
 
@@ -64,8 +61,7 @@ public final class NotificationData implements Parcelable {
         dest.writeString(message);
         dest.writeString(targetClass);
         dest.writeString(uri);
-        dest.writeInt(defaultSmallImageResource);
-        dest.writeInt(defaultLargeImageResource);
+        dest.writeString(imageUrl);
         dest.writeInt(hasLarge ? 1 : 0);
     }
 
@@ -81,17 +77,4 @@ public final class NotificationData implements Parcelable {
         }
     };
 
-    @Override
-    public String toString() {
-        return "NotificationData{" +
-                "id=" + id +
-                ", title='" + title + '\'' +
-                ", message='" + message + '\'' +
-                ", targetClass='" + targetClass + '\'' +
-                ", uri=" + uri +
-                ", defaultSmallImageResource=" + defaultSmallImageResource +
-                ", defaultLargeImageResource=" + defaultLargeImageResource +
-                ", hasLarge=" + hasLarge +
-                '}';
-    }
 }

@@ -76,6 +76,9 @@ public class DrawerLeftMenuFragment extends  BaseListFragment<LeftMenu> {
                 }
             }
         });
+
+//        View headerView = null;
+//        listVIew.addHeaderView(headerView, null, false);
     }
 
     private OnMenuClickItemListener onMenuClickItemListener = new OnMenuClickItemListener() {

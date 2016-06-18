@@ -1,9 +1,7 @@
 package com.fivetrue.gimpo.ac05.ui.fragment.data;
 
-import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.v4.view.ViewPager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -14,12 +12,8 @@ import android.widget.TextView;
 
 import com.fivetrue.gimpo.ac05.R;
 import com.fivetrue.gimpo.ac05.ui.adapter.PageDataRecyclerAdapter;
-import com.fivetrue.gimpo.ac05.ui.adapter.pager.PageDataPagerAdapter;
-import com.fivetrue.gimpo.ac05.ui.fragment.BaseFragment;
 import com.fivetrue.gimpo.ac05.vo.data.PageData;
 import com.fivetrue.gimpo.ac05.vo.data.PageDataEntry;
-
-import java.util.ArrayList;
 
 /**
  * Created by kwonojin on 16. 6. 15..

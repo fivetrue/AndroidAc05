@@ -16,6 +16,7 @@ public class PageDataEntry implements Parcelable{
 	private String contentBgColor = null;
 
 	private ArrayList<PageData> pages = new ArrayList<>();
+
 	public String getDataTitle() {
 		return dataTitle;
 	}
@@ -74,13 +75,22 @@ public class PageDataEntry implements Parcelable{
 
 	@Override
 	public void writeToParcel(Parcel dest, int flags) {
+
 		dest.writeString(dataTitle);
 		dest.writeInt(count);
+		dest.writeString(titleColor);
+		dest.writeString(titleBgColor);
+		dest.writeString(contentColor);
+		dest.writeString(contentBgColor);
 		dest.writeTypedList(pages);
 	}
 	protected PageDataEntry(Parcel in) {
 		dataTitle = in.readString();
 		count = in.readInt();
+		titleColor = in.readString();
+		titleBgColor = in.readString();
+		contentColor = in.readString();
+		contentBgColor = in.readString();
 		pages = in.createTypedArrayList(PageData.CREATOR);
 	}
 
@@ -95,4 +105,5 @@ public class PageDataEntry implements Parcelable{
 			return new PageDataEntry[size];
 		}
 	};
+
 }
