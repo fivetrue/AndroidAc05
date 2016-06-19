@@ -15,13 +15,13 @@
             android:layout_height="match_parent"
             android:gravity="center"
             android:textColor="@color/colorAccent"
-            android:textSize="13dp"
+            android:textSize="15dp"
             android:layout_alignParentLeft="true"
             android:layout_centerVertical="true"
             style="@style/CommonText"/>
 
         <ImageView
-            android:id="@+id/tv_fragment_list_page_data_detail"
+            android:id="@+id/iv_fragment_list_page_data_detail_info"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:layout_alignParentRight="true"
@@ -32,6 +32,14 @@
             android:text="@string/detail"
             android:src="@android:drawable/ic_menu_info_details"
             android:background="@drawable/selector_common_list_item_background"/>
+
+        <ImageView
+            android:id="@+id/iv_fragment_list_page_data_detail_view"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_toLeftOf="@id/iv_fragment_list_page_data_detail_info"
+            android:src="@android:drawable/ic_menu_view"
+            android:visibility="gone"/>
     </RelativeLayout>
 
 

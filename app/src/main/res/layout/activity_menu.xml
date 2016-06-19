@@ -5,7 +5,7 @@
 
     <fragment
         android:id="@+id/left_fragment_drawer"
-        android:layout_width="@dimen/menu_drawr_width"
+        android:layout_width="@dimen/menu_drawer_width"
         android:layout_height="match_parent"
         android:layout_gravity="left"
         android:name="com.fivetrue.gimpo.ac05.ui.fragment.DrawerLeftMenuFragment" />

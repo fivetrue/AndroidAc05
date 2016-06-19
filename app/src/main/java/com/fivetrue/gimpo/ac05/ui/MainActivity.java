@@ -8,10 +8,12 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.text.TextUtils;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.ScrollView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.android.volley.VolleyError;
@@ -21,7 +23,7 @@ import com.fivetrue.gimpo.ac05.net.NetworkManager;
 import com.fivetrue.gimpo.ac05.net.request.PageDataRequest;
 import com.fivetrue.gimpo.ac05.ui.fragment.BaseFragment;
 import com.fivetrue.gimpo.ac05.ui.fragment.data.BasePageDataFragment;
-import com.fivetrue.gimpo.ac05.ui.fragment.data.HorizontalListPageDataFragment;
+import com.fivetrue.gimpo.ac05.ui.fragment.data.PageDataListFragment;
 import com.fivetrue.gimpo.ac05.ui.fragment.UserInfoInputFragment;
 import com.fivetrue.gimpo.ac05.ui.fragment.data.PageDataDetailFragment;
 import com.fivetrue.gimpo.ac05.utils.Log;
@@ -43,6 +45,10 @@ public class MainActivity extends DrawerActivity implements BasePageDataFragment
     private ScrollView mScrollView = null;
     private View mBackground = null;
     private LinearLayout mMainContainer = null;
+
+    private ViewGroup mTopHoverContainer = null;
+    private TextView mTopHoverText = null;
+
 
     private ProgressBar mProgressBar = null;
 
@@ -127,7 +133,8 @@ public class MainActivity extends DrawerActivity implements BasePageDataFragment
                             }else{
                                 Bundle argument = new Bundle();
                                 argument.putParcelable(PageDataEntry.class.getName(), data.get(i));
-                                addFragment(HorizontalListPageDataFragment.class, argument, layouts[ i % layouts.length], R.anim.enter_smooth, 0, false);
+                                PageDataListFragment fragment = (PageDataListFragment) addFragment(PageDataListFragment.class, argument, layouts[i % layouts.length], R.anim.enter_smooth, 0, false);
+                                fragment.setNestedScrollingEnabled(false);
                             }
                         }
                     }
@@ -169,9 +176,10 @@ public class MainActivity extends DrawerActivity implements BasePageDataFragment
     @Override
     public void onClickPageDetail(PageDataEntry entry) {
         Log.i(TAG, "onClickPageDetail: "  + entry.toString());
-        Intent intent = new Intent(this, PageDataListActivity.class);
-        intent.putExtra(PageDataEntry.class.getName(), entry);
-        startActivity(intent);
+//        Intent intent = new Intent(this, PageDataListActivity.class);
+//        intent.putExtra(PageDataEntry.class.getName(), entry);
+//        startActivity(intent);
+        Toast.makeText(this, entry.getContentDescription(), Toast.LENGTH_SHORT).show();
     }
 
     @Override
@@ -195,7 +203,7 @@ public class MainActivity extends DrawerActivity implements BasePageDataFragment
 
     @Override
     public void onBackPressed() {
-        if(getCurrentFragmentManager().getBackStackEntryCount() > 0){
+        if(getCurrentFragmentManager().getBackStackEntryCount() > 0 || isOpenMenu()){
             super.onBackPressed();
         }else{
             if(!mDoubleClickBack){

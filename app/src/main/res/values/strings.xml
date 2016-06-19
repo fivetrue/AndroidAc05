@@ -15,9 +15,11 @@
     <string name="config_user_info_register">사용자 정보 등록 중 입니다</string>
     <string name="config_user_info_verify">사용자 정보 확인 중 입니다</string>
 
-
     <string name="fail_auth_user_info">사용자 정보를 확인 할 수 없어 종료 됩니다</string>
 
+    <string name="exit_click_back_twice">뒤로가기 동작 시 종료 됩니다.</string>
+
+    <string name="create_date">등록일</string>
     <!-- Left Menu-->
     <string name="main">메인</string>
     <string name="cafe">카페</string>
@@ -54,7 +56,6 @@
 
     <string name="setting_logout_message">로그아웃 시 앱이 종료됩니다.</string>
 
-
     <!-- Drip write-->
     <string name="write_hint">개드립 한번 해보시개ㅋ.</string>
     <string name="write_btn_write">글쓰기</string>
@@ -74,6 +75,9 @@
     <string name="invalid_user_password">패스워드 형식이 잘못 되었습니다.</string>
 
     <string name="userinfo_input_wellcome">%s 님 환영합니다.\n원활한 앱 사용을 위하여 간단한 기본 정보를 입력해 주시겠어요?</string>
+
+    <!-- Page data-->
+    <string name="page_data_empty">정보가 없습니다.</string>
 
 
 </resources>

@@ -2,11 +2,12 @@
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent" android:layout_height="match_parent">
 
-    <View
+    <ImageView
         android:id="@+id/view_main_background"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@drawable/common_background"/>
+        android:src="@drawable/common_background"
+        android:scaleType="fitXY"/>
 
     <android.support.v4.widget.SwipeRefreshLayout
         android:id="@+id/layout_main_refresh"
@@ -25,8 +26,7 @@
                 <FrameLayout
                     android:id="@+id/layout_main_banner"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/actionbar_height"/>
+                    android:layout_height="wrap_content"/>
 
                 <FrameLayout
                     android:id="@+id/layout_main_page1"

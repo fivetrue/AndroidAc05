@@ -14,6 +14,7 @@ public class PageDataEntry implements Parcelable{
 
 	private String contentColor = null;
 	private String contentBgColor = null;
+	private String contentDescription = null;
 
 	private ArrayList<PageData> pages = new ArrayList<>();
 
@@ -54,6 +55,15 @@ public class PageDataEntry implements Parcelable{
 	public void setContentBgColor(String contentBgColor) {
 		this.contentBgColor = contentBgColor;
 	}
+
+	public String getContentDescription() {
+		return contentDescription;
+	}
+
+	public void setContentDescription(String contentDescription) {
+		this.contentDescription = contentDescription;
+	}
+
 	public ArrayList<PageData> getPages() {
 		return pages;
 	}
@@ -61,11 +71,19 @@ public class PageDataEntry implements Parcelable{
 	public void setPages(ArrayList<PageData> pages) {
 		this.pages = pages;
 	}
+
 	@Override
 	public String toString() {
-		return "PageDataEntry [dataTitle=" + dataTitle + ", count=" + count + ", titleColor=" + titleColor
-				+ ", titleBgColor=" + titleBgColor + ", contentColor=" + contentColor + ", contentBgColor="
-				+ contentBgColor + ", pages=" + pages + "]";
+		return "PageDataEntry{" +
+				"dataTitle='" + dataTitle + '\'' +
+				", count=" + count +
+				", titleColor='" + titleColor + '\'' +
+				", titleBgColor='" + titleBgColor + '\'' +
+				", contentColor='" + contentColor + '\'' +
+				", contentBgColor='" + contentBgColor + '\'' +
+				", contentDescription='" + contentDescription + '\'' +
+				", pages=" + pages +
+				'}';
 	}
 
 	@Override
@@ -82,6 +100,7 @@ public class PageDataEntry implements Parcelable{
 		dest.writeString(titleBgColor);
 		dest.writeString(contentColor);
 		dest.writeString(contentBgColor);
+		dest.writeString(contentDescription);
 		dest.writeTypedList(pages);
 	}
 	protected PageDataEntry(Parcel in) {
@@ -91,6 +110,7 @@ public class PageDataEntry implements Parcelable{
 		titleBgColor = in.readString();
 		contentColor = in.readString();
 		contentBgColor = in.readString();
+		contentDescription = in.readString();
 		pages = in.createTypedArrayList(PageData.CREATOR);
 	}
 

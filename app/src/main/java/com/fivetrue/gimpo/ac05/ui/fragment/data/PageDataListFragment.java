@@ -1,5 +1,6 @@
 package com.fivetrue.gimpo.ac05.ui.fragment.data;
 
+import android.media.Image;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.LinearLayoutManager;
@@ -18,13 +19,16 @@ import com.fivetrue.gimpo.ac05.vo.data.PageDataEntry;
 /**
  * Created by kwonojin on 16. 6. 15..
  */
-public class HorizontalListPageDataFragment extends BasePageDataFragment {
+public class PageDataListFragment extends BasePageDataFragment {
 
     private ViewGroup mLayoutLabel = null;
     private TextView mDataTitle = null;
     private ImageView mDataDetail = null;
+    private ImageView mDataViewIcon = null;
     private RecyclerView mRecyclerView = null;
     private PageDataRecyclerAdapter mAdapter = null;
+
+    private boolean mScrollEnable = true;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -43,14 +47,29 @@ public class HorizontalListPageDataFragment extends BasePageDataFragment {
         View view = inflater.inflate(R.layout.fragment_list_page_data, null);
         mLayoutLabel = (ViewGroup) view.findViewById(R.id.layout_fragment_list_label);
         mDataTitle = (TextView) view.findViewById(R.id.tv_fragment_list_page_data_title);
-        mDataDetail = (ImageView) view.findViewById(R.id.tv_fragment_list_page_data_detail);
+        mDataDetail = (ImageView) view.findViewById(R.id.iv_fragment_list_page_data_detail_info);
+        mDataViewIcon = (ImageView) view.findViewById(R.id.iv_fragment_list_page_data_detail_view);
         mRecyclerView = (RecyclerView) view.findViewById(R.id.rv_fragment_list_page_data);
-        mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity(), LinearLayoutManager.HORIZONTAL, false));
-
+        mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false));
+        mRecyclerView.setNestedScrollingEnabled(mScrollEnable);
         mDataDetail.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 onClickPageDetail(getPageEntry());
+            }
+        });
+        mLayoutLabel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(mRecyclerView != null && mDataViewIcon != null){
+                    if(mRecyclerView.isShown()){
+                        mRecyclerView.setVisibility(View.GONE);
+                        mDataViewIcon.setVisibility(View.VISIBLE);
+                    }else{
+                        mRecyclerView.setVisibility(View.VISIBLE);
+                        mDataViewIcon.setVisibility(View.GONE);
+                    }
+                }
             }
         });
 
@@ -69,7 +88,7 @@ public class HorizontalListPageDataFragment extends BasePageDataFragment {
                     mAdapter.setOnClickPageDataListener(new PageDataRecyclerAdapter.OnClickPageDataListener() {
                         @Override
                         public void onClickPageData(View view, PageData data) {
-                            HorizontalListPageDataFragment.this.onClickPageData(entry, data, getPageTitleColor(), getPageTitleBgColor());
+                            PageDataListFragment.this.onClickPageData(entry, data, getPageTitleColor(), getPageTitleBgColor());
                         }
                     });
                     mRecyclerView.setAdapter(mAdapter);
@@ -77,6 +96,13 @@ public class HorizontalListPageDataFragment extends BasePageDataFragment {
                     mAdapter.setData(entry.getPages());
                 }
             }
+        }
+    }
+
+    public void setNestedScrollingEnabled(boolean b){
+        mScrollEnable = b;
+        if(mRecyclerView != null){
+            mRecyclerView.setNestedScrollingEnabled(b);
         }
     }
 }

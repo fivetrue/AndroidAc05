@@ -6,9 +6,7 @@
         android:id="@+id/tv_fragment_page_data_detail"
         android:layout_width="match_parent"
         android:layout_height="50dp"
-        android:layout_marginTop="@dimen/actionbar_height"
-
-        android:textSize="13dp"
+        android:textSize="15dp"
         android:textColor="@android:color/black"
         android:gravity="center"
         style="@style/CommonText"/>

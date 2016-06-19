@@ -3,6 +3,7 @@ package com.fivetrue.gimpo.ac05.ui.adapter;
 import android.support.v7.widget.RecyclerView;
 import android.text.Html;
 import android.view.View;
+import android.view.animation.TranslateAnimation;
 import android.widget.TextView;
 
 import com.android.volley.toolbox.NetworkImageView;
@@ -61,16 +62,19 @@ public class PageDataRecyclerAdapter extends BaseRecyclerAdapter<PageData, PageD
                     holder.imageView.setImageUrl(imgUrl, ImageLoadManager.getImageLoader());
                 }            }
             if(data.getPageDate() != null){
-                holder.date.setText(data.getPageDate());
+                String date = holder.date.getResources().getString(R.string.create_date) + " " + data.getPageDate();
+                holder.date.setText(date);
             }
             holder.container.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    if(mOnClickPageDataListener != null){
+                    if (mOnClickPageDataListener != null) {
                         mOnClickPageDataListener.onClickPageData(v, data);
                     }
                 }
             });
+            holder.container.setVisibility(View.VISIBLE);
+
         }
     }
 
@@ -95,6 +99,9 @@ public class PageDataRecyclerAdapter extends BaseRecyclerAdapter<PageData, PageD
             layoutTop = itemView.findViewById(R.id.layout_item_page_data_list_top);
             imageView = (NetworkImageView) itemView.findViewById(R.id.iv_item_page_data_list_image);
             content = (TextView) itemView.findViewById(R.id.tv_item_page_data_list_content);
+            TranslateAnimation anim = new TranslateAnimation(0, 0, -100, 0);
+            container.setAnimation(anim);
+            container.setVisibility(View.GONE);
         }
     }
 }
