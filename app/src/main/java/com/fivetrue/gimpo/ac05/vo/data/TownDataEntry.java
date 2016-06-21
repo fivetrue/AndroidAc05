@@ -5,32 +5,29 @@ import android.os.Parcelable;
 
 import java.util.ArrayList;
 
-public class PageDataEntry implements Parcelable{
-
-	private String dataTitle = null;
+public class TownDataEntry implements Parcelable{
+	
 	private int count = 0;
+	private String description = null;
+	private String title = null;
 	private String titleColor = null;
 	private String titleBgColor = null;
-
 	private String contentColor = null;
 	private String contentBgColor = null;
-	private String contentDescription = null;
+	private ArrayList<TownData> list = new ArrayList<>();
 
-	private ArrayList<PageData> pages = new ArrayList<>();
-
-	public String getDataTitle() {
-		return dataTitle;
-	}
-	public void setDataTitle(String dataTitle) {
-		this.dataTitle = dataTitle;
-	}
 	public int getCount() {
 		return count;
 	}
 	public void setCount(int count) {
 		this.count = count;
 	}
-
+	public String getDescription() {
+		return description;
+	}
+	public void setDescription(String description) {
+		this.description = description;
+	}
 	public String getTitleColor() {
 		return titleColor;
 	}
@@ -55,34 +52,30 @@ public class PageDataEntry implements Parcelable{
 	public void setContentBgColor(String contentBgColor) {
 		this.contentBgColor = contentBgColor;
 	}
-
-	public String getContentDescription() {
-		return contentDescription;
+	public ArrayList<TownData> getList() {
+		return list;
 	}
-
-	public void setContentDescription(String contentDescription) {
-		this.contentDescription = contentDescription;
+	public void setList(ArrayList<TownData> list) {
+		this.list = list;
 	}
-
-	public ArrayList<PageData> getPages() {
-		return pages;
+	public String getTitle() {
+		return title;
 	}
-
-	public void setPages(ArrayList<PageData> pages) {
-		this.pages = pages;
+	public void setTitle(String title) {
+		this.title = title;
 	}
 
 	@Override
 	public String toString() {
-		return "PageDataEntry{" +
-				"dataTitle='" + dataTitle + '\'' +
-				", count=" + count +
+		return "TownDataEntry{" +
+				"count=" + count +
+				", description='" + description + '\'' +
+				", title='" + title + '\'' +
 				", titleColor='" + titleColor + '\'' +
 				", titleBgColor='" + titleBgColor + '\'' +
 				", contentColor='" + contentColor + '\'' +
 				", contentBgColor='" + contentBgColor + '\'' +
-				", contentDescription='" + contentDescription + '\'' +
-				", pages=" + pages +
+				", list=" + list +
 				'}';
 	}
 
@@ -93,37 +86,36 @@ public class PageDataEntry implements Parcelable{
 
 	@Override
 	public void writeToParcel(Parcel dest, int flags) {
-
-		dest.writeString(dataTitle);
 		dest.writeInt(count);
+		dest.writeString(description);
+		dest.writeString(title);
 		dest.writeString(titleColor);
 		dest.writeString(titleBgColor);
 		dest.writeString(contentColor);
 		dest.writeString(contentBgColor);
-		dest.writeString(contentDescription);
-		dest.writeTypedList(pages);
+		dest.writeTypedList(list);
 	}
-	protected PageDataEntry(Parcel in) {
-		dataTitle = in.readString();
+
+	protected TownDataEntry(Parcel in) {
 		count = in.readInt();
+		description = in.readString();
+		title = in.readString();
 		titleColor = in.readString();
 		titleBgColor = in.readString();
 		contentColor = in.readString();
 		contentBgColor = in.readString();
-		contentDescription = in.readString();
-		pages = in.createTypedArrayList(PageData.CREATOR);
+		list = in.createTypedArrayList(TownData.CREATOR);
 	}
 
-	public static final Creator<PageDataEntry> CREATOR = new Creator<PageDataEntry>() {
+	public static final Creator<TownDataEntry> CREATOR = new Creator<TownDataEntry>() {
 		@Override
-		public PageDataEntry createFromParcel(Parcel in) {
-			return new PageDataEntry(in);
+		public TownDataEntry createFromParcel(Parcel in) {
+			return new TownDataEntry(in);
 		}
 
 		@Override
-		public PageDataEntry[] newArray(int size) {
-			return new PageDataEntry[size];
+		public TownDataEntry[] newArray(int size) {
+			return new TownDataEntry[size];
 		}
 	};
-
 }

@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
 import android.view.View;
 import android.view.animation.AlphaAnimation;
 import android.view.animation.Animation;
@@ -169,6 +170,8 @@ public class SplashActivity extends BaseActivity {
                 if(RETRY_COUNT > mRetryCount){
                     NetworkManager.getInstance().request(mConfigReqeust);
                     mRetryCount++;
+                }else{
+                   finishError();
                 }
             }
         }
@@ -178,9 +181,21 @@ public class SplashActivity extends BaseActivity {
             if(RETRY_COUNT > mRetryCount){
                 NetworkManager.getInstance().request(mConfigReqeust);
                 mRetryCount++;
+            }else{
+                finishError();
             }
         }
     }, new TypeToken<AppConfig>(){}.getType());
+
+    private void finishError(){
+        Toast.makeText(SplashActivity.this, R.string.config_data_can_not_read, Toast.LENGTH_SHORT).show();
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                finish();
+            }
+        }, 500L);
+    }
 
     private void getUserProfile(Token token){
         Log.i(TAG, "getUserProfile: token = " + token.toString());

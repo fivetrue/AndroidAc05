@@ -8,9 +8,9 @@ import com.fivetrue.gimpo.ac05.net.BaseApiResponse;
 /**
  * Created by kwonojin on 16. 3. 19..
  */
-public class PageDataRequest extends BasicRequest {
+public class MainPageDataRequest extends BasicRequest {
 
-    private static final String API = Constants.API_SERVER_HOST + "/api/data/page";
+    private static final String API = Constants.API_SERVER_HOST + "/api/data/main";
 //    private static final String API = "http://10.10.5.71:8080/gimpo-ac05/api/data/page";
 //    private static final String API = "http://192.168.43.126:8080/gimpo-ac05/api/data/page";
 //    private static final String API = "http://192.168.219.168:8080/gimpo-ac05/api/data/page";
@@ -19,7 +19,7 @@ public class PageDataRequest extends BasicRequest {
     private boolean mCached = true;
     private long mCacheTime = 1000 * 60 * 5;
 
-    public PageDataRequest(Context context, BaseApiResponse response) {
+    public MainPageDataRequest(Context context, BaseApiResponse response) {
         super(context, API, response);
     }
 

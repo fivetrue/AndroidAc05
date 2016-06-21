@@ -15,6 +15,8 @@
     <string name="config_user_info_register">사용자 정보 등록 중 입니다</string>
     <string name="config_user_info_verify">사용자 정보 확인 중 입니다</string>
 
+    <string name="config_data_can_not_read">설정 정보를 가져올 수 없어 앱이 종료 됩니다.</string>
+
     <string name="fail_auth_user_info">사용자 정보를 확인 할 수 없어 종료 됩니다</string>
 
     <string name="exit_click_back_twice">뒤로가기 동작 시 종료 됩니다.</string>

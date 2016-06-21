@@ -1,6 +1,5 @@
 package com.fivetrue.gimpo.ac05.ui;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.app.Fragment;
@@ -20,15 +19,17 @@ import com.android.volley.VolleyError;
 import com.fivetrue.gimpo.ac05.R;
 import com.fivetrue.gimpo.ac05.net.BaseApiResponse;
 import com.fivetrue.gimpo.ac05.net.NetworkManager;
-import com.fivetrue.gimpo.ac05.net.request.PageDataRequest;
+import com.fivetrue.gimpo.ac05.net.request.MainPageDataRequest;
+import com.fivetrue.gimpo.ac05.rss.FeedMessage;
 import com.fivetrue.gimpo.ac05.ui.fragment.BaseFragment;
-import com.fivetrue.gimpo.ac05.ui.fragment.data.BasePageDataFragment;
 import com.fivetrue.gimpo.ac05.ui.fragment.data.PageDataListFragment;
 import com.fivetrue.gimpo.ac05.ui.fragment.UserInfoInputFragment;
 import com.fivetrue.gimpo.ac05.ui.fragment.data.PageDataDetailFragment;
+import com.fivetrue.gimpo.ac05.ui.fragment.data.TownDataFragment;
 import com.fivetrue.gimpo.ac05.utils.Log;
+import com.fivetrue.gimpo.ac05.vo.data.MainDataEntry;
 import com.fivetrue.gimpo.ac05.vo.data.PageData;
-import com.fivetrue.gimpo.ac05.vo.data.PageDataEntry;
+import com.fivetrue.gimpo.ac05.vo.data.TownDataEntry;
 import com.fivetrue.gimpo.ac05.vo.user.UserInfo;
 import com.google.gson.reflect.TypeToken;
 
@@ -37,7 +38,7 @@ import java.util.ArrayList;
 /**
  * Created by kwonojin on 16. 6. 7..
  */
-public class MainActivity extends DrawerActivity implements BasePageDataFragment.OnPageDataClickListener {
+public class MainActivity extends DrawerActivity implements PageDataListFragment.OnPageDataClickListener {
 
     private static final String TAG = "MainActivity";
 
@@ -53,7 +54,7 @@ public class MainActivity extends DrawerActivity implements BasePageDataFragment
     private ProgressBar mProgressBar = null;
 
     private UserInfo mUserInfo = null;
-    private PageDataRequest mPageDataReqeust = null;
+    private MainPageDataRequest mPageDataReqeust = null;
 
     private boolean mDoubleClickBack = false;
 
@@ -76,7 +77,7 @@ public class MainActivity extends DrawerActivity implements BasePageDataFragment
 
     private void initData(){
         mUserInfo = getIntent().getParcelableExtra(UserInfo.class.getName());
-        mPageDataReqeust = new PageDataRequest(this, basePageDataApiResponse);
+        mPageDataReqeust = new MainPageDataRequest(this, basePageDataApiResponse);
     }
 
     private void initView(){
@@ -96,8 +97,8 @@ public class MainActivity extends DrawerActivity implements BasePageDataFragment
         mScrollView.getViewTreeObserver().addOnScrollChangedListener(new ViewTreeObserver.OnScrollChangedListener() {
             @Override
             public void onScrollChanged() {
-                if(mScrollView != null){
-                    scrollY(mScrollView.getScrollY() / (float)mScrollView.getHeight());
+                if (mScrollView != null) {
+                    scrollY(mScrollView.getScrollY() / (float) mScrollView.getHeight());
                 }
             }
         });
@@ -120,32 +121,51 @@ public class MainActivity extends DrawerActivity implements BasePageDataFragment
         }
     }
 
-    private void setData(final ArrayList<PageDataEntry> data){
+    private void setData(final MainDataEntry data){
         if(data != null){
-            new Handler().postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    for(int i = 0 ; i < data.size() ; i++){
-                        if(i < data.size()){
-                            Fragment f = getCurrentFragmentManager().findFragmentById(layouts[i % layouts.length]);
-                            if(f != null && f instanceof BasePageDataFragment){
-                                ((BasePageDataFragment) f).setData(data.get(i));
-                            }else{
-                                Bundle argument = new Bundle();
-                                argument.putParcelable(PageDataEntry.class.getName(), data.get(i));
-                                PageDataListFragment fragment = (PageDataListFragment) addFragment(PageDataListFragment.class, argument, layouts[i % layouts.length], R.anim.enter_smooth, 0, false);
-                                fragment.setNestedScrollingEnabled(false);
+            TownDataEntry townDataEntry = data.getTown();
+            if(townDataEntry != null){
+                Fragment f = getCurrentFragmentManager().findFragmentById(layouts[0]);
+                if(f != null && f instanceof TownDataFragment){
+                    ((TownDataFragment) f).setData(townDataEntry);
+                }else{
+                    Bundle argument = new Bundle();
+                    argument.putParcelable(TownDataEntry.class.getName(), townDataEntry);
+                    TownDataFragment fragment = (TownDataFragment) addFragment(TownDataFragment.class, argument, layouts[0], R.anim.enter_smooth, 0, false);
+                }
+
+            }
+
+            final ArrayList<PageData> pageData = data.getPages();
+            if(pageData != null){
+                for(int i = 0 ; i < pageData.size() ; i ++){
+                    if(i < pageData.size()){
+                        final int idx = i;
+                        new Handler().postDelayed(new Runnable() {
+                            @Override
+                            public void run() {
+
+                                Fragment f = getCurrentFragmentManager().findFragmentById(layouts[(idx + 1)]);
+                                if(f != null && f instanceof PageDataListFragment){
+                                    ((PageDataListFragment) f).setData(pageData.get(idx));
+                                }else{
+                                    Bundle argument = new Bundle();
+                                    argument.putParcelable(PageData.class.getName(), pageData.get(idx));
+                                    PageDataListFragment fragment = (PageDataListFragment) addFragment(PageDataListFragment.class, argument, layouts[idx + 1], R.anim.enter_smooth, 0, false);
+                                    fragment.setNestedScrollingEnabled(false);
+                                }
+
                             }
-                        }
+                        }, 500L);
                     }
                 }
-            }, 500L);
+            }
         }
     }
 
-    private BaseApiResponse<ArrayList<PageDataEntry>> basePageDataApiResponse = new BaseApiResponse<>(new BaseApiResponse.OnResponseListener<ArrayList<PageDataEntry>>() {
+    private BaseApiResponse<MainDataEntry> basePageDataApiResponse = new BaseApiResponse<>(new BaseApiResponse.OnResponseListener<MainDataEntry>() {
         @Override
-        public void onResponse(BaseApiResponse<ArrayList<PageDataEntry>> response) {
+        public void onResponse(BaseApiResponse<MainDataEntry> response) {
             if(mRefreshLayout != null && mRefreshLayout.isRefreshing()){
                 mRefreshLayout.setRefreshing(false);
             }
@@ -161,25 +181,16 @@ public class MainActivity extends DrawerActivity implements BasePageDataFragment
             }
             mProgressBar.setVisibility(View.GONE);
         }
-    }, new TypeToken<ArrayList<PageDataEntry>>(){}.getType());
+    }, new TypeToken<MainDataEntry>(){}.getType());
 
     @Override
-    public void onClickPageData(PageDataEntry entry, PageData pageData, Integer textColor, Integer bgColor) {
-        BaseFragment f = addFragment(PageDataDetailFragment.class, PageDataDetailFragment.makeArgument(pageData, textColor, bgColor)
+    public void onClickPageData(FeedMessage data, Integer textColor, Integer bgColor) {
+        BaseFragment f = addFragment(PageDataDetailFragment.class, PageDataDetailFragment.makeArgument(data, textColor, bgColor)
                 , getFragmentAnchorLayoutID(), R.anim.enter_translate_up, R.anim.exit_translate_down, true);
         if(f != null){
-            getFtActionBar().setTitle(entry.getDataTitle());
+            getFtActionBar().setTitle(data.getTitle());
         }
-        Log.i(TAG, "onClickPageData: " + pageData.toString());
-    }
-
-    @Override
-    public void onClickPageDetail(PageDataEntry entry) {
-        Log.i(TAG, "onClickPageDetail: "  + entry.toString());
-//        Intent intent = new Intent(this, PageDataListActivity.class);
-//        intent.putExtra(PageDataEntry.class.getName(), entry);
-//        startActivity(intent);
-        Toast.makeText(this, entry.getContentDescription(), Toast.LENGTH_SHORT).show();
+        Log.i(TAG, "onClickPageData: " + data.toString());
     }
 
     @Override

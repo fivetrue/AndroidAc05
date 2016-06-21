@@ -2,12 +2,18 @@ package com.fivetrue.gimpo.ac05.manager;
 
 import android.content.Context;
 import android.os.AsyncTask;
+import android.util.Pair;
 
 import com.fivetrue.gimpo.ac05.preferences.ConfigPreferenceManager;
 import com.fivetrue.gimpo.ac05.utils.Log;
-import com.nhn.android.naverlogin.OAuthLoginDefine;
-import com.nhn.android.naverlogin.connection.CommonConnection;
-import com.nhn.android.naverlogin.connection.ResponseData;
+
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.net.HttpURLConnection;
+import java.net.URL;
 
 /**
  * Created by kwonojin on 16. 6. 2..
@@ -111,17 +117,70 @@ public class NaverApiManager {
 
     private String requestNaverApi(Context context, String accessToken, String url) {
         String authHeader = "bearer " + accessToken;
-        if(OAuthLoginDefine.DEVELOPER_VERSION) {
-            Log.d("NaverLoginOAuth|OAuthLogin", "at:" + accessToken + ", url:" + url);
-            Log.d("NaverLoginOAuth|OAuthLogin", "header:" + authHeader);
+        Pair<String,String>[] header = new Pair[1];
+        header[0] = new Pair("Authorization", authHeader);
+        String response = requestApi(url, "POST", true, header, "");
+
+
+        return response;
+    }
+
+    public static String requestApi(String api, String method, boolean userCaches, Pair<String, String>[] headers, Pair<String, String>...parameters){
+        return requestApi(api, method, userCaches, headers, getPostDataString(parameters));
+    }
+
+    public static String requestApi(String api, String method, boolean userCaches, Pair<String, String>[] headers, String data){
+        String response = "";
+        try {
+            boolean hasoutbody = method.equalsIgnoreCase("POST");
+            final URL url = new URL(api);
+            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+            conn.setRequestMethod(method);
+
+            if(headers != null){
+                for(Pair<String, String> header : headers){
+                    conn.addRequestProperty(header.first, header.second);
+                }
+            }
+
+            conn.setUseCaches(userCaches);
+            conn.setDoInput(true);
+            conn.setDoOutput(hasoutbody);
+            conn.connect();
+
+            if(hasoutbody){
+                if(data != null && data.length() > 0){
+                    OutputStream os = conn.getOutputStream();
+                    BufferedWriter writer = new BufferedWriter(
+                            new OutputStreamWriter(os, "UTF-8"));
+                    writer.write(data);
+                    writer.flush();
+                    writer.close();
+                    os.close();
+                }
+            }
+
+            int responseCode =conn.getResponseCode();
+            String line;
+            BufferedReader br=new BufferedReader(new InputStreamReader(conn.getInputStream()));
+            while ((line=br.readLine()) != null) {
+                response+=line;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
 
-        ResponseData res = CommonConnection.request(context, url, (String) null, (String) null, authHeader);
-        if(OAuthLoginDefine.DEVELOPER_VERSION) {
-            Log.d("NaverLoginOAuth|OAuthLogin", "res.statuscode" + res.mStatusCode);
-            Log.d("NaverLoginOAuth|OAuthLogin", "res.content" + res.mContent);
-        }
+        return response;
+    }
 
-        return res == null?null:res.mContent;
+    public static String getPostDataString(Pair<String, String>[] pairs){
+        String data = "";
+        if(pairs != null && pairs.length > 0){
+            for(Pair<String, String> p : pairs){
+                data += p.first + "=" + p.second + "&";
+            }
+        }
+        return data;
+
     }
 }

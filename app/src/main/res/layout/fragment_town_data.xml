@@ -3,42 +3,49 @@
     android:layout_width="match_parent" android:layout_height="wrap_content">
 
     <RelativeLayout
-        android:id="@+id/layout_fragment_pager_data_label"
+        android:id="@+id/layout_fragment_town_data_label"
         android:layout_width="match_parent"
         android:layout_height="40dp"
         android:paddingLeft="@dimen/common_horizontal_padding"
-        android:paddingRight="@dimen/common_horizontal_padding"
         android:background="@color/colorPrimary">
 
         <TextView
-            android:id="@+id/tv_fragment_pager_page_data_title"
+            android:id="@+id/tv_fragment_town_data_title"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
-            android:textSize="13dp"
             android:gravity="center"
             android:textColor="@color/colorAccent"
+            android:textSize="15dp"
             android:layout_alignParentLeft="true"
             android:layout_centerVertical="true"
             style="@style/CommonText"/>
 
-        <TextView
-            android:id="@+id/tv_fragment_pager_page_data_detail"
+        <ImageView
+            android:id="@+id/iv_fragment_town_data_detail_info"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:layout_alignParentRight="true"
             android:layout_centerVertical="true"
+            android:paddingLeft="@dimen/common_horizontal_padding"
+            android:paddingRight="@dimen/common_horizontal_padding"
             android:gravity="center"
             android:text="@string/detail"
-            android:textSize="20dp"
-            android:textColor="@color/colorAccent"
+            android:src="@android:drawable/ic_menu_info_details"
             android:background="@drawable/selector_common_list_item_background"/>
 
+        <ImageView
+            android:id="@+id/iv_fragment_town_data_detail_view"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_toLeftOf="@id/iv_fragment_town_data_detail_info"
+            android:src="@android:drawable/ic_menu_view"
+            android:visibility="gone"/>
     </RelativeLayout>
 
     <android.support.v4.view.ViewPager
-        android:id="@+id/vp_fragment_pager_page_data"
+        android:id="@+id/vp_fragment_town_data"
         android:layout_width="match_parent"
         android:layout_height="200dp"
-        android:layout_below="@id/layout_fragment_pager_data_label"/>
+        android:layout_below="@id/layout_fragment_town_data_label"/>
 
 </RelativeLayout>

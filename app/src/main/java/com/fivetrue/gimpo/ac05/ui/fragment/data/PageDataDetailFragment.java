@@ -14,6 +14,7 @@ import android.webkit.WebViewClient;
 import android.widget.TextView;
 
 import com.fivetrue.gimpo.ac05.R;
+import com.fivetrue.gimpo.ac05.rss.FeedMessage;
 import com.fivetrue.gimpo.ac05.ui.fragment.BaseFragment;
 import com.fivetrue.gimpo.ac05.vo.data.PageData;
 
@@ -28,7 +29,7 @@ public class PageDataDetailFragment extends BaseFragment {
     private WebView mWebView = null;
     private FloatingActionButton mDetailButton = null;
 
-    private PageData mPageData = null;
+    private FeedMessage mData = null;
 
     private int mTextColor = 0;
     private int mTextBgColor = 0;
@@ -46,7 +47,7 @@ public class PageDataDetailFragment extends BaseFragment {
     }
 
     private void initData(){
-        mPageData = getArguments().getParcelable(PageData.class.getName());
+        mData = getArguments().getParcelable(FeedMessage.class.getName());
         mTextColor = getArguments().getInt("textColor", getResources().getColor(R.color.colorAccent));
         mTextBgColor = getArguments().getInt("bgColor", getResources().getColor(R.color.colorPrimary));
     }
@@ -64,8 +65,8 @@ public class PageDataDetailFragment extends BaseFragment {
         mDetailButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(mPageData != null && getActivity() != null){
-                    Uri uri = Uri.parse(mPageData.getPageUrl());
+                if(mData != null && getActivity() != null){
+                    Uri uri = Uri.parse(mData.getLink());
                     Intent intent = new Intent(Intent.ACTION_VIEW, uri);
                     startActivity(intent);
                 }
@@ -78,8 +79,8 @@ public class PageDataDetailFragment extends BaseFragment {
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         mWebView.setWebViewClient(webViewClient);
-        mWebView.loadDataWithBaseURL("", mPageData.getPageContent(), "text/html", "UTF-8", "");
-        mPageDataTitle.setText(mPageData.getPageTitle());
+        mWebView.loadDataWithBaseURL("", mData.getDescription(), "text/html", "UTF-8", "");
+        mPageDataTitle.setText(mData.getTitle());
     }
 
     private WebViewClient webViewClient = new WebViewClient(){
@@ -104,9 +105,9 @@ public class PageDataDetailFragment extends BaseFragment {
         }
     };
 
-    public static Bundle makeArgument(PageData pageData, @Nullable int textColor, @Nullable int bgColor){
+    public static Bundle makeArgument(FeedMessage data, @Nullable int textColor, @Nullable int bgColor){
         Bundle b = new Bundle();
-        b.putParcelable(PageData.class.getName(), pageData);
+        b.putParcelable(FeedMessage.class.getName(), data);
         b.putInt("textColor", textColor);
         b.putInt("bgColor", bgColor);
         return b;

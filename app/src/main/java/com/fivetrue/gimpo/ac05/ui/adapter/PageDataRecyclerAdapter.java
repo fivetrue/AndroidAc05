@@ -9,6 +9,7 @@ import android.widget.TextView;
 import com.android.volley.toolbox.NetworkImageView;
 import com.fivetrue.gimpo.ac05.R;
 import com.fivetrue.gimpo.ac05.image.ImageLoadManager;
+import com.fivetrue.gimpo.ac05.rss.FeedMessage;
 import com.fivetrue.gimpo.ac05.utils.Log;
 import com.fivetrue.gimpo.ac05.vo.data.PageData;
 
@@ -17,12 +18,12 @@ import java.util.List;
 /**
  * Created by kwonojin on 16. 6. 15..
  */
-public class PageDataRecyclerAdapter extends BaseRecyclerAdapter<PageData, PageDataRecyclerAdapter.PageDataHolder> {
+public class PageDataRecyclerAdapter extends BaseRecyclerAdapter<FeedMessage, PageDataRecyclerAdapter.PageDataHolder> {
 
     private static final String TAG = "PageDataRecyclerAdapter";
 
     public interface OnClickPageDataListener{
-        void onClickPageData(View view, PageData data);
+        void onClickPageData(View view, FeedMessage data);
     }
 
     private int mContentColor = 0;
@@ -30,7 +31,7 @@ public class PageDataRecyclerAdapter extends BaseRecyclerAdapter<PageData, PageD
 
     private OnClickPageDataListener mOnClickPageDataListener = null;
 
-    public PageDataRecyclerAdapter(List<PageData> data, int contentColor, int contentBgColor) {
+    public PageDataRecyclerAdapter(List<FeedMessage> data, int contentColor, int contentBgColor) {
         super(data, R.layout.item_page_data_list);
         mContentColor = contentColor;
         mContentBgColor = contentBgColor;
@@ -45,24 +46,24 @@ public class PageDataRecyclerAdapter extends BaseRecyclerAdapter<PageData, PageD
 
     @Override
     public void onBindViewHolder(final PageDataHolder holder, int position) {
-        final PageData data = getItem(position);
+        final FeedMessage data = getItem(position);
         if (data != null) {
-            holder.title.setText(data.getPageTitle());
+            holder.title.setText(data.getTitle());
             holder.title.setTextColor(mContentColor);
             holder.layoutTop.setBackgroundColor(mContentBgColor);
             holder.imageView.setImageBitmap(null);
-            if(data.getPageContent() != null){
-                holder.content.setText(Html.fromHtml(data.getPageContent()));
+            if(data.getDescription() != null){
+                holder.content.setText(Html.fromHtml(data.getDescription()));
                 String token = "src=\"";
-                if(data.getPageContent().contains(token)) {
-                    int startTokenIndex = data.getPageContent().indexOf(token);
-                    String imgUrl = data.getPageContent().substring(startTokenIndex + token.length());
+                if(data.getDescription().contains(token)) {
+                    int startTokenIndex = data.getDescription().indexOf(token);
+                    String imgUrl = data.getDescription().substring(startTokenIndex + token.length());
                     imgUrl = imgUrl.substring(0, imgUrl.indexOf("\""));
                     Log.i(TAG, "setPageData: " + imgUrl);
                     holder.imageView.setImageUrl(imgUrl, ImageLoadManager.getImageLoader());
                 }            }
-            if(data.getPageDate() != null){
-                String date = holder.date.getResources().getString(R.string.create_date) + " " + data.getPageDate();
+            if(data.getPubDate() != null){
+                String date = holder.date.getResources().getString(R.string.create_date) + " " + data.getPubDate();
                 holder.date.setText(date);
             }
             holder.container.setOnClickListener(new View.OnClickListener() {

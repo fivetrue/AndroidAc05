@@ -8,8 +8,13 @@ import android.view.View;
 import android.widget.TextView;
 
 import com.fivetrue.gimpo.ac05.R;
+import com.fivetrue.gimpo.ac05.rss.Feed;
+import com.fivetrue.gimpo.ac05.rss.FeedMessage;
+import com.fivetrue.gimpo.ac05.rss.RSSFeedParser;
 import com.fivetrue.gimpo.ac05.ui.adapter.PageDataRecyclerAdapter;
-import com.fivetrue.gimpo.ac05.vo.data.PageDataEntry;
+import com.fivetrue.gimpo.ac05.vo.data.PageData;
+
+import java.util.List;
 
 /**
  * Created by kwonojin on 16. 6. 17..
@@ -17,12 +22,14 @@ import com.fivetrue.gimpo.ac05.vo.data.PageDataEntry;
 public class PageDataListActivity extends BaseActivity{
 
 
-    private PageDataEntry mEntry = null;
+    private PageData mEntry = null;
 
     private RecyclerView mRecylerView = null;
     private TextView mEmptyText = null;
 
     private PageDataRecyclerAdapter mAdapter = null;
+
+    private Feed mFeed = null;
 
     private int mTitleColor = 0;
     private int mTitleBgColor = 0;
@@ -40,7 +47,7 @@ public class PageDataListActivity extends BaseActivity{
     }
 
     private void initData(){
-        mEntry = getIntent().getParcelableExtra(PageDataEntry.class.getName());
+        mEntry = getIntent().getParcelableExtra(PageData.class.getName());
         mTitleColor = Color.parseColor(mEntry.getTitleColor());
         mTitleBgColor = Color.parseColor(mEntry.getTitleBgColor());
         mContentColor = Color.parseColor(mEntry.getContentColor());
@@ -56,21 +63,39 @@ public class PageDataListActivity extends BaseActivity{
         mEmptyText.setBackgroundColor(mContentBgColor);
     }
 
-    protected void setData(PageDataEntry entry){
+    protected void setData(PageData entry){
         if(entry != null){
-            if(entry.getPages() != null){
-                mEmptyText.setVisibility(View.GONE);
-                if(mAdapter == null){
-                    mAdapter = new PageDataRecyclerAdapter(entry.getPages(), mTitleColor, mTitleBgColor);
-                    mRecylerView.setAdapter(mAdapter);
-                }else{
-                    mAdapter.setData(entry.getPages());
-                }
-            }
 
-            getFtActionBar().setTitle(entry.getDataTitle());
+            if(mFeed == null){
+                new RSSFeedParser(entry.getPageUrl(), new RSSFeedParser.OnLoadFeedListener() {
+                    @Override
+                    public void onLoad(Feed feed) {
+                        mFeed = feed;
+                        setListData(mFeed);
+                    }
+                }).readFeed();
+            }else{
+                setListData(mFeed);
+            }
         }else{
             mEmptyText.setVisibility(View.VISIBLE);
+        }
+    }
+
+    private void setListData(Feed feed){
+        if(feed != null){
+            if(mAdapter == null){
+                mAdapter = new PageDataRecyclerAdapter(feed.getMessages(), mTitleColor, mTitleBgColor);
+                mRecylerView.setAdapter(mAdapter);
+            }else{
+                mAdapter.setData(feed.getMessages());
+            }
+
+            if(feed.getMessages() != null){
+                mEmptyText.setVisibility(View.GONE);
+
+            }
+            getFtActionBar().setTitle(feed.getTitle());
         }
     }
 }
