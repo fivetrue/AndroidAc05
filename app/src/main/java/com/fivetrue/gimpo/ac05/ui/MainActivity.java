@@ -184,11 +184,11 @@ public class MainActivity extends DrawerActivity implements PageDataListFragment
     }, new TypeToken<MainDataEntry>(){}.getType());
 
     @Override
-    public void onClickPageData(FeedMessage data, Integer textColor, Integer bgColor) {
+    public void onClickPageData(String title, FeedMessage data, Integer textColor, Integer bgColor) {
         BaseFragment f = addFragment(PageDataDetailFragment.class, PageDataDetailFragment.makeArgument(data, textColor, bgColor)
                 , getFragmentAnchorLayoutID(), R.anim.enter_translate_up, R.anim.exit_translate_down, true);
         if(f != null){
-            getFtActionBar().setTitle(data.getTitle());
+            getFtActionBar().setTitle(title);
         }
         Log.i(TAG, "onClickPageData: " + data.toString());
     }
@@ -197,7 +197,7 @@ public class MainActivity extends DrawerActivity implements PageDataListFragment
     public BaseFragment addFragment(Class<? extends BaseFragment> cls, Bundle arguments, int anchorLayout, int enterAnim, int exitAnim, boolean addBackstack) {
         BaseFragment f = super.addFragment(cls, arguments, anchorLayout, enterAnim, exitAnim, addBackstack);
         if(addBackstack){
-            getFtActionBar().setHomeAsUp(true);
+            getFtActionBar().setHomeAsUp(true, true);
         }
         return f;
     }
@@ -206,7 +206,7 @@ public class MainActivity extends DrawerActivity implements PageDataListFragment
     protected boolean popFragment(FragmentManager fm) {
         boolean b = super.popFragment(fm);
         if(getCurrentFragmentManager().getBackStackEntryCount() <= 0){
-            getFtActionBar().setHomeAsUp(false);
+            getFtActionBar().setHomeAsUp(false, true);
             getFtActionBar().setTitle(R.string.app_name);
         }
         return b;

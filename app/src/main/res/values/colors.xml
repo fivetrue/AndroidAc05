@@ -7,7 +7,7 @@
     <color name="color_primary_alpha_10">#1987b4f6</color>
     <color name="color_primary_alpha_30">#4C87b4f6</color>
 
-    <color name="actionbar_background">@color/color_primary_alpha_30</color>
+    <color name="actionbar_background">#4C3887fa</color>
 
     <color name="colorNegative">#FFA900</color>
     <color name="colorNegativeDark">#D48C00</color>
@@ -19,6 +19,8 @@
     <color name="empty_white">#00ffffff</color>
     <color name="color_black_alpha_10">#19000000</color>
     <color name="color_black_alpha_30">#4C000000</color>
+    <color name="color_white_alpha_10">#19ffffff</color>
+    <color name="color_white_alpha_30">#4Cffffff</color>
 
 
     <color name="divider_color">#aaaaaa</color>

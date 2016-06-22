@@ -12,15 +12,11 @@ import com.fivetrue.gimpo.ac05.ui.fragment.DrawerLeftMenuFragment;
 import com.fivetrue.gimpo.ac05.utils.Log;
 import com.fivetrue.gimpo.ac05.vo.LeftMenu;
 
-public class DrawerActivity extends BaseActivity{
+public class DrawerActivity extends BaseActivity implements DrawerLeftMenuFragment.OnMenuClickItemListener{
 
     private static final String TAG = DrawerActivity.class.getSimpleName();
 
     private DrawerLayout mDrawerLayout;
-
-    private DrawerLeftMenuFragment mLeftDrawerFragment = null;
-
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -124,12 +120,9 @@ public class DrawerActivity extends BaseActivity{
         return b;
     }
 
+
+
     private void initView(View view) {
-//        mLeftDrawerLayout = (FrameLayout) view.findViewById(R.id.left_drawer);
-        mLeftDrawerFragment = (DrawerLeftMenuFragment) getSupportFragmentManager().findFragmentById(R.id.left_fragment_drawer);
-        if(mLeftDrawerFragment != null){
-            mLeftDrawerFragment.setOnMenuClickItemListener(onMenuClickItemListener);
-        }
 
         mDrawerLayout = (DrawerLayout) view.findViewById(R.id.layout_drawer);
         mDrawerLayout.setFocusableInTouchMode(false);
@@ -176,15 +169,13 @@ public class DrawerActivity extends BaseActivity{
         return mDrawerLayout;
     }
 
-    private DrawerLeftMenuFragment.OnMenuClickItemListener onMenuClickItemListener = new DrawerLeftMenuFragment.OnMenuClickItemListener() {
-        @Override
-        public void onClickMenu(LeftMenu menu) {
-            if(menu != null && DrawerActivity.this.getClass() != menu.getActivity() ){
-                Intent i = new Intent(DrawerActivity.this, menu.getActivity());
-                i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                startActivity(i);
-            }
-            closeMenu();
+    @Override
+    public void onClickMenu(LeftMenu menu) {
+        if(menu != null && DrawerActivity.this.getClass() != menu.getActivity() ){
+            Intent i = new Intent(DrawerActivity.this, menu.getActivity());
+            i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+            startActivity(i);
         }
-    };
+        closeMenu();
+    }
 }

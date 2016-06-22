@@ -79,6 +79,8 @@ public class SplashActivity extends BaseActivity {
         mUserImage = (CircleImageView) findViewById(R.id.iv_splash_user);
 
         mProgress = (ProgressBar) findViewById(R.id.pb_splash);
+        mProgress.getIndeterminateDrawable().setColorFilter(getResources().getColor(R.color.colorAccent)
+                , android.graphics.PorterDuff.Mode.MULTIPLY);
     }
 
     private void initModels(){

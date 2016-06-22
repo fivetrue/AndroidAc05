@@ -1,6 +1,7 @@
 package com.fivetrue.gimpo.ac05.vo;
 
 import android.app.Activity;
+import android.graphics.Bitmap;
 
 /**
  * Created by Fivetrue on 2016-02-15.
@@ -8,10 +9,12 @@ import android.app.Activity;
 public class LeftMenu {
 
     private String name = null;
+    private int icon = 0;
     private Class< ? extends Activity> activity = null;
 
-    public LeftMenu(String name, Class<? extends Activity> activityCls){
+    public LeftMenu(String name, int imageResource, Class<? extends Activity> activityCls){
         this.name = name;
+        this.icon = imageResource;
         this.activity = activityCls;
     }
 
@@ -19,15 +22,11 @@ public class LeftMenu {
         return name;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public int getIcon() {
+        return icon;
     }
 
     public Class<? extends Activity> getActivity() {
         return activity;
-    }
-
-    public void setActivity(Class<? extends Activity> activity) {
-        this.activity = activity;
     }
 }

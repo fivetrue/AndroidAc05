@@ -8,6 +8,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -30,14 +31,19 @@ public class TownDataFragment extends ColorChooserFragment {
     private TextView mDataTitle = null;
     private ImageView mDataView = null;
     private ImageView mDataDetail = null;
+
+    private ImageView mArrowRight = null;
+    private ImageView mArrowLeft = null;
     private ViewPager mViewPager = null;
+
+    private LinearLayout mIndexLayout = null;
 
     private TownDataPagerAdapter mAdapter = null;
 
     private TownDataEntry mEntry = null;
 
-    private Timer mTimer = null;
-    private TimerTask mTimerTask = null;
+//    private Timer mTimer = null;
+//    private TimerTask mTimerTask = null;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -65,43 +71,43 @@ public class TownDataFragment extends ColorChooserFragment {
     @Override
     public void onStart() {
         super.onStart();
-        registerTimer();
+//        registerTimer();
     }
 
     @Override
     public void onStop() {
         super.onStop();
-        unregisterTimer();
+//        unregisterTimer();
     }
 
 
-    private void registerTimer(){
-        mTimer = new Timer();
-        mTimerTask = new TimerTask() {
-            @Override
-            public void run() {
-                getActivity().runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        if(mViewPager != null && mEntry != null){
-                            int index = mViewPager.getCurrentItem() + 1;
-                            if(index >= mEntry.getCount()){
-                                index = 0;
-                            }
-                            mViewPager.setCurrentItem(index);
-                        }
-                    }
-                });
-            }
-        };
-        mTimer.schedule(mTimerTask, 5000L, 5000L);
-    }
-
-    private void unregisterTimer(){
-        if(mTimer != null){
-            mTimer.cancel();
-        }
-    }
+//    private void registerTimer(){
+//        mTimer = new Timer();
+//        mTimerTask = new TimerTask() {
+//            @Override
+//            public void run() {
+//                getActivity().runOnUiThread(new Runnable() {
+//                    @Override
+//                    public void run() {
+//                        if(mViewPager != null && mEntry != null){
+//                            int index = mViewPager.getCurrentItem() + 1;
+//                            if(index >= mEntry.getCount()){
+//                                index = 0;
+//                            }
+//                            mViewPager.setCurrentItem(index);
+//                        }
+//                    }
+//                });
+//            }
+//        };
+//        mTimer.schedule(mTimerTask, 5000L, 5000L);
+//    }
+//
+//    private void unregisterTimer(){
+//        if(mTimer != null){
+//            mTimer.cancel();
+//        }
+//    }
 
     private View initView(LayoutInflater inflater){
         View view = inflater.inflate(R.layout.fragment_town_data, null);
@@ -109,7 +115,15 @@ public class TownDataFragment extends ColorChooserFragment {
         mDataTitle = (TextView) view.findViewById(R.id.tv_fragment_town_data_title);
         mDataDetail = (ImageView) view.findViewById(R.id.iv_fragment_town_data_detail_info);
         mDataView = (ImageView) view.findViewById(R.id.iv_fragment_town_data_detail_view);
+
+        mArrowLeft = (ImageView) view.findViewById(R.id.iv_fragment_town_data_detail_arrow_left);
+        mArrowRight = (ImageView) view.findViewById(R.id.iv_fragment_town_data_detail_arrow_right);
+
         mViewPager = (ViewPager) view.findViewById(R.id.vp_fragment_town_data);
+
+        mIndexLayout = (LinearLayout) view.findViewById(R.id.layout_fragment_town_data_index);
+
+        mArrowLeft.setVisibility(View.GONE);
 
         mDataDetail.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -133,6 +147,28 @@ public class TownDataFragment extends ColorChooserFragment {
             }
         });
 
+        mArrowLeft.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(mViewPager != null){
+                    if(mViewPager.getCurrentItem() > 0){
+                        mViewPager.setCurrentItem(mViewPager.getCurrentItem() - 1);
+                    }
+                }
+            }
+        });
+
+        mArrowRight.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(mViewPager != null && mAdapter != null){
+                    if(mViewPager.getCurrentItem() < mAdapter.getCount()){
+                        mViewPager.setCurrentItem(mViewPager.getCurrentItem() + 1);
+                    }
+                }
+            }
+        });
+
         mViewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
             @Override
             public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
@@ -142,7 +178,14 @@ public class TownDataFragment extends ColorChooserFragment {
 
             @Override
             public void onPageSelected(int position) {
-
+                if(mIndexLayout != null && mIndexLayout.getChildCount() > 0){
+                    for(int i = 0 ; i < mIndexLayout.getChildCount() ; i++){
+                        mIndexLayout.getChildAt(i).setSelected(false);
+                    }
+                }
+                mIndexLayout.getChildAt(position).setSelected(true);
+                mArrowLeft.setVisibility(position > 0 ? View.VISIBLE : View.GONE);
+                mArrowRight.setVisibility(position < mAdapter.getCount() - 1 ? View.VISIBLE : View.GONE);
             }
 
             @Override
@@ -172,6 +215,19 @@ public class TownDataFragment extends ColorChooserFragment {
                     mAdapter.notifyDataSetChanged();
                 }
             }
+
+            for(int i = 0 ; i < entry.getCount() ; i ++){
+                View v = new ImageView(getActivity());
+                v.setBackground(getResources().getDrawable(R.drawable.common_index));
+                float density = getResources().getDisplayMetrics().density;
+                int size = (int) (10 * density);
+                LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(size, size);
+                params.leftMargin = (int) getResources().getDimension(R.dimen.activity_vertical_margin);
+//                params.rightMargin = (int) getResources().getDimension(R.dimen.activity_vertical_margin);
+                mIndexLayout.addView(v, params);
+                v.setSelected(false);
+            }
+            mIndexLayout.getChildAt(0).setSelected(true);
         }
     }
 
@@ -220,7 +276,7 @@ public class TownDataFragment extends ColorChooserFragment {
             message.setLink(data.getUrl());
             message.setPubDate(data.getDate());
             message.setTitle(data.getTitle());
-            onClickPageData(message, getPageTitleColor(), getPageTitleBgColor());
+            onClickPageData(data.getTitle(), message, getPageTitleColor(), getPageTitleBgColor());
         }
     };
 }

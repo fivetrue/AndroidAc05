@@ -13,7 +13,7 @@ import com.fivetrue.gimpo.ac05.ui.fragment.BaseFragment;
 public abstract class ColorChooserFragment extends BaseFragment{
 
     public interface OnPageDataClickListener{
-        void onClickPageData(FeedMessage message, Integer textColor, Integer bgColor);
+        void onClickPageData(String title, FeedMessage message, Integer textColor, Integer bgColor);
     }
 
     private OnPageDataClickListener mOnPageDataClickListener = null;
@@ -46,9 +46,9 @@ public abstract class ColorChooserFragment extends BaseFragment{
         return c;
     }
 
-    protected void onClickPageData(FeedMessage message, Integer textColor, Integer bgColor){
+    protected void onClickPageData(String title, FeedMessage message, Integer textColor, Integer bgColor){
         if(mOnPageDataClickListener != null){
-            mOnPageDataClickListener.onClickPageData(message, textColor, bgColor);
+            mOnPageDataClickListener.onClickPageData(title, message, textColor, bgColor);
         }
     }
 }

@@ -48,4 +48,32 @@
         android:layout_height="200dp"
         android:layout_below="@id/layout_fragment_town_data_label"/>
 
+    <ImageView
+        android:id="@+id/iv_fragment_town_data_detail_arrow_left"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/ic_arrow_left_20dp"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentBottom="true"
+        android:padding="@dimen/common_horizontal_padding"/>
+
+    <ImageView
+        android:id="@+id/iv_fragment_town_data_detail_arrow_right"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/ic_arrow_right_20dp"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentBottom="true"
+        android:padding="@dimen/common_horizontal_padding"/>
+
+
+    <LinearLayout
+        android:id="@+id/layout_fragment_town_data_index"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:orientation="horizontal"
+        android:layout_alignParentBottom="true"
+        android:paddingBottom="10dp" />
+
 </RelativeLayout>

@@ -10,6 +10,7 @@ import android.util.AttributeSet;
 import android.view.View;
 
 import com.fivetrue.gimpo.ac05.R;
+import com.fivetrue.gimpo.ac05.utils.Log;
 
 
 /**
@@ -60,11 +61,13 @@ public class DrawerButton extends View {
         if(mRotationOffset == INVALID_VALUE){
             mRotationOffset = 0;
         }
-        if(isHomeAsUp){
-            onDrawBack(canvas);
-        }else{
+        mRotationOffset = isHomeAsUp ? 1 - mRotationOffset : mRotationOffset;
+
+//        if(isHomeAsUp){
+//            onDrawBack(canvas);
+//        }else{
             onDrawHome(canvas);
-        }
+//        }
     }
 
     private void initAttributeSet(Context context, AttributeSet attrs){
@@ -147,6 +150,7 @@ public class DrawerButton extends View {
 
     public void setHomeAsUp(boolean isHomeAsUp){
         this.isHomeAsUp = isHomeAsUp;
+        mRotationOffset = 0;
         invalidate();
     }
 
@@ -156,6 +160,7 @@ public class DrawerButton extends View {
 
     public void setRotationOffset(float value){
         mRotationOffset = value;
+        Log.i(TAG, "setRotationOffset: value = " + value);
         invalidate();
     }
 

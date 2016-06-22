@@ -122,7 +122,7 @@ public class PageDataListFragment extends ColorChooserFragment {
                 mAdapter.setOnClickPageDataListener(new PageDataRecyclerAdapter.OnClickPageDataListener() {
                     @Override
                     public void onClickPageData(View view, FeedMessage data) {
-                        PageDataListFragment.this.onClickPageData(data, getPageTitleColor(), getPageTitleBgColor());
+                        PageDataListFragment.this.onClickPageData(mPageData.getPageTitle(), data, getPageTitleColor(), getPageTitleBgColor());
                     }
                 });
                 mRecyclerView.setAdapter(mAdapter);

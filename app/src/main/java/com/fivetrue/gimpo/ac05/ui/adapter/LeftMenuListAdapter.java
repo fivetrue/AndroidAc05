@@ -3,6 +3,9 @@ package com.fivetrue.gimpo.ac05.ui.adapter;
 import android.content.Context;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
+import android.widget.TextView;
+
 import com.fivetrue.gimpo.ac05.view.SmallItemView;
 
 import com.fivetrue.gimpo.ac05.R;
@@ -19,14 +22,14 @@ public class LeftMenuListAdapter extends BaseListAdapter<LeftMenu, LeftMenuListA
 
 
     public LeftMenuListAdapter(Context context, List<LeftMenu> data) {
-        super(context, data, R.layout.item_row_base_grid);
+        super(context, data, R.layout.item_left_menu_list);
     }
 
     @Override
     protected ViewHolder makeHolder(View view) {
         ViewHolder holder = new ViewHolder();
-        holder.item = new SmallItemView(getContext());
-        ((ViewGroup) view.findViewById(R.id.layout_row_item_base_grid)).addView(holder.item);
+        holder.image = (ImageView) view.findViewById(R.id.iv_item_left_menu_list);
+        holder.title = (TextView) view.findViewById(R.id.tv_item_left_menu_list);
         return holder;
     }
 
@@ -34,12 +37,13 @@ public class LeftMenuListAdapter extends BaseListAdapter<LeftMenu, LeftMenuListA
     protected void initView(ViewHolder holder, int position, View convertView, ViewGroup parent) {
         LeftMenu item = getItem(position);
         if(item != null) {
-            holder.item.setLargeText(item.getName());
+            holder.image.setImageResource(item.getIcon());
+            holder.title.setText(item.getName());
         }
     }
 
-
     protected static class ViewHolder{
-        private SmallItemView item = null;
+        private ImageView image = null;
+        private TextView title = null;
     }
 }

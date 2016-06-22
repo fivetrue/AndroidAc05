@@ -1,5 +1,6 @@
 package com.fivetrue.gimpo.ac05.widget;
 
+import android.animation.Animator;
 import android.animation.ValueAnimator;
 import android.content.Context;
 import android.text.TextUtils;
@@ -92,8 +93,49 @@ public class FTActionBar extends RelativeLayout {
      * @param isUp
      */
     public void setHomeAsUp(boolean isUp){
+        setHomeAsUp(isUp, false);
+    }
+
+    public void setHomeAsUp(final boolean isUp, boolean smooth){
         mDrawerButton.setVisibility(VISIBLE);
-        mDrawerButton.setHomeAsUp(isUp);
+        if(smooth){
+            ValueAnimator animator = ValueAnimator.ofInt(0, 100);
+            animator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+                @Override
+                public void onAnimationUpdate(ValueAnimator animation) {
+                    if (animation != null && animation.getAnimatedValue() != null && animation.getAnimatedValue() instanceof Integer) {
+                        int value = (Integer) animation.getAnimatedValue();
+                        mDrawerButton.setRotationOffset((float)value / (float)100);
+                    }
+                }
+            });
+            animator.addListener(new Animator.AnimatorListener() {
+                @Override
+                public void onAnimationStart(Animator animation) {
+
+                }
+
+                @Override
+                public void onAnimationEnd(Animator animation) {
+                    mDrawerButton.setHomeAsUp(isUp);
+                }
+
+                @Override
+                public void onAnimationCancel(Animator animation) {
+
+                }
+
+                @Override
+                public void onAnimationRepeat(Animator animation) {
+
+                }
+            });
+            animator.setDuration(300L);
+            animator.start();
+        }else{
+            mDrawerButton.setHomeAsUp(isUp);
+        }
+
     }
 
     public boolean isHomeAsUp(){
