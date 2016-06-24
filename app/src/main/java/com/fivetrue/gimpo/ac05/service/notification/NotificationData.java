@@ -11,64 +11,132 @@ public final class NotificationData implements Parcelable {
 
     public static final String ACTION_NOTIFICATION = NotificationData.class.getName() + ".notification";
 
-    public int id = -1;
-    public String title = null;
-    public String message = null;
-    public String targetClass = null;
-    public String uri = null;
-    public String imageUrl = null;
-    public boolean hasLarge = false;
+    private String multicast_id = null;
+    private int id = -1;
+    private String title = null;
+    private String message = null;
+    private String targetClass = null;
+    private String uri = null;
+    private String imageUrl = null;
+
+    private long createTime = 0;
+
+    private String authorNickname = null;
+    private String authorEmail = null;
+
 
     public NotificationData(){}
 
     public NotificationData(int id, String title, String message, Class< ? extends ContextWrapper> targetCls, String uri){
-        this(id, title, message, targetCls, uri, null, false);
+        this(id, title, message, targetCls, uri, null);
     }
 
     public NotificationData(int id, String title, String message, Class< ? extends ContextWrapper> targetCls, String uri, String imageUrl){
-        this(id, title, message, targetCls, uri, imageUrl, false);
-    }
-
-    public NotificationData(int id, String title, String message, Class< ? extends ContextWrapper> targetCls, String uri, String imageUrl, boolean hasLarge){
         this.id = id;
         this.title = title;
         this.message = message;
         this.targetClass = targetCls.getName();
         this.uri = uri;
         this.imageUrl = imageUrl;
-        this.hasLarge = hasLarge;
     }
 
-    public NotificationData(Parcel parcel){
-        id = parcel.readInt();
-        title = parcel.readString();
-        message = parcel.readString();
-        targetClass = parcel.readString();
-        uri = parcel.readString();
-        imageUrl = parcel.readString();
-        hasLarge = parcel.readInt() == 1;
+    public String getMulticast_id() {
+        return multicast_id;
     }
 
-    @Override
-    public int describeContents() {
-        return 0;
+    public void setMulticast_id(String multicast_id) {
+        this.multicast_id = multicast_id;
     }
 
-    @Override
-    public void writeToParcel(Parcel dest, int flags) {
-        dest.writeInt(id);
-        dest.writeString(title);
-        dest.writeString(message);
-        dest.writeString(targetClass);
-        dest.writeString(uri);
-        dest.writeString(imageUrl);
-        dest.writeInt(hasLarge ? 1 : 0);
+    public int getId() {
+        return id;
     }
 
-    public static Creator<NotificationData> CREATOR = new Creator<NotificationData>() {
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public String getTitle() {
+        return title;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
+    public String getMessage() {
+        return message;
+    }
+
+    public void setMessage(String message) {
+        this.message = message;
+    }
+
+    public String getTargetClass() {
+        return targetClass;
+    }
+
+    public void setTargetClass(String targetClass) {
+        this.targetClass = targetClass;
+    }
+
+    public String getUri() {
+        return uri;
+    }
+
+    public void setUri(String uri) {
+        this.uri = uri;
+    }
+
+    public String getImageUrl() {
+        return imageUrl;
+    }
+
+    public void setImageUrl(String imageUrl) {
+        this.imageUrl = imageUrl;
+    }
+
+    public long getCreateTime() {
+        return createTime;
+    }
+
+    public void setCreateTime(long createTime) {
+        this.createTime = createTime;
+    }
+
+    public String getAuthorNickname() {
+        return authorNickname;
+    }
+
+    public void setAuthorNickname(String authorNickname) {
+        this.authorNickname = authorNickname;
+    }
+
+    public String getAuthorEmail() {
+        return authorEmail;
+    }
+
+    public void setAuthorEmail(String authorEmail) {
+        this.authorEmail = authorEmail;
+    }
+
+    protected NotificationData(Parcel in) {
+        multicast_id = in.readString();
+        id = in.readInt();
+        title = in.readString();
+        message = in.readString();
+        targetClass = in.readString();
+        uri = in.readString();
+        imageUrl = in.readString();
+        createTime = in.readLong();
+        authorNickname = in.readString();
+        authorEmail = in.readString();
+    }
+
+    public static final Creator<NotificationData> CREATOR = new Creator<NotificationData>() {
         @Override
-        public NotificationData createFromParcel(Parcel source) {
-            return new NotificationData(source);
+        public NotificationData createFromParcel(Parcel in) {
+            return new NotificationData(in);
         }
 
         @Override
@@ -77,4 +145,22 @@ public final class NotificationData implements Parcelable {
         }
     };
 
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(multicast_id);
+        dest.writeInt(id);
+        dest.writeString(title);
+        dest.writeString(message);
+        dest.writeString(targetClass);
+        dest.writeString(uri);
+        dest.writeString(imageUrl);
+        dest.writeLong(createTime);
+        dest.writeString(authorNickname);
+        dest.writeString(authorEmail);
+    }
 }

@@ -8,6 +8,13 @@
         <item name="colorAccent">@color/colorAccent</item>
         <item name="colorControlActivated">@color/colorPrimaryDark</item>
         <item name="android:colorActivatedHighlight">@color/colorAccent</item>
+    </style>
 
+    <style name="NoticeActivityTheme" parent="AppTheme">
+        <item name="android:statusBarColor">@color/colorNegative</item>
+    </style>
+
+    <style name="CafeActivityTheme" parent="AppTheme">
+        <item name="android:statusBarColor">@color/colorCafe</item>
     </style>
 </resources>

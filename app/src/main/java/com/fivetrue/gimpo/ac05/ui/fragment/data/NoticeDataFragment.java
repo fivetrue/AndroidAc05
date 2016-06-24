@@ -14,18 +14,17 @@ import android.widget.Toast;
 
 import com.fivetrue.gimpo.ac05.R;
 import com.fivetrue.gimpo.ac05.rss.FeedMessage;
-import com.fivetrue.gimpo.ac05.ui.adapter.pager.TownDataPagerAdapter;
-import com.fivetrue.gimpo.ac05.vo.data.TownData;
-import com.fivetrue.gimpo.ac05.vo.data.TownDataEntry;
+import com.fivetrue.gimpo.ac05.service.notification.NotificationData;
+import com.fivetrue.gimpo.ac05.ui.adapter.pager.NoticeDataPagerAdapter;
 
-import java.util.Timer;
-import java.util.TimerTask;
+import java.util.ArrayList;
+import java.util.Date;
 
 
 /**
  * Created by kwonojin on 16. 6. 15..
  */
-public class TownDataFragment extends ColorChooserFragment {
+public class NoticeDataFragment extends ColorChooserFragment {
 
     private ViewGroup mLayoutLabel = null;
     private TextView mDataTitle = null;
@@ -38,12 +37,10 @@ public class TownDataFragment extends ColorChooserFragment {
 
     private LinearLayout mIndexLayout = null;
 
-    private TownDataPagerAdapter mAdapter = null;
+    private NoticeDataPagerAdapter mAdapter = null;
 
-    private TownDataEntry mEntry = null;
+    private ArrayList<NotificationData> mEntry = null;
 
-//    private Timer mTimer = null;
-//    private TimerTask mTimerTask = null;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -65,49 +62,19 @@ public class TownDataFragment extends ColorChooserFragment {
     }
 
     private void initData(){
-        mEntry = getArguments().getParcelable(TownDataEntry.class.getName());
+        mEntry = getArguments().getParcelableArrayList(NotificationData.class.getName());
     }
 
     @Override
     public void onStart() {
         super.onStart();
-//        registerTimer();
     }
 
     @Override
     public void onStop() {
         super.onStop();
-//        unregisterTimer();
     }
 
-
-//    private void registerTimer(){
-//        mTimer = new Timer();
-//        mTimerTask = new TimerTask() {
-//            @Override
-//            public void run() {
-//                getActivity().runOnUiThread(new Runnable() {
-//                    @Override
-//                    public void run() {
-//                        if(mViewPager != null && mEntry != null){
-//                            int index = mViewPager.getCurrentItem() + 1;
-//                            if(index >= mEntry.getCount()){
-//                                index = 0;
-//                            }
-//                            mViewPager.setCurrentItem(index);
-//                        }
-//                    }
-//                });
-//            }
-//        };
-//        mTimer.schedule(mTimerTask, 5000L, 5000L);
-//    }
-//
-//    private void unregisterTimer(){
-//        if(mTimer != null){
-//            mTimer.cancel();
-//        }
-//    }
 
     private View initView(LayoutInflater inflater){
         View view = inflater.inflate(R.layout.fragment_town_data, null);
@@ -129,7 +96,7 @@ public class TownDataFragment extends ColorChooserFragment {
             @Override
             public void onClick(View v) {
                 if(getActivity() != null){
-                    Toast.makeText(getActivity(), mEntry.getDescription(), Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getActivity(), "공지사항", Toast.LENGTH_SHORT).show();
                 }
             }
         });
@@ -190,33 +157,27 @@ public class TownDataFragment extends ColorChooserFragment {
 
             @Override
             public void onPageScrollStateChanged(int state) {
-//                if(state == ViewPager.SCROLL_STATE_DRAGGING){
-//                    unregisterTimer();
-//                }else if(state == ViewPager.SCROLL_STATE_IDLE){
-//                    registerTimer();
-//                }
-
             }
         });
         return view;
     }
 
-    public void setData(TownDataEntry entry){
+    public void setData(ArrayList<NotificationData> entry){
         if(entry != null){
-            mDataTitle.setText(entry.getTitle() + String.format("( %s )", entry.getCount()));
+            mDataTitle.setText("공지사항" + String.format("( %s )", entry.size()));
             mDataTitle.setTextColor(getPageTitleColor());
             mLayoutLabel.setBackgroundColor(getPageTitleBgColor());
-            if(entry.getList() != null){
+            if(entry != null){
                 if(mAdapter == null){
-                    mAdapter = new TownDataPagerAdapter(entry.getList(), getPageTitleColor(), getPageTitleBgColor(), onClickTownDataListener);
+                    mAdapter = new NoticeDataPagerAdapter(entry, getPageTitleColor(), getPageTitleBgColor(), onClickNoticeDataListener);
                     mViewPager.setAdapter(mAdapter);
                 }else{
-                    mAdapter.setData(entry.getList());
+                    mAdapter.setData(entry);
                     mAdapter.notifyDataSetChanged();
                 }
             }
             mIndexLayout.removeAllViews();
-            for(int i = 0 ; i < entry.getCount() ; i ++){
+            for(int i = 0 ; i < entry.size() ; i ++){
                 View v = new ImageView(getActivity());
                 v.setBackground(getResources().getDrawable(R.drawable.common_index));
                 float density = getResources().getDisplayMetrics().density;
@@ -227,15 +188,17 @@ public class TownDataFragment extends ColorChooserFragment {
                 mIndexLayout.addView(v, params);
                 v.setSelected(false);
             }
-            mIndexLayout.getChildAt(0).setSelected(true);
+            if(mIndexLayout.getChildCount() > 0){
+                mIndexLayout.getChildAt(0).setSelected(true);
+            }
         }
     }
 
     @Override
     protected int getPageTitleColor(){
         int color = Color.BLACK;
-        if(mEntry != null && mEntry.getTitleColor() != null){
-            color = parseColor(mEntry.getTitleColor());
+        if(getActivity() != null){
+            color = getResources().getColor(R.color.colorAccent);
         }
         return color;
     }
@@ -243,40 +206,40 @@ public class TownDataFragment extends ColorChooserFragment {
     @Override
     protected int getPageTitleBgColor(){
         int color = Color.WHITE;
-        if(mEntry != null && mEntry.getTitleBgColor() != null){
-            color = parseColor(mEntry.getTitleBgColor());
+        if(getActivity() != null){
+            color = getResources().getColor(R.color.colorPrimary);
         }
         return color;
     }
 
     @Override
     protected int getPageContentColor(){
-        int color = Color.WHITE;
-        if(mEntry != null && mEntry.getContentColor() != null){
-            color = parseColor(mEntry.getContentColor());
+        int color = Color.BLACK;
+        if(getActivity() != null){
+            color = getResources().getColor(R.color.colorAccent);
         }
         return color;
     }
 
     @Override
     protected int getPageContentBgColor(){
-        int color = Color.BLACK;
-        if(mEntry != null && mEntry.getContentBgColor() != null){
-            color = parseColor(mEntry.getContentBgColor());
+        int color = Color.WHITE;
+        if(getActivity() != null){
+            color = getResources().getColor(R.color.colorPrimary);
         }
         return color;
     }
 
-    private TownDataPagerAdapter.OnClickTownDataListener onClickTownDataListener = new TownDataPagerAdapter.OnClickTownDataListener() {
+    private NoticeDataPagerAdapter.OnClickNoticeDataListener onClickNoticeDataListener = new NoticeDataPagerAdapter.OnClickNoticeDataListener() {
         @Override
-        public void onClick(View view, TownData data) {
+        public void onClick(View view, NotificationData data) {
             FeedMessage message = new FeedMessage();
-            message.setAuthor(data.getAuthor());
-            message.setDescription(data.getContent());
-            message.setLink(data.getUrl());
-            message.setPubDate(data.getDate());
+            message.setAuthor(data.getAuthorNickname());
+            message.setDescription(data.getMessage());
+            message.setLink(data.getUri());
+            message.setPubDate(new Date(data.getCreateTime()).toString());
             message.setTitle(data.getTitle());
-            onClickPageData(data.getTitle(), message, getPageTitleColor(), getPageTitleBgColor());
+            onClickPageData("공지사항", message, getPageTitleColor(), getPageTitleBgColor());
         }
     };
 }

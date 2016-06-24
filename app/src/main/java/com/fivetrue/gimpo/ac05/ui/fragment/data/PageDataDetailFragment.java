@@ -1,14 +1,18 @@
 package com.fivetrue.gimpo.ac05.ui.fragment.data;
 
+import android.animation.Animator;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewAnimationUtils;
 import android.view.ViewGroup;
+import android.view.animation.AlphaAnimation;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.TextView;
@@ -65,10 +69,44 @@ public class PageDataDetailFragment extends BaseFragment {
         mDetailButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(mData != null && getActivity() != null){
-                    Uri uri = Uri.parse(mData.getLink());
-                    Intent intent = new Intent(Intent.ACTION_VIEW, uri);
-                    startActivity(intent);
+//                if(mData != null && getActivity() != null){
+//                    Uri uri = Uri.parse(mData.getLink());
+//                    Intent intent = new Intent(Intent.ACTION_VIEW, uri);
+//                    startActivity(intent);
+//                }
+                mWebView.loadUrl(mData.getLink());
+                if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP){
+                    Animator anim = ViewAnimationUtils.createCircularReveal(mDetailButton
+                            , mDetailButton.getWidth() / 2, mDetailButton.getHeight() / 2
+                            , mDetailButton.getWidth(), 0);
+                    anim.setDuration(500L);
+                    anim.addListener(new Animator.AnimatorListener() {
+                        @Override
+                        public void onAnimationStart(Animator animation) {
+
+                        }
+
+                        @Override
+                        public void onAnimationEnd(Animator animation) {
+                            mDetailButton.setVisibility(View.INVISIBLE);
+                        }
+
+                        @Override
+                        public void onAnimationCancel(Animator animation) {
+
+                        }
+
+                        @Override
+                        public void onAnimationRepeat(Animator animation) {
+
+                        }
+                    });
+                    anim.start();
+                }else{
+                    AlphaAnimation animation = new AlphaAnimation(1f, 0);
+                    animation.setDuration(500L);
+                    mDetailButton.setAnimation(animation);
+                    mDetailButton.setVisibility(View.INVISIBLE);
                 }
             }
         });

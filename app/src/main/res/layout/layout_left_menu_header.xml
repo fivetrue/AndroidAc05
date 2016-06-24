@@ -9,11 +9,28 @@
         android:background="@color/colorPrimaryDark"
         android:padding="@dimen/common_horizontal_padding"
         android:orientation="vertical">
-        <com.fivetrue.gimpo.ac05.view.CircleImageView
-            android:id="@+id/iv_left_menu_header"
-            android:layout_width="50dp"
-            android:layout_height="50dp"
-            android:layout_marginBottom="@dimen/common_vertical_padding"/>
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <com.fivetrue.gimpo.ac05.view.CircleImageView
+                android:id="@+id/iv_left_menu_header"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:layout_centerVertical="true"
+                android:layout_marginBottom="@dimen/common_vertical_padding"/>
+
+            <TextView
+                android:id="@+id/tv_left_menu_header_district"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textSize="14dp"
+                android:layout_centerVertical="true"
+                android:layout_toRightOf="@id/iv_left_menu_header"
+                android:gravity="left"
+                android:textColor="@color/colorAccent"
+                android:padding="@dimen/common_vertical_padding"/>
+        </RelativeLayout>
 
         <TextView
             android:id="@+id/tv_left_menu_header_name"

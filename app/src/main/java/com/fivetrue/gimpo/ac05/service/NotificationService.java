@@ -50,7 +50,7 @@ public class NotificationService extends IntentService {
              * Notification
              */
             if(action.equals(ACTION_CREATE_NOTIFICATION)){
-                getNotificationHelper().createNotification(intent);
+                getNotificationHelper().createNotification(this, intent);
             }else if(action.equals(ACTION_CANCEL_NOTIFICATION)){
                 getNotificationHelper().cancelNotification(intent);
             }else if(action.equals(ACTION_CANCEL_ALL_NOTIFIACTION)){

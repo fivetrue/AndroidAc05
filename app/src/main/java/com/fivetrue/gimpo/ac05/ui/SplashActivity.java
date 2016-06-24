@@ -16,7 +16,6 @@ import android.widget.Toast;
 import com.android.volley.VolleyError;
 import com.fivetrue.gimpo.ac05.ApplicationEX;
 import com.fivetrue.gimpo.ac05.R;
-import com.fivetrue.gimpo.ac05.image.ImageLoadManager;
 import com.fivetrue.gimpo.ac05.manager.NaverApiManager;
 import com.fivetrue.gimpo.ac05.net.BaseApiResponse;
 import com.fivetrue.gimpo.ac05.net.NetworkManager;
@@ -228,8 +227,15 @@ public class SplashActivity extends BaseActivity {
         public void onResponse(BaseApiResponse<UserInfo> response) {
             Log.i(TAG, "onRegisterUserInfoResponse onResponse: " + response.toString());
             if(response != null && response.getData() != null){
-                mConfigPref.setUserInfo(response.getData());
-                startApplication(response.getData());
+                final UserInfo userInfo = response.getData();
+                mConfigPref.setUserInfo(userInfo);
+                AppConfig config = ((ApplicationEX)getApplicationContext()).getAppConfig();
+                NaverApiManager.getInstance().requestSignupCafe(config.getClubId(), new NaverApiManager.OnRequestResponseListener() {
+                    @Override
+                    public void onResponse(String response) {
+                        startApplication(userInfo);
+                    }
+                });
             }else{
                 if(RETRY_COUNT > mRetryCount){
                     NetworkManager.getInstance().request(mRegisterUserRequest);
@@ -256,7 +262,7 @@ public class SplashActivity extends BaseActivity {
         mProgress.setVisibility(View.GONE);
         if(naverUserInfo != null){
             Log.i(TAG, "startApplication: naverUserInfo = " + naverUserInfo.toString());
-            mUserNickname.setText(naverUserInfo.getNickname());
+            mUserNickname.setText(naverUserInfo.getName());
             mUserImage.setImageUrl(naverUserInfo.getProfileImage());
 
             AlphaAnimation anim = new AlphaAnimation(0f, 1f);
@@ -292,10 +298,21 @@ public class SplashActivity extends BaseActivity {
 
     private void startMainActivity(UserInfo info){
         Log.i(TAG, "startMainActivity: start");
-        Intent intent = new Intent(this, MainActivity.class);
+        Intent intent = null;
+        if(getIntent() != null){
+            intent = getIntent();
+            intent.setClass(this, MainActivity.class);
+        }else{
+            intent = new Intent(this, MainActivity.class);
+        }
         intent.putExtra(UserInfo.class.getName(), info);
         startActivity(intent);
         finish();
+    }
+
+    @Override
+    protected void checkAppConfig() {
+//        super.checkAppConfig();
     }
 
     @Override

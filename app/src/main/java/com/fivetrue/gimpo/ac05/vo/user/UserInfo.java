@@ -24,7 +24,7 @@ public class UserInfo implements Parcelable{
     private String gcmId = null;
     private String device = null;
 
-    private String apartDong = null;
+    private String apartDong = "";
 
     public UserInfo(){
 

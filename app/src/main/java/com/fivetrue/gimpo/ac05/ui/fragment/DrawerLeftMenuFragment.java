@@ -3,6 +3,7 @@ package com.fivetrue.gimpo.ac05.ui.fragment;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,6 +15,7 @@ import com.fivetrue.gimpo.ac05.R;
 import com.fivetrue.gimpo.ac05.preferences.ConfigPreferenceManager;
 import com.fivetrue.gimpo.ac05.ui.CafeActivity;
 import com.fivetrue.gimpo.ac05.ui.MainActivity;
+import com.fivetrue.gimpo.ac05.ui.NoticeListActivity;
 import com.fivetrue.gimpo.ac05.ui.SettingActivity;
 import com.fivetrue.gimpo.ac05.ui.adapter.BaseListAdapter;
 import com.fivetrue.gimpo.ac05.ui.adapter.LeftMenuListAdapter;
@@ -37,6 +39,7 @@ public class DrawerLeftMenuFragment extends  BaseListFragment<LeftMenu> {
 
     private TextView mName = null;
     private TextView mEmail = null;
+    private TextView mDistrict = null;
     private CircleImageView mProfileImage = null;
 
     private ArrayList<LeftMenu> mLeftMenu = null;
@@ -80,6 +83,9 @@ public class DrawerLeftMenuFragment extends  BaseListFragment<LeftMenu> {
         mLeftMenu.add(new LeftMenu(getString(R.string.main)
                 , R.drawable.ic_home_20dp
                 , MainActivity.class));
+        mLeftMenu.add(new LeftMenu(getString(R.string.notice)
+                , R.drawable.ic_notification_20dp
+                , NoticeListActivity.class));
         mLeftMenu.add(new LeftMenu(getString(R.string.cafe)
                 , R.drawable.ic_cafe_20dp
                 , CafeActivity.class));
@@ -117,10 +123,13 @@ public class DrawerLeftMenuFragment extends  BaseListFragment<LeftMenu> {
             mName = (TextView) view.findViewById(R.id.tv_left_menu_header_name);
             mEmail = (TextView) view.findViewById(R.id.tv_left_menu_header_email);
             mProfileImage = (CircleImageView) view.findViewById(R.id.iv_left_menu_header);
+            mDistrict = (TextView) view.findViewById(R.id.tv_left_menu_header_district);
 
-            mName.setText(userInfo.getName());
+            mName.setText(userInfo.getName() + " / " + userInfo.getId());
             mEmail.setText(userInfo.getEmail());
             mProfileImage.setImageUrl(userInfo.getProfileImage());
+            mDistrict.setText(userInfo.getApartDong());
+            mDistrict.setVisibility(TextUtils.isEmpty(userInfo.getApartDong()) ? View.GONE : View.VISIBLE);
             view.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {

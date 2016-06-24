@@ -13,6 +13,7 @@ import android.view.animation.Animation;
 import android.view.animation.TranslateAnimation;
 import android.widget.RelativeLayout;
 
+import com.fivetrue.gimpo.ac05.ApplicationEX;
 import com.fivetrue.gimpo.ac05.R;
 import com.fivetrue.gimpo.ac05.ui.fragment.BaseFragment;
 import com.fivetrue.gimpo.ac05.widget.FTActionBar;
@@ -87,9 +88,16 @@ public class BaseActivity extends FragmentActivity {
         mBaseContainer = view;
     }
 
+    protected void checkAppConfig(){
+        if(((ApplicationEX)getApplicationContext()).getAppConfig() == null){
+            System.exit(-1);
+        }
+    }
+
     @Override
     protected void onStart() {
         super.onStart();
+        checkAppConfig();
     }
 
     @Override

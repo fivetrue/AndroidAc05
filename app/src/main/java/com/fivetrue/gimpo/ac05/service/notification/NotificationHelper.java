@@ -6,7 +6,9 @@ import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
+import android.os.Handler;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.TaskStackBuilder;
 
@@ -32,60 +34,68 @@ public class NotificationHelper extends BaseServiceHelper {
         mManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
     }
 
-    public void createNotification(Intent intent){
+    public void createNotification(Context context, Intent intent){
         if(intent != null){
-            createNotification((NotificationData) intent.getParcelableExtra(KEY_NOTIFICATION_PARCELABLE));
+            createNotification(context, (NotificationData) intent.getParcelableExtra(KEY_NOTIFICATION_PARCELABLE));
         }
     }
 
-    public void createNotification(final NotificationData data){
-        if(data != null && data.id > INVALID_VALUE){
-            if(data.imageUrl != null){
-                ImageLoadManager.getInstance().loadImageUrl(data.imageUrl, new ImageLoader.ImageListener() {
+    public void createNotification(final Context context, final NotificationData data){
+        if(data != null && data.getId() > INVALID_VALUE){
+            if(data.getImageUrl() != null){
+                new Handler(context.getMainLooper()).post(new Runnable() {
                     @Override
-                    public void onResponse(ImageLoader.ImageContainer response, boolean isImmediate) {
-                        if(response != null && response.getBitmap() != null && !response.getBitmap().isRecycled()){
-                            makeNotification(data, response.getBitmap());
-                        }
-                    }
+                    public void run() {
+                        ImageLoadManager.getInstance().loadImageUrl(data.getImageUrl(), new ImageLoader.ImageListener() {
+                            @Override
+                            public void onResponse(ImageLoader.ImageContainer response, boolean isImmediate) {
+                                if (response != null && response.getBitmap() != null && !response.getBitmap().isRecycled()) {
+                                    makeNotification(context, data, response.getBitmap());
+                                }
+                            }
 
-                    @Override
-                    public void onErrorResponse(VolleyError error) {
-                        makeNotification(data, null);
+                            @Override
+                            public void onErrorResponse(VolleyError error) {
+                                makeNotification(context, data, null);
+                            }
+                        });
                     }
                 });
             }else{
-                makeNotification(data, null);
+                makeNotification(context, data, null);
             }
         }
     }
 
-    private void makeNotification(NotificationData data, Bitmap image){
+    private void makeNotification(Context context, NotificationData data, Bitmap image){
         if(data != null){
             NotificationCompat.Builder builder = new NotificationCompat.Builder(getContext());
-            builder.setSmallIcon(R.drawable.ic_launcher)
-                    .setContentTitle(data.title)
-                    .setContentText(data.message)
+            builder.setSmallIcon(R.drawable.push_icon)
+                    .setContentTitle(data.getTitle())
+                    .setContentText(data.getMessage())
                     .setDefaults(Notification.DEFAULT_ALL)
                     .setWhen(System.currentTimeMillis())
+                    .setColor(context.getResources().getColor(R.color.colorPrimaryDark))
                     .setAutoCancel(true);
 
             if(image != null && !image.isRecycled()){
                 builder.setLargeIcon(image);
+            }else{
+                builder.setLargeIcon(BitmapFactory.decodeResource(context.getResources(), R.drawable.ic_launcher));
             }
 
-            if(data.targetClass != null){
+            if(data.getTargetClass() != null){
                 Class<?> target = null;
                 try {
-                    target = Class.forName(data.targetClass);
+                    target = Class.forName(data.getTargetClass());
                 } catch (ClassNotFoundException e) {
                     e.printStackTrace();
                 }
 
                 Intent targetIntent = new Intent(getContext(), target);
                 targetIntent.setAction(NotificationData.ACTION_NOTIFICATION);
-                if(data.uri != null){
-                    targetIntent.setData(Uri.parse(data.uri));
+                if(data.getUri() != null){
+                    targetIntent.setData(Uri.parse(data.getUri()));
                 }
                 TaskStackBuilder stackBuilder = TaskStackBuilder.create(getContext());
                 stackBuilder.addParentStack(SplashActivity.class);
@@ -93,7 +103,7 @@ public class NotificationHelper extends BaseServiceHelper {
                 PendingIntent resultPendingIntent = stackBuilder.getPendingIntent(0, PendingIntent.FLAG_UPDATE_CURRENT);
                 builder.setContentIntent(resultPendingIntent);
             }
-            mManager.notify(data.id, builder.build());
+            mManager.notify(data.getId(), builder.build());
 
         }
     }

@@ -23,6 +23,7 @@ public class NaverApiManager {
     private static final String TAG = "NaverApiManager";
 
     private static final String API_USER_PROFILE = "https://openapi.naver.com/v1/nid/getUserProfile.xml";
+    private static final String API_SIGNUP_CAFE = "https://openapi.naver.com/v1/cafe/%s/members";
 
     public interface OnErrorCodeListener{
         void onError(NaverApiManager apiManager, String errorCode, String errorDescription);
@@ -81,6 +82,11 @@ public class NaverApiManager {
     public void reqeustUserProfile(OnRequestResponseListener ll){
         mOnRequestResponseListener = ll;
         new RequestAPITask().execute(API_USER_PROFILE);
+    }
+
+    public void requestSignupCafe(String clubId, OnRequestResponseListener ll){
+        mOnRequestResponseListener = ll;
+        new RequestAPITask().execute(String.format(API_SIGNUP_CAFE, clubId));
     }
 
     private OnRequestResponseListener onRequestResponseListener = new OnRequestResponseListener() {

@@ -34,15 +34,25 @@
         <activity
             android:name=".ui.NaverLoginActivity"
             android:screenOrientation="portrait"
-            android:theme="@android:style/Theme.Translucent"/>
+            android:theme="@android:style/Theme.Translucent.NoTitleBar"/>
 
         <activity
             android:name=".ui.MainActivity"
             android:screenOrientation="portrait"/>
 
         <activity
-            android:name=".ui.CafeActivity"
+            android:name=".ui.UserInfoInputActivity"
             android:screenOrientation="portrait"/>
+
+        <activity
+            android:name=".ui.NoticeListActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/NoticeActivityTheme"/>
+
+        <activity
+            android:name=".ui.CafeActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/CafeActivityTheme"/>
 
         <activity
             android:name=".ui.SettingActivity"
@@ -69,6 +79,9 @@
             </intent-filter>
         </receiver>
 
+        <meta-data
+            android:name="io.fabric.ApiKey"
+            android:value="26092c681a23dd24c85511f383cc76702aa4e5ff" />
     </application>
 
 </manifest>

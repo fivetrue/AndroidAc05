@@ -31,10 +31,10 @@ public class GCMService extends GcmListenerService {
         String message = data.getString(DATA_KEY);
         if(message != null && mConfigPref.isSettingPush()){
             NotificationData noti = new Gson().fromJson(message, NotificationData.class);
-            if(noti.id >= 0){
-                noti.id = DEFAULT_NOTIFICATION_ID;
+            if(noti.getId() >= 0){
+                noti.setId(DEFAULT_NOTIFICATION_ID);
             }
-            noti.targetClass = SplashActivity.class.getName();
+            noti.setTargetClass(SplashActivity.class.getName());
             NotificationService.createNotifcation(this, noti);
         }
         Log.d(TAG, "From: " + from);

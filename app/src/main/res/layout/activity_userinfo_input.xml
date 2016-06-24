@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:paddingTop="@dimen/login_fragment_margin_bottom_10dp"
+    android:paddingBottom="@dimen/login_fragment_margin_bottom_10dp">
+    <TextView
+        android:id="@+id/tv_userinfo_input_wellcome"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:gravity="center"
+        android:layout_margin="@dimen/common_horizontal_padding"
+        style="@style/CommonText.Medium"/>
+
+    <android.support.v7.widget.AppCompatSpinner
+        android:id="@+id/sp_user_info_input"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/common_horizontal_padding"
+        android:layout_below="@id/tv_userinfo_input_wellcome"
+        android:background="@drawable/rect_primary_color"/>
+
+
+    <TextView
+        android:id="@+id/tv_userinfo_input_selected"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/common_horizontal_padding"
+        android:textColor="@color/colorPrimaryDark"
+        android:layout_below="@id/sp_user_info_input"
+        android:gravity="center"
+        android:visibility="invisible"
+        style="@style/CommonText.Large"/>
+
+    <Button
+        android:id="@+id/btn_usernfo_input"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:text="@string/ok"
+        style="@style/CommonButton"/>
+</RelativeLayout>
