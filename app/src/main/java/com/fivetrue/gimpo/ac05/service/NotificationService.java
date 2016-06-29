@@ -7,7 +7,7 @@ import android.content.Intent;
 
 import com.fivetrue.gimpo.ac05.service.alarm.AlarmData;
 import com.fivetrue.gimpo.ac05.service.alarm.AlarmHelper;
-import com.fivetrue.gimpo.ac05.service.notification.NotificationData;
+import com.fivetrue.gimpo.ac05.vo.notification.NotificationData;
 import com.fivetrue.gimpo.ac05.service.notification.NotificationHelper;
 
 

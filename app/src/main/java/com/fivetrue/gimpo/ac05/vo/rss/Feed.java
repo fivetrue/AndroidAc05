@@ -1,4 +1,4 @@
-package com.fivetrue.gimpo.ac05.rss;
+package com.fivetrue.gimpo.ac05.vo.rss;
 
 import android.os.Parcel;
 import android.os.Parcelable;

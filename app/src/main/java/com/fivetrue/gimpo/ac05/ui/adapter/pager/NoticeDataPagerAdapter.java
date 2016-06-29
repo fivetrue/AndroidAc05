@@ -1,6 +1,5 @@
 package com.fivetrue.gimpo.ac05.ui.adapter.pager;
 
-import android.text.Html;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -9,10 +8,8 @@ import android.widget.TextView;
 import com.android.volley.toolbox.NetworkImageView;
 import com.fivetrue.gimpo.ac05.R;
 import com.fivetrue.gimpo.ac05.image.ImageLoadManager;
-import com.fivetrue.gimpo.ac05.service.notification.NotificationData;
+import com.fivetrue.gimpo.ac05.vo.notification.NotificationData;
 import com.fivetrue.gimpo.ac05.ui.adapter.BasePagerAdapter;
-import com.fivetrue.gimpo.ac05.utils.Log;
-import com.fivetrue.gimpo.ac05.vo.data.TownData;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;

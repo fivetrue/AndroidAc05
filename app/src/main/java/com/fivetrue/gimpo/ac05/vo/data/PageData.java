@@ -2,22 +2,12 @@ package com.fivetrue.gimpo.ac05.vo.data;
 
 import android.os.Parcel;
 import android.os.Parcelable;
-import android.util.Base64;
 
-import com.fivetrue.gimpo.ac05.rss.Feed;
-import com.fivetrue.gimpo.ac05.rss.FeedMessage;
-import com.fivetrue.gimpo.ac05.rss.RSSFeedParser;
+import com.fivetrue.gimpo.ac05.vo.IPageData;
+import com.fivetrue.gimpo.ac05.vo.rss.Feed;
 
-import java.util.ArrayList;
+public class PageData implements Parcelable, IPageData{
 
-public class PageData implements Parcelable{
-
-    public static enum PageType{
-        None,
-        Town,
-        Journal,
-        News,
-    }
 
     public PageData(){
 
@@ -40,6 +30,21 @@ public class PageData implements Parcelable{
     private String pageType = "None";
 
     private Feed feed = null;
+
+    @Override
+    public String getTitle() {
+        return pageTitle;
+    }
+
+    @Override
+    public String getContent() {
+        return contentDescription;
+    }
+
+    @Override
+    public String getUrl() {
+        return pageUrl;
+    }
 
     public int getPageId() {
         return pageId;

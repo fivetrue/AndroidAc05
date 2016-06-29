@@ -2,6 +2,9 @@ package com.fivetrue.gimpo.ac05.rss;
 
 import android.os.AsyncTask;
 
+import com.fivetrue.gimpo.ac05.vo.rss.Feed;
+import com.fivetrue.gimpo.ac05.vo.rss.FeedMessage;
+
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
 import org.xmlpull.v1.XmlPullParserFactory;

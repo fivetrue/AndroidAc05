@@ -1,6 +1,6 @@
 package com.fivetrue.gimpo.ac05.vo.data;
 
-import com.fivetrue.gimpo.ac05.service.notification.NotificationData;
+import com.fivetrue.gimpo.ac05.vo.notification.NotificationData;
 
 import java.util.ArrayList;
 

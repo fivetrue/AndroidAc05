@@ -84,10 +84,10 @@ public class NaverApiManager {
         new RequestAPITask().execute(API_USER_PROFILE);
     }
 
-    public void requestSignupCafe(String clubId, OnRequestResponseListener ll){
-        mOnRequestResponseListener = ll;
-        new RequestAPITask().execute(String.format(API_SIGNUP_CAFE, clubId));
-    }
+//    public void requestSignupCafe(String clubId, OnRequestResponseListener ll){
+//        mOnRequestResponseListener = ll;
+//        new RequestAPITask().execute(String.format(API_SIGNUP_CAFE, clubId));
+//    }
 
     private OnRequestResponseListener onRequestResponseListener = new OnRequestResponseListener() {
         @Override
@@ -125,7 +125,7 @@ public class NaverApiManager {
         String authHeader = "bearer " + accessToken;
         Pair<String,String>[] header = new Pair[1];
         header[0] = new Pair("Authorization", authHeader);
-        String response = requestApi(url, "POST", true, header, "");
+        String response = requestApi(url, "POST", false, header, "");
 
 
         return response;
@@ -172,6 +172,7 @@ public class NaverApiManager {
             while ((line=br.readLine()) != null) {
                 response+=line;
             }
+            br.close();
         } catch (Exception e) {
             e.printStackTrace();
         }

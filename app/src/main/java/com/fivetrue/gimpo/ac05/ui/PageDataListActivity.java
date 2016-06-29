@@ -8,13 +8,10 @@ import android.view.View;
 import android.widget.TextView;
 
 import com.fivetrue.gimpo.ac05.R;
-import com.fivetrue.gimpo.ac05.rss.Feed;
-import com.fivetrue.gimpo.ac05.rss.FeedMessage;
+import com.fivetrue.gimpo.ac05.vo.rss.Feed;
 import com.fivetrue.gimpo.ac05.rss.RSSFeedParser;
 import com.fivetrue.gimpo.ac05.ui.adapter.PageDataRecyclerAdapter;
 import com.fivetrue.gimpo.ac05.vo.data.PageData;
-
-import java.util.List;
 
 /**
  * Created by kwonojin on 16. 6. 17..

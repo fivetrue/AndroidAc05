@@ -1,6 +1,5 @@
 package com.fivetrue.gimpo.ac05.ui;
 
-import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
@@ -9,12 +8,12 @@ import android.support.v4.app.FragmentTransaction;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.animation.Animation;
-import android.view.animation.TranslateAnimation;
 import android.widget.RelativeLayout;
 
 import com.fivetrue.gimpo.ac05.ApplicationEX;
 import com.fivetrue.gimpo.ac05.R;
+import com.fivetrue.gimpo.ac05.analytics.Event;
+import com.fivetrue.gimpo.ac05.analytics.GoogleAnalytics;
 import com.fivetrue.gimpo.ac05.ui.fragment.BaseFragment;
 import com.fivetrue.gimpo.ac05.widget.FTActionBar;
 
@@ -33,6 +32,7 @@ public class BaseActivity extends FragmentActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        checkAppConfig();
     }
 
     private void initView(){
@@ -90,7 +90,12 @@ public class BaseActivity extends FragmentActivity {
 
     protected void checkAppConfig(){
         if(((ApplicationEX)getApplicationContext()).getAppConfig() == null){
-            System.exit(-1);
+            GoogleAnalytics.getInstance().sendLogEventProperties(Event.AppConfigNull.addParams("checkAppConfig", "null"));
+            Intent i = getBaseContext().getPackageManager()
+                    .getLaunchIntentForPackage( getBaseContext().getPackageName() );
+            i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+            startActivity(i);
+//            System.exit(0);
         }
     }
 
@@ -103,11 +108,6 @@ public class BaseActivity extends FragmentActivity {
     @Override
     protected void onStop() {
         super.onStop();
-    }
-
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
     }
 
     protected FTActionBar getFtActionBar(){

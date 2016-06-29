@@ -16,6 +16,8 @@ import android.widget.Toast;
 import com.android.volley.VolleyError;
 import com.fivetrue.gimpo.ac05.ApplicationEX;
 import com.fivetrue.gimpo.ac05.R;
+import com.fivetrue.gimpo.ac05.analytics.Event;
+import com.fivetrue.gimpo.ac05.analytics.GoogleAnalytics;
 import com.fivetrue.gimpo.ac05.manager.NaverApiManager;
 import com.fivetrue.gimpo.ac05.net.BaseApiResponse;
 import com.fivetrue.gimpo.ac05.net.NetworkManager;
@@ -23,6 +25,7 @@ import com.fivetrue.gimpo.ac05.net.request.ConfigRequest;
 import com.fivetrue.gimpo.ac05.net.request.RegisterUserRequest;
 import com.fivetrue.gimpo.ac05.parser.NaverUserInfoParser;
 import com.fivetrue.gimpo.ac05.preferences.ConfigPreferenceManager;
+import com.fivetrue.gimpo.ac05.service.notification.NotificationHelper;
 import com.fivetrue.gimpo.ac05.utils.Log;
 import com.fivetrue.gimpo.ac05.view.CircleImageView;
 import com.fivetrue.gimpo.ac05.vo.config.AppConfig;
@@ -229,13 +232,7 @@ public class SplashActivity extends BaseActivity {
             if(response != null && response.getData() != null){
                 final UserInfo userInfo = response.getData();
                 mConfigPref.setUserInfo(userInfo);
-                AppConfig config = ((ApplicationEX)getApplicationContext()).getAppConfig();
-                NaverApiManager.getInstance().requestSignupCafe(config.getClubId(), new NaverApiManager.OnRequestResponseListener() {
-                    @Override
-                    public void onResponse(String response) {
-                        startApplication(userInfo);
-                    }
-                });
+                startApplication(userInfo);
             }else{
                 if(RETRY_COUNT > mRetryCount){
                     NetworkManager.getInstance().request(mRegisterUserRequest);
@@ -299,12 +296,18 @@ public class SplashActivity extends BaseActivity {
     private void startMainActivity(UserInfo info){
         Log.i(TAG, "startMainActivity: start");
         Intent intent = null;
-        if(getIntent() != null){
-            intent = getIntent();
-            intent.setClass(this, MainActivity.class);
+        if(getIntent() != null
+                && getIntent().getAction() != null
+                && getIntent().getAction().equals(NotificationHelper.ACTION_NOTIFICATION)){
+            GoogleAnalytics.getInstance().sendLogEventProperties(Event.EnterSplashActivity_Notification.addParams("data", getIntent().getDataString()));
+            intent = new Intent(this, MainActivity.class);
+            intent.setData(getIntent().getData());
+            intent.putExtra(NotificationHelper.KEY_NOTIFICATION_PARCELABLE, getIntent().getParcelableExtra(NotificationHelper.KEY_NOTIFICATION_PARCELABLE));
+
         }else{
             intent = new Intent(this, MainActivity.class);
         }
+        GoogleAnalytics.getInstance().setUserId(info.getEmail());
         intent.putExtra(UserInfo.class.getName(), info);
         startActivity(intent);
         finish();
@@ -323,6 +326,7 @@ public class SplashActivity extends BaseActivity {
 
     private void failedLogin(){
         Toast.makeText(this, R.string.fail_auth_user_info, Toast.LENGTH_SHORT).show();
+        GoogleAnalytics.getInstance().sendLogEventProperties(Event.EnterSplashActivity_LoginFailed);
         getBaseLayoutContainer().postDelayed(new Runnable() {
             @Override
             public void run() {

@@ -4,14 +4,18 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v4.widget.ContentLoadingProgressBar;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.webkit.JavascriptInterface;
+import android.webkit.WebChromeClient;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 
 import com.fivetrue.gimpo.ac05.R;
+import com.fivetrue.gimpo.ac05.analytics.Event;
+import com.fivetrue.gimpo.ac05.analytics.GoogleAnalytics;
 import com.fivetrue.gimpo.ac05.utils.Log;
 
 /**
@@ -26,6 +30,7 @@ public class WebViewFragment extends BaseFragment{
         void onCallback(String response);
     }
 
+    private ContentLoadingProgressBar mProgress = null;
     private WebView mWebView = null;
     private OnShouldOverrideUrlLoadingListener mOnShouldOverrideUrlLoadingListener = null;
 
@@ -35,6 +40,7 @@ public class WebViewFragment extends BaseFragment{
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         initData();
+        GoogleAnalytics.getInstance().sendLogEventProperties(Event.EnterWebviewFragment.addParams("url", mUrl));
     }
 
     @Override
@@ -57,8 +63,10 @@ public class WebViewFragment extends BaseFragment{
 
     private View initView(LayoutInflater inflater){
         View view = inflater.inflate(R.layout.fragment_webview, null);
+        mProgress = (ContentLoadingProgressBar) view.findViewById(R.id.pb_fragment_webview);
         mWebView = (WebView) view.findViewById(R.id.webview_fragment_webview);
         mWebView.getSettings().setJavaScriptEnabled(true);
+        mProgress.setMax(100);
         return view;
     }
 
@@ -67,6 +75,7 @@ public class WebViewFragment extends BaseFragment{
         super.onViewCreated(view, savedInstanceState);
         mWebView.addJavascriptInterface(this, "Android");
         mWebView.setWebViewClient(webViewClient);
+        mWebView.setWebChromeClient(webChromeClient);
         mWebView.loadUrl(mUrl);
     }
 
@@ -96,6 +105,7 @@ public class WebViewFragment extends BaseFragment{
         @Override
         public void onPageFinished(WebView view, String url) {
             super.onPageFinished(view, url);
+            mProgress.setVisibility(View.GONE);
         }
 
         @Override
@@ -106,6 +116,15 @@ public class WebViewFragment extends BaseFragment{
         @Override
         public void onPageStarted(WebView view, String url, Bitmap favicon) {
             super.onPageStarted(view, url, favicon);
+            mProgress.setVisibility(View.VISIBLE);
+        }
+    };
+
+    private WebChromeClient webChromeClient = new WebChromeClient(){
+        @Override
+        public void onProgressChanged(WebView view, int newProgress) {
+            super.onProgressChanged(view, newProgress);
+            mProgress.setProgress(newProgress);
         }
     };
 

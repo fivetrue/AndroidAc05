@@ -9,9 +9,8 @@ import android.widget.TextView;
 import com.android.volley.toolbox.NetworkImageView;
 import com.fivetrue.gimpo.ac05.R;
 import com.fivetrue.gimpo.ac05.image.ImageLoadManager;
-import com.fivetrue.gimpo.ac05.rss.FeedMessage;
+import com.fivetrue.gimpo.ac05.vo.rss.FeedMessage;
 import com.fivetrue.gimpo.ac05.utils.Log;
-import com.fivetrue.gimpo.ac05.vo.data.PageData;
 
 import java.util.List;
 

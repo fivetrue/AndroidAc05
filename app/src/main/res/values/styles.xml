@@ -6,6 +6,9 @@
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
     </style>
+    <style name="TransparentAppTheme" parent="@android:style/Theme.Translucent.NoTitleBar">
+        <!-- Customize your theme here. -->
+    </style>
 
     <style name="CommonButton">
         <item name="android:typeface">sans</item>

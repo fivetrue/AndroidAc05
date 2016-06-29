@@ -50,6 +50,7 @@
     <string name="input_user_dong">어느 동에 계신가요 ?</string>
 
     <!-- Main -->
+    <string name="public_notice">공지사항</string>
     <string name="town_news">우리동네 소식</string>
     <string name="gimpo_journal">김포 저널</string>
     <string name="gimpo_news">김포 뉴스</string>

@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:v="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent" android:layout_height="match_parent">
 
     <ImageView
@@ -15,51 +16,67 @@
         android:src="@drawable/common_background"
         android:scaleType="fitXY"/>
 
-    <android.support.v4.widget.SwipeRefreshLayout
-        android:id="@+id/layout_main_refresh"
+    <com.fivetrue.gimpo.ac05.widget.PagerSlidingTabStrip
+        android:id="@+id/tab_main_pager_strip"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
-        <ScrollView
-            android:id="@+id/layout_main_scroll"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent">
-            <LinearLayout
-                android:id="@+id/layout_main_container"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:orientation="vertical">
+        android:layout_height="40dp"
+        v:indicatorColor="@color/white"
+        v:indicatorHeight="5dp"
+        v:tabsTextColor="@color/colorPrimary"
+        v:tabsBackgroundColor="@color/colorPrimaryDark"/>
 
-                <FrameLayout
-                    android:id="@+id/layout_main_banner"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"/>
-
-                <FrameLayout
-                    android:id="@+id/layout_main_page1"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content" />
+    <android.support.v4.view.ViewPager
+        android:id="@+id/vp_main_pager"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@id/tab_main_pager_strip"/>
 
 
-                <FrameLayout
-                    android:id="@+id/layout_main_page2"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content" />
+    <!--<android.support.v4.widget.SwipeRefreshLayout-->
+        <!--android:id="@+id/layout_main_refresh"-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="match_parent">-->
+        <!--<ScrollView-->
+            <!--android:id="@+id/layout_main_scroll"-->
+            <!--android:layout_width="match_parent"-->
+            <!--android:layout_height="match_parent">-->
+            <!--<LinearLayout-->
+                <!--android:id="@+id/layout_main_container"-->
+                <!--android:layout_width="match_parent"-->
+                <!--android:layout_height="match_parent"-->
+                <!--android:orientation="vertical">-->
+
+                <!--<FrameLayout-->
+                    <!--android:id="@+id/layout_main_banner"-->
+                    <!--android:layout_width="match_parent"-->
+                    <!--android:layout_height="wrap_content"/>-->
+
+                <!--<FrameLayout-->
+                    <!--android:id="@+id/layout_main_page1"-->
+                    <!--android:layout_width="match_parent"-->
+                    <!--android:layout_height="wrap_content" />-->
 
 
-                <FrameLayout
-                    android:id="@+id/layout_main_page3"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content" />
-
-                <FrameLayout
-                    android:id="@+id/layout_main_page4"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content" />
+                <!--<FrameLayout-->
+                    <!--android:id="@+id/layout_main_page2"-->
+                    <!--android:layout_width="match_parent"-->
+                    <!--android:layout_height="wrap_content" />-->
 
 
-            </LinearLayout>
-        </ScrollView>
-    </android.support.v4.widget.SwipeRefreshLayout>
+                <!--<FrameLayout-->
+                    <!--android:id="@+id/layout_main_page3"-->
+                    <!--android:layout_width="match_parent"-->
+                    <!--android:layout_height="wrap_content" />-->
+
+                <!--<FrameLayout-->
+                    <!--android:id="@+id/layout_main_page4"-->
+                    <!--android:layout_width="match_parent"-->
+                    <!--android:layout_height="wrap_content" />-->
+
+
+            <!--</LinearLayout>-->
+        <!--</ScrollView>-->
+    <!--</android.support.v4.widget.SwipeRefreshLayout>-->
 
     <ProgressBar
         android:id="@+id/pb_main"
@@ -67,4 +84,4 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center"
         android:visibility="gone"/>
-</FrameLayout>
+</RelativeLayout>

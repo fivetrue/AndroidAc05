@@ -3,64 +3,60 @@ package com.fivetrue.gimpo.ac05.ui;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
-import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
-import android.support.v4.widget.SwipeRefreshLayout;
+import android.support.v4.view.ViewPager;
+import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
 import android.view.View;
-import android.view.ViewTreeObserver;
-import android.widget.LinearLayout;
 import android.widget.ProgressBar;
-import android.widget.ScrollView;
 import android.widget.Toast;
 
 import com.android.volley.VolleyError;
+import com.fivetrue.gimpo.ac05.Constants;
 import com.fivetrue.gimpo.ac05.R;
+import com.fivetrue.gimpo.ac05.analytics.Event;
+import com.fivetrue.gimpo.ac05.analytics.GoogleAnalytics;
+import com.fivetrue.gimpo.ac05.analytics.UserProperty;
 import com.fivetrue.gimpo.ac05.net.BaseApiResponse;
 import com.fivetrue.gimpo.ac05.net.NetworkManager;
 import com.fivetrue.gimpo.ac05.net.request.MainPageDataRequest;
-import com.fivetrue.gimpo.ac05.rss.FeedMessage;
-import com.fivetrue.gimpo.ac05.service.notification.NotificationData;
+import com.fivetrue.gimpo.ac05.vo.IPageData;
+import com.fivetrue.gimpo.ac05.vo.rss.FeedMessage;
+import com.fivetrue.gimpo.ac05.vo.notification.NotificationData;
+import com.fivetrue.gimpo.ac05.service.notification.NotificationHelper;
+import com.fivetrue.gimpo.ac05.ui.adapter.pager.MainFragmentViewPagerAdapter;
+import com.fivetrue.gimpo.ac05.ui.fragment.BaseDataListFragment;
 import com.fivetrue.gimpo.ac05.ui.fragment.BaseFragment;
 import com.fivetrue.gimpo.ac05.ui.fragment.WebViewFragment;
-import com.fivetrue.gimpo.ac05.ui.fragment.data.NoticeDataFragment;
-import com.fivetrue.gimpo.ac05.ui.fragment.data.PageDataListFragment;
-import com.fivetrue.gimpo.ac05.ui.fragment.data.PageDataDetailFragment;
-import com.fivetrue.gimpo.ac05.ui.fragment.data.TownDataFragment;
+import com.fivetrue.gimpo.ac05.ui.fragment.detail.PageDataDetailFragment;
 import com.fivetrue.gimpo.ac05.utils.Log;
 import com.fivetrue.gimpo.ac05.vo.data.MainDataEntry;
-import com.fivetrue.gimpo.ac05.vo.data.PageData;
-import com.fivetrue.gimpo.ac05.vo.data.TownDataEntry;
 import com.fivetrue.gimpo.ac05.vo.user.UserInfo;
+import com.fivetrue.gimpo.ac05.widget.PagerSlidingTabStrip;
 import com.google.gson.reflect.TypeToken;
-
-import java.util.ArrayList;
 
 /**
  * Created by kwonojin on 16. 6. 7..
  */
-public class MainActivity extends DrawerActivity implements PageDataListFragment.OnPageDataClickListener {
+public class MainActivity extends DrawerActivity implements BaseDataListFragment.IBaseDataListListener {
 
     private static final String TAG = "MainActivity";
 
-    private SwipeRefreshLayout mRefreshLayout = null;
-    private ScrollView mScrollView = null;
+    private PagerSlidingTabStrip mTabPager = null;
+    private ViewPager mViewPager = null;
+
     private View mBackground = null;
-    private LinearLayout mMainContainer = null;
 
     private ProgressBar mProgressBar = null;
+
+    private MainFragmentViewPagerAdapter mAdapter = null;
 
     private UserInfo mUserInfo = null;
     private MainPageDataRequest mPageDataReqeust = null;
 
     private boolean mDoubleClickBack = false;
 
-    private int [] layouts = {
-            R.id.layout_main_page1,
-            R.id.layout_main_page2,
-            R.id.layout_main_page3,
-            R.id.layout_main_page4,
-    };
+    private int mScrollY = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -74,12 +70,17 @@ public class MainActivity extends DrawerActivity implements PageDataListFragment
         if(getIntent() != null && getIntent().getDataString() != null){
             String data = getIntent().getData().toString();
             if(data != null && (data.startsWith("http") || data.startsWith("https"))){
-                Bundle argument = new Bundle();
-                argument.putString("url", data);
-                BaseFragment f = addFragment(WebViewFragment.class, argument
-                        , getFragmentAnchorLayoutID(), R.anim.enter_translate_up, R.anim.exit_translate_down, true);
+                NotificationData notificationData = getIntent().getParcelableExtra(NotificationHelper.KEY_NOTIFICATION_PARCELABLE);
+                if(notificationData != null){
+                    data = String.format(Constants.API_CHECK_REDIRECT, notificationData.getUri()
+                            , notificationData.getMulticast_id()
+                            , mUserInfo.getEmail());
+                }
+                showWebviewFragment(getString(R.string.notice), data);
             }
         }
+
+        GoogleAnalytics.getInstance().sendLogEventProperties(Event.EnterMainActivity);
     }
 
     private void initData(){
@@ -89,32 +90,10 @@ public class MainActivity extends DrawerActivity implements PageDataListFragment
 
     private void initView(){
         mBackground = findViewById(R.id.view_main_background);
-        mRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.layout_main_refresh);
-        mScrollView = (ScrollView) findViewById(R.id.layout_main_scroll);
-        mMainContainer = (LinearLayout) findViewById(R.id.layout_main_container);
+        mTabPager = (PagerSlidingTabStrip) findViewById(R.id.tab_main_pager_strip);
+        mViewPager = (ViewPager) findViewById(R.id.vp_main_pager);
+
         mProgressBar = (ProgressBar) findViewById(R.id.pb_main);
-        mRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
-            @Override
-            public void onRefresh() {
-                mPageDataReqeust.setCache(false);
-                NetworkManager.getInstance().request(mPageDataReqeust);
-            }
-        });
-
-        mScrollView.getViewTreeObserver().addOnScrollChangedListener(new ViewTreeObserver.OnScrollChangedListener() {
-            @Override
-            public void onScrollChanged() {
-                if (mScrollView != null) {
-                    scrollY(mScrollView.getScrollY() / (float) mScrollView.getHeight());
-                }
-            }
-        });
-    }
-
-    private void scrollY(float scrollOffset){
-        int backgroundHeight = mBackground.getHeight();
-        backgroundHeight = (int) (backgroundHeight * 0.1);
-        mBackground.scrollTo(0, (int) -(backgroundHeight * scrollOffset));
     }
 
     private void checkUserInfo(){
@@ -123,74 +102,41 @@ public class MainActivity extends DrawerActivity implements PageDataListFragment
                 Intent intent = new Intent(this, UserInfoInputActivity.class);
                 startActivity(intent);
                 overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
-//                Bundle arg = new Bundle();
-//                arg.putParcelable(UserInfo.class.getName(), mUserInfo);
-//                addFragment(UserInfoInputActivity.class, arg,
-//                        getBaseLayoutContainer().getId(), ,true);
+            }else{
+                GoogleAnalytics.getInstance().setUserProperties(UserProperty.makeProperty(UserProperty.DISTRICT, mUserInfo.getApartDong()));
             }
         }
     }
 
-    private void setData(final MainDataEntry data){
-        if(data != null){
-            ArrayList<NotificationData> notices = data.getNotices();
-            if(notices != null && notices.size() > 0){
-                Fragment f = getCurrentFragmentManager().findFragmentById(layouts[0]);
-                if(f != null && f instanceof NoticeDataFragment){
-                    ((NoticeDataFragment) f).setData(notices);
-                }else{
-                    Bundle argument = new Bundle();
-                    argument.putParcelableArrayList(NotificationData.class.getName(), notices);
-                    NoticeDataFragment fragment = (NoticeDataFragment) addFragment(NoticeDataFragment.class, argument, layouts[0], R.anim.enter_smooth, 0, false);
-                }
-            }
+    private void setData(MainDataEntry data){
+        if(mAdapter == null){
+            mAdapter = new MainFragmentViewPagerAdapter(getSupportFragmentManager(), data);
+            mViewPager.setAdapter(mAdapter);
+            mTabPager.setViewPager(mViewPager);
+        }
+    }
 
-            TownDataEntry townDataEntry = data.getTown();
-            if(townDataEntry != null && townDataEntry.getCount() > 0){
-                Fragment f = getCurrentFragmentManager().findFragmentById(layouts[1]);
-                if(f != null && f instanceof TownDataFragment){
-                    ((TownDataFragment) f).setData(townDataEntry);
-                }else{
-                    Bundle argument = new Bundle();
-                    argument.putParcelable(TownDataEntry.class.getName(), townDataEntry);
-                    TownDataFragment fragment = (TownDataFragment) addFragment(TownDataFragment.class, argument, layouts[1], R.anim.enter_smooth, 0, false);
-                }
+    private void showPageDetailFragment(String title, FeedMessage message, Integer textColor, Integer bgColor){
+        BaseFragment f = addFragment(PageDataDetailFragment.class, PageDataDetailFragment.makeArgument(message, textColor, bgColor)
+                , getFragmentAnchorLayoutID(), R.anim.enter_translate_up, R.anim.exit_translate_down, true);
+        if(f != null){
+            getFtActionBar().setTitle(title);
+        }
+    }
 
-            }
-
-            final ArrayList<PageData> pageData = data.getPages();
-            if(pageData != null){
-                for(int i = 0 ; i < pageData.size() ; i ++){
-                    if(i < pageData.size()){
-                        final int idx = i;
-                        new Handler().postDelayed(new Runnable() {
-                            @Override
-                            public void run() {
-
-                                Fragment f = getCurrentFragmentManager().findFragmentById(layouts[(idx + 2)]);
-                                if(f != null && f instanceof PageDataListFragment){
-                                    ((PageDataListFragment) f).setData(pageData.get(idx));
-                                }else{
-                                    Bundle argument = new Bundle();
-                                    argument.putParcelable(PageData.class.getName(), pageData.get(idx));
-                                    PageDataListFragment fragment = (PageDataListFragment) addFragment(PageDataListFragment.class, argument, layouts[idx + 2], R.anim.enter_smooth, 0, false);
-                                    fragment.setNestedScrollingEnabled(false);
-                                }
-
-                            }
-                        }, 500L);
-                    }
-                }
-            }
+    private void showWebviewFragment(String title, String url){
+        Bundle argument = new Bundle();
+        argument.putString("url", url);
+        BaseFragment f = addFragment(WebViewFragment.class, argument
+                , getFragmentAnchorLayoutID(), R.anim.enter_translate_up, R.anim.exit_translate_down, true);
+        if(f != null){
+            getFtActionBar().setTitle(title);
         }
     }
 
     private BaseApiResponse<MainDataEntry> basePageDataApiResponse = new BaseApiResponse<>(new BaseApiResponse.OnResponseListener<MainDataEntry>() {
         @Override
         public void onResponse(BaseApiResponse<MainDataEntry> response) {
-            if(mRefreshLayout != null && mRefreshLayout.isRefreshing()){
-                mRefreshLayout.setRefreshing(false);
-            }
             mPageDataReqeust.setCache(true);
             setData(response.getData());
             mProgressBar.setVisibility(View.GONE);
@@ -198,21 +144,42 @@ public class MainActivity extends DrawerActivity implements PageDataListFragment
 
         @Override
         public void onError(VolleyError error) {
-            if(mRefreshLayout != null && mRefreshLayout.isRefreshing()){
-                mRefreshLayout.setRefreshing(false);
-            }
             mProgressBar.setVisibility(View.GONE);
         }
     }, new TypeToken<MainDataEntry>(){}.getType());
 
     @Override
-    public void onClickPageData(String title, FeedMessage data, Integer textColor, Integer bgColor) {
-        BaseFragment f = addFragment(PageDataDetailFragment.class, PageDataDetailFragment.makeArgument(data, textColor, bgColor)
-                , getFragmentAnchorLayoutID(), R.anim.enter_translate_up, R.anim.exit_translate_down, true);
-        if(f != null){
-            getFtActionBar().setTitle(title);
+    public void onClickPageData(String title, IPageData data, Integer textColor, Integer bgColor) {
+        if(data != null){
+            if(data instanceof FeedMessage){
+                showPageDetailFragment(title, (FeedMessage) data, textColor, bgColor);
+            }else{
+                String url = null;
+                if(data instanceof NotificationData){
+                    url = String.format(Constants.API_CHECK_REDIRECT, ((NotificationData)data).getUri()
+                            , ((NotificationData)data).getMulticast_id()
+                            , mUserInfo.getEmail());
+                }else{
+                    url = data.getUrl();
+                }
+                showWebviewFragment(title, url);
+
+            }
+            Log.i(TAG, "onClickPageData: " + data.toString());
         }
-        Log.i(TAG, "onClickPageData: " + data.toString());
+    }
+
+    @Override
+    public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
+
+    }
+
+    @Override
+    public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+//        int backgroundHeight = mBackground.getHeight();
+//        backgroundHeight = (int) (backgroundHeight * 0.1);
+//        mBackground.scrollTo(0, (int) -(backgroundHeight * scrollOffset));
+        mBackground.scrollTo(0, dy);
     }
 
     @Override
@@ -249,6 +216,7 @@ public class MainActivity extends DrawerActivity implements PageDataListFragment
                     }
                 }, 2000L);
             }else{
+                GoogleAnalytics.getInstance().sendLogEventProperties(Event.ExitAppByBackPress);
                 super.onBackPressed();
             }
         }

@@ -1,11 +1,11 @@
-package com.fivetrue.gimpo.ac05.rss;
+package com.fivetrue.gimpo.ac05.vo.rss;
 
 import android.os.Parcel;
 import android.os.Parcelable;
 
-import com.fivetrue.gimpo.ac05.vo.data.IPageData;
+import com.fivetrue.gimpo.ac05.vo.IPageData;
 
-public class FeedMessage implements Parcelable{
+public class FeedMessage implements Parcelable, IPageData{
 
 	String title;
 	String description;
@@ -18,10 +18,20 @@ public class FeedMessage implements Parcelable{
 
 	}
 
+	@Override
 	public String getTitle() {
 		return title;
 	}
 
+	@Override
+	public String getContent() {
+		return description;
+	}
+
+	@Override
+	public String getUrl() {
+		return link;
+	}
 
 	public void setTitle(String title) {
 		this.title = title;

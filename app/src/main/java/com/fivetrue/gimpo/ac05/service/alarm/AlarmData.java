@@ -3,7 +3,7 @@ package com.fivetrue.gimpo.ac05.service.alarm;
 import android.os.Parcel;
 import android.os.Parcelable;
 
-import com.fivetrue.gimpo.ac05.service.notification.NotificationData;
+import com.fivetrue.gimpo.ac05.vo.notification.NotificationData;
 
 
 /**

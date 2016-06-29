@@ -8,6 +8,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 
 import com.fivetrue.gimpo.ac05.R;
+import com.fivetrue.gimpo.ac05.analytics.GoogleAnalytics;
 import com.fivetrue.gimpo.ac05.ui.fragment.DrawerLeftMenuFragment;
 import com.fivetrue.gimpo.ac05.utils.Log;
 import com.fivetrue.gimpo.ac05.vo.LeftMenu;
@@ -21,6 +22,11 @@ public class DrawerActivity extends BaseActivity implements DrawerLeftMenuFragme
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
     }
 
     @Override

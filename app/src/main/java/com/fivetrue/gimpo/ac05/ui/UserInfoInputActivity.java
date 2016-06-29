@@ -14,6 +14,8 @@ import android.widget.Toast;
 import com.android.volley.VolleyError;
 import com.fivetrue.gimpo.ac05.ApplicationEX;
 import com.fivetrue.gimpo.ac05.R;
+import com.fivetrue.gimpo.ac05.analytics.Event;
+import com.fivetrue.gimpo.ac05.analytics.GoogleAnalytics;
 import com.fivetrue.gimpo.ac05.net.BaseApiResponse;
 import com.fivetrue.gimpo.ac05.net.NetworkManager;
 import com.fivetrue.gimpo.ac05.net.request.RegisterUserRequest;
@@ -50,6 +52,7 @@ public class UserInfoInputActivity extends BaseActivity {
         setContentView(R.layout.activity_userinfo_input);
         initData();
         initView();
+        GoogleAnalytics.getInstance().sendLogEventProperties(Event.EnterUserInfoInputActivity);
     }
 
     private void initData(){
@@ -86,6 +89,7 @@ public class UserInfoInputActivity extends BaseActivity {
                     mSelectedText.setAnimation(animation);
                     mSelectedText.setVisibility(View.INVISIBLE);
                 }
+                GoogleAnalytics.getInstance().sendLogEventProperties(Event.ClickUserInfoInput_SelectedDistrict.addParams("District", mAdapter.getItem(position)));
             }
 
             @Override
@@ -102,6 +106,7 @@ public class UserInfoInputActivity extends BaseActivity {
             @Override
             public void onClick(View v) {
                 if (mUserInfo != null && !TextUtils.isEmpty(mUserInfo.getApartDong())) {
+                    GoogleAnalytics.getInstance().sendLogEventProperties(Event.ClickUserInfoInput_FinishUserInput.addParams("District", "mUserInfo.getApartDong"));
                     mRequest.setObject(mUserInfo);
                     NetworkManager.getInstance().request(mRequest);
                 } else {

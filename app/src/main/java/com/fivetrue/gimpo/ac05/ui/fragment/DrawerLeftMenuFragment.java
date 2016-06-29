@@ -12,6 +12,8 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import com.fivetrue.gimpo.ac05.R;
+import com.fivetrue.gimpo.ac05.analytics.Event;
+import com.fivetrue.gimpo.ac05.analytics.GoogleAnalytics;
 import com.fivetrue.gimpo.ac05.preferences.ConfigPreferenceManager;
 import com.fivetrue.gimpo.ac05.ui.CafeActivity;
 import com.fivetrue.gimpo.ac05.ui.MainActivity;
@@ -107,6 +109,8 @@ public class DrawerLeftMenuFragment extends  BaseListFragment<LeftMenu> {
                 if (getAdapter() != null) {
                     LeftMenu menu = (LeftMenu) getAdapter().getItem(i - listVIew.getHeaderViewsCount());
                     onMenuClickItemListener.onClickMenu(menu);
+                    GoogleAnalytics.getInstance()
+                            .sendLogEventProperties(Event.ClickLeftMenu.addParams("Name", menu.getName()));
                 }
             }
         });
@@ -128,7 +132,7 @@ public class DrawerLeftMenuFragment extends  BaseListFragment<LeftMenu> {
             mName.setText(userInfo.getName() + " / " + userInfo.getId());
             mEmail.setText(userInfo.getEmail());
             mProfileImage.setImageUrl(userInfo.getProfileImage());
-            mDistrict.setText(userInfo.getApartDong());
+            mDistrict.setText(userInfo.getApartDong() + " 동");
             mDistrict.setVisibility(TextUtils.isEmpty(userInfo.getApartDong()) ? View.GONE : View.VISIBLE);
             view.setOnClickListener(new View.OnClickListener() {
                 @Override

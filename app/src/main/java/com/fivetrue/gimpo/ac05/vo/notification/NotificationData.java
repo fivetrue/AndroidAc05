@@ -1,15 +1,15 @@
-package com.fivetrue.gimpo.ac05.service.notification;
+package com.fivetrue.gimpo.ac05.vo.notification;
 
 import android.content.ContextWrapper;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import com.fivetrue.gimpo.ac05.vo.IPageData;
+
 /**
  * Created by ojin.kwon on 2016-02-25.
  */
-public final class NotificationData implements Parcelable {
-
-    public static final String ACTION_NOTIFICATION = NotificationData.class.getName() + ".notification";
+public final class NotificationData implements Parcelable, IPageData {
 
     private String multicast_id = null;
     private int id = -1;
@@ -58,6 +58,16 @@ public final class NotificationData implements Parcelable {
 
     public String getTitle() {
         return title;
+    }
+
+    @Override
+    public String getContent() {
+        return message;
+    }
+
+    @Override
+    public String getUrl() {
+        return uri;
     }
 
     public void setTitle(String title) {

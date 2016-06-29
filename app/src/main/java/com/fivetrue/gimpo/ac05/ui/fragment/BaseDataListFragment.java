@@ -1,5 +1,6 @@
-package com.fivetrue.gimpo.ac05.ui.fragment.data;
+package com.fivetrue.gimpo.ac05.ui.fragment;
 
+import android.content.Context;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -10,31 +11,34 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.fivetrue.gimpo.ac05.R;
-import com.fivetrue.gimpo.ac05.rss.Feed;
-import com.fivetrue.gimpo.ac05.rss.FeedMessage;
-import com.fivetrue.gimpo.ac05.rss.RSSFeedParser;
-import com.fivetrue.gimpo.ac05.ui.adapter.PageDataRecyclerAdapter;
-import com.fivetrue.gimpo.ac05.vo.data.PageData;
+import com.fivetrue.gimpo.ac05.vo.IPageData;
+import com.fivetrue.gimpo.ac05.vo.rss.FeedMessage;
 
 /**
  * Created by kwonojin on 16. 6. 15..
  */
-public class PageDataListFragment extends ColorChooserFragment {
+abstract public class BaseDataListFragment<T> extends ColorChooserFragment {
 
     private static final String TAG = "PageDataListFragment";
+
+    public interface IBaseDataListListener {
+        void onClickPageData(String title, IPageData data, Integer textColor, Integer bgColor);
+        void onScrollStateChanged(RecyclerView recyclerView, int newState);
+        void onScrolled(RecyclerView recyclerView, int dx, int dy);
+    }
+
+    private IBaseDataListListener mOnPageDataClickListener = null;
+
 
     private ViewGroup mLayoutLabel = null;
     private TextView mDataTitle = null;
     private ImageView mDataDetail = null;
     private ImageView mDataViewIcon = null;
     private RecyclerView mRecyclerView = null;
-    private PageDataRecyclerAdapter mAdapter = null;
 
-    private PageData mPageData = null;
-    private Feed mFeed = null;
+    private T mPageData = null;
 
     private boolean mScrollEnable = true;
 
@@ -42,6 +46,14 @@ public class PageDataListFragment extends ColorChooserFragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         initData();
+    }
+
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        if(getActivity() != null && getActivity() instanceof IBaseDataListListener){
+            mOnPageDataClickListener = (IBaseDataListListener) getActivity();
+        }
     }
 
     @Nullable
@@ -54,11 +66,12 @@ public class PageDataListFragment extends ColorChooserFragment {
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        setData(mPageData);
+        setData(mRecyclerView, mPageData);
+        setTitle(mLayoutLabel, mDataTitle, mPageData);
     }
 
     protected void initData(){
-        mPageData = getArguments().getParcelable(PageData.class.getName());
+        mPageData = getPageData();
     }
 
     private View initView(LayoutInflater inflater){
@@ -70,11 +83,28 @@ public class PageDataListFragment extends ColorChooserFragment {
         mRecyclerView = (RecyclerView) view.findViewById(R.id.rv_fragment_list_page_data);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false));
         mRecyclerView.setNestedScrollingEnabled(mScrollEnable);
+        mRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
+                super.onScrollStateChanged(recyclerView, newState);
+                if(mOnPageDataClickListener != null){
+                    mOnPageDataClickListener.onScrollStateChanged(recyclerView, newState);
+                }
+            }
+
+            @Override
+            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+                super.onScrolled(recyclerView, dx, dy);
+                if(mOnPageDataClickListener != null){
+                    mOnPageDataClickListener.onScrolled(recyclerView, dx, dy);
+                }
+            }
+        });
         mDataDetail.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if(getActivity() != null){
-                    Toast.makeText(getActivity(), mPageData.getContentDescription(), Toast.LENGTH_SHORT).show();
+                    onClickPageDetail(mPageData);
                 }
             }
         });
@@ -96,42 +126,6 @@ public class PageDataListFragment extends ColorChooserFragment {
         return view;
     }
 
-    public void setData(final PageData data){
-        if(data != null){
-            if(mFeed == null){
-                new RSSFeedParser(data.getPageUrl(), new RSSFeedParser.OnLoadFeedListener() {
-                    @Override
-                    public void onLoad(Feed feed) {
-                        mFeed = feed;
-                        setInternalData(data, feed);
-                    }
-                }).readFeed();
-            }else{
-                setInternalData(data, mFeed);
-            }
-        }
-    }
-
-    private void setInternalData(PageData data, Feed feed){
-        mDataTitle.setText(data.getPageTitle() + String.format("( %s )", feed.getMessages().size()));
-        mDataTitle.setTextColor(getPageTitleColor());
-        mLayoutLabel.setBackgroundColor(getPageTitleBgColor());
-        if(feed.getMessages() != null){
-            if(mAdapter == null){
-                mAdapter = new PageDataRecyclerAdapter(feed.getMessages(), getPageContentColor(), getPageContentBgColor());
-                mAdapter.setOnClickPageDataListener(new PageDataRecyclerAdapter.OnClickPageDataListener() {
-                    @Override
-                    public void onClickPageData(View view, FeedMessage data) {
-                        PageDataListFragment.this.onClickPageData(mPageData.getPageTitle(), data, getPageTitleColor(), getPageTitleBgColor());
-                    }
-                });
-                mRecyclerView.setAdapter(mAdapter);
-            }else{
-                mAdapter.setData(feed.getMessages());
-            }
-        }
-    }
-
     public void setNestedScrollingEnabled(boolean b){
         mScrollEnable = b;
         if(mRecyclerView != null){
@@ -139,44 +133,43 @@ public class PageDataListFragment extends ColorChooserFragment {
         }
     }
 
-    public PageData getPageData(){
-        return mPageData;
-    }
-
-
     @Override
     protected int getPageTitleColor(){
         int color = Color.BLACK;
-        if(mPageData != null && mPageData.getTitleColor() != null){
-            color = parseColor(mPageData.getTitleColor());
-        }
         return color;
     }
 
     @Override
     protected int getPageTitleBgColor(){
         int color = Color.WHITE;
-        if(mPageData != null && mPageData.getTitleBgColor() != null){
-            color = parseColor(mPageData.getTitleBgColor());
-        }
         return color;
     }
 
     @Override
     protected int getPageContentColor(){
         int color = Color.WHITE;
-        if(mPageData != null && mPageData.getContentColor() != null){
-            color = parseColor(mPageData.getContentColor());
-        }
         return color;
     }
 
     @Override
     protected int getPageContentBgColor(){
         int color = Color.BLACK;
-        if(mPageData != null && mPageData.getContentBgColor() != null){
-            color = parseColor(mPageData.getContentBgColor());
-        }
         return color;
+    }
+
+    protected void onClickPageData(String title, IPageData data, Integer textColor, Integer bgColor){
+        if(mOnPageDataClickListener != null){
+            mOnPageDataClickListener.onClickPageData(title, data, textColor, bgColor);
+        }
+    }
+
+    abstract protected void setData(RecyclerView view, T data);
+
+    abstract protected void setTitle(View parent, TextView textviw, T data);
+
+    abstract public T getPageData();
+
+    protected void onClickPageDetail(T data){
+
     }
 }

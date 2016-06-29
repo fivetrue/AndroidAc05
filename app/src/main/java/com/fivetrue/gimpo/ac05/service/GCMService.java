@@ -3,7 +3,7 @@ package com.fivetrue.gimpo.ac05.service;
 import android.os.Bundle;
 
 import com.fivetrue.gimpo.ac05.preferences.ConfigPreferenceManager;
-import com.fivetrue.gimpo.ac05.service.notification.NotificationData;
+import com.fivetrue.gimpo.ac05.vo.notification.NotificationData;
 import com.fivetrue.gimpo.ac05.ui.SplashActivity;
 import com.fivetrue.gimpo.ac05.utils.Log;
 import com.google.android.gms.gcm.GcmListenerService;
@@ -31,7 +31,7 @@ public class GCMService extends GcmListenerService {
         String message = data.getString(DATA_KEY);
         if(message != null && mConfigPref.isSettingPush()){
             NotificationData noti = new Gson().fromJson(message, NotificationData.class);
-            if(noti.getId() >= 0){
+            if(noti.getId() <= 0){
                 noti.setId(DEFAULT_NOTIFICATION_ID);
             }
             noti.setTargetClass(SplashActivity.class.getName());

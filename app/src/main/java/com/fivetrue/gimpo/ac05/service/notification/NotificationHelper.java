@@ -18,12 +18,15 @@ import com.fivetrue.gimpo.ac05.R;
 import com.fivetrue.gimpo.ac05.image.ImageLoadManager;
 import com.fivetrue.gimpo.ac05.service.BaseServiceHelper;
 import com.fivetrue.gimpo.ac05.ui.SplashActivity;
+import com.fivetrue.gimpo.ac05.vo.notification.NotificationData;
 
 
 /**
  * Created by ojin.kwon on 2016-02-25.
  */
 public class NotificationHelper extends BaseServiceHelper {
+
+    public static final String ACTION_NOTIFICATION = NotificationData.class.getName() + ".notification";
 
     public static final String KEY_NOTIFICATION_PARCELABLE = "noti_parcelable";
 
@@ -93,10 +96,11 @@ public class NotificationHelper extends BaseServiceHelper {
                 }
 
                 Intent targetIntent = new Intent(getContext(), target);
-                targetIntent.setAction(NotificationData.ACTION_NOTIFICATION);
+                targetIntent.setAction(ACTION_NOTIFICATION);
                 if(data.getUri() != null){
                     targetIntent.setData(Uri.parse(data.getUri()));
                 }
+                targetIntent.putExtra(KEY_NOTIFICATION_PARCELABLE, data);
                 TaskStackBuilder stackBuilder = TaskStackBuilder.create(getContext());
                 stackBuilder.addParentStack(SplashActivity.class);
                 stackBuilder.addNextIntent(targetIntent);

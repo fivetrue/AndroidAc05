@@ -12,6 +12,8 @@ import android.widget.Toast;
 import com.android.volley.VolleyError;
 import com.fivetrue.gimpo.ac05.ApplicationEX;
 import com.fivetrue.gimpo.ac05.R;
+import com.fivetrue.gimpo.ac05.analytics.Event;
+import com.fivetrue.gimpo.ac05.analytics.GoogleAnalytics;
 import com.fivetrue.gimpo.ac05.net.BaseApiResponse;
 import com.fivetrue.gimpo.ac05.net.NetworkManager;
 import com.fivetrue.gimpo.ac05.net.request.TokenRequest;
@@ -50,6 +52,7 @@ public class SettingActivity extends DrawerActivity{
         setContentView(R.layout.activity_setting);
         initData();
         initView();
+        GoogleAnalytics.getInstance().sendLogEventProperties(Event.EnterSettingActivity);
     }
 
     private void initData(){
@@ -74,6 +77,7 @@ public class SettingActivity extends DrawerActivity{
                 Bundle b = new Bundle();
                 b.putString("url", mAppConfig.getMyInfoUrl());
                 addFragment(WebViewFragment.class, b, true);
+                GoogleAnalytics.getInstance().sendLogEventProperties(Event.ClickSettingMenu_MyInfo);
             }
         });
 
@@ -84,6 +88,7 @@ public class SettingActivity extends DrawerActivity{
                 Token token = mConfigPref.getToken();
                 mDeleteTokenRequest.requestDeleteToken(mAppConfig, token);
                 NetworkManager.getInstance().request(mDeleteTokenRequest);
+                GoogleAnalytics.getInstance().sendLogEventProperties(Event.ClickSettingMenu_Logout);
             }
         });
 
@@ -92,7 +97,9 @@ public class SettingActivity extends DrawerActivity{
         mSwitchPush.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+
                 mConfigPref.setSettingPush(isChecked);
+                GoogleAnalytics.getInstance().sendLogEventProperties(isChecked ? Event.ClickSettingMenu_NotificationOn : Event.ClickSettingMenu_NotificationOff);
             }
         });
 

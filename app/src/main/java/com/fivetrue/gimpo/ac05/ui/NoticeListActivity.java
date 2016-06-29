@@ -8,11 +8,15 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.android.volley.VolleyError;
+import com.fivetrue.gimpo.ac05.Constants;
 import com.fivetrue.gimpo.ac05.R;
+import com.fivetrue.gimpo.ac05.analytics.Event;
+import com.fivetrue.gimpo.ac05.analytics.GoogleAnalytics;
 import com.fivetrue.gimpo.ac05.net.BaseApiResponse;
 import com.fivetrue.gimpo.ac05.net.NetworkManager;
 import com.fivetrue.gimpo.ac05.net.request.NoticeDataRequest;
-import com.fivetrue.gimpo.ac05.service.notification.NotificationData;
+import com.fivetrue.gimpo.ac05.preferences.ConfigPreferenceManager;
+import com.fivetrue.gimpo.ac05.vo.notification.NotificationData;
 import com.fivetrue.gimpo.ac05.ui.adapter.NotificationDataRecyclerAdapter;
 import com.fivetrue.gimpo.ac05.ui.adapter.pager.NoticeDataPagerAdapter;
 import com.fivetrue.gimpo.ac05.ui.fragment.WebViewFragment;
@@ -25,7 +29,6 @@ import java.util.ArrayList;
  */
 public class NoticeListActivity extends DrawerActivity{
 
-
     private NoticeDataRequest mRequest = null;
     private RecyclerView mRecylerView = null;
     private TextView mEmptyText = null;
@@ -33,6 +36,7 @@ public class NoticeListActivity extends DrawerActivity{
     private ProgressBar mProgress = null;
 
     private NotificationDataRecyclerAdapter mAdapter = null;
+    private ConfigPreferenceManager mPref = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,11 +45,12 @@ public class NoticeListActivity extends DrawerActivity{
         initData();
         initView();
         NetworkManager.getInstance().request(mRequest);
-
+        GoogleAnalytics.getInstance().sendLogEventProperties(Event.EnterNoticeActivity);
     }
 
     private void initData(){
         mRequest = new NoticeDataRequest(this, baseApiResponse);
+        mPref = new ConfigPreferenceManager(this);
     }
 
     private void initView(){
@@ -81,8 +86,12 @@ public class NoticeListActivity extends DrawerActivity{
         @Override
         public void onClick(View view, NotificationData data) {
             Bundle b = new Bundle();
-            b.putString("url", data.getUri());
+            String url = String.format(Constants.API_CHECK_REDIRECT, data.getUri()
+                    , data.getMulticast_id()
+                    , mPref.getUserInfo().getEmail());
+            b.putString("url", url);
             addFragment(WebViewFragment.class, b, getBaseLayoutContainer().getId(), R.anim.enter_transform, R.anim.exit_transform, true);
+            GoogleAnalytics.getInstance().sendLogEventProperties(Event.ClickNoticeData);
         }
     };
 

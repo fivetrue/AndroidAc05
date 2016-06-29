@@ -53,6 +53,7 @@ public class PagerSlidingTabStrip extends HorizontalScrollView {
     public interface PagerTabContent {
         int getStringResource();
         int getIconResource();
+        String getTabName();
         boolean isShowingIcon();
     }
 
@@ -165,6 +166,7 @@ public class PagerSlidingTabStrip extends HorizontalScrollView {
         mPaintBackround.setAntiAlias(true);
         mPaintBackround.setColor(tabBackgroundColor);
         mPaintBackround.setStyle(Paint.Style.FILL);
+        setBackgroundColor(tabBackgroundColor);
 
         defaultTabLayoutParams = new LinearLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.MATCH_PARENT);
         expandedTabLayoutParams = new LinearLayout.LayoutParams(0, LayoutParams.MATCH_PARENT, 1.0f);
@@ -217,7 +219,12 @@ public class PagerSlidingTabStrip extends HorizontalScrollView {
                     if(content.isShowingIcon()){
                         addIconTab(i, content.getIconResource());
                     }else{
-                        addTextTab(i, content.getStringResource());
+                        if(content.getTabName() != null){
+                            addTextTab(i, content.getTabName());
+                        }else{
+                            addTextTab(i, content.getStringResource());
+                        }
+
                     }
                 }
             }
@@ -264,10 +271,14 @@ public class PagerSlidingTabStrip extends HorizontalScrollView {
         }
     }
 
-    private void addTextTab(final int position, int stringResource) {
+    private void addTextTab(final int position, int stringResource){
+        addTextTab(position, getContext().getString(stringResource));
+    }
+
+    private void addTextTab(final int position, String name) {
 
         HoverTextView tab = new HoverTextView(getContext());
-        tab.setText(stringResource);
+        tab.setText(name);
         tab.setFocusable(true);
         tab.setGravity(Gravity.CENTER);
         tab.setSingleLine();
@@ -423,7 +434,7 @@ public class PagerSlidingTabStrip extends HorizontalScrollView {
             lineRight = (currentPositionOffset * nextTabRight + (1f - currentPositionOffset) * lineRight);
         }
 
-        canvas.drawRect(0, 0, getWidth(), getHeight(), mPaintBackround);
+//        canvas.drawRect(0, 0, getWidth(), getHeight(), mPaintBackround);
         canvas.drawRect(lineLeft, height - indicatorHeight, lineRight, height, mPaintIndicator);
 //		dividerPaint.setColor(dividerColor);
 //		for (int i = 0; i < tabCount - 1; i++) {

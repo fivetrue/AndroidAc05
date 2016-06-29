@@ -4,7 +4,9 @@ package com.fivetrue.gimpo.ac05.vo.data;
 import android.os.Parcel;
 import android.os.Parcelable;
 
-public class TownData implements Parcelable, IPageData{
+import com.fivetrue.gimpo.ac05.vo.IPageData;
+
+public class TownData implements Parcelable, IPageData {
 	
 	private int postId = 0;
 	private String title = null;
