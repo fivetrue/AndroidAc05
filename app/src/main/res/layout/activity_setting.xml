@@ -16,7 +16,7 @@
 
         <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_height="100dp"
+            android:layout_height="wrap_content"
             android:padding="@dimen/common_horizontal_padding"
             android:background="@color/colorAccent">
 
@@ -30,16 +30,26 @@
             <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_alignParentRight="true"
+                android:layout_centerHorizontal="true"
                 android:layout_toRightOf="@id/iv_setting_user_image"
+                android:layout_alignParentRight="true"
                 android:gravity="center"
                 android:layout_centerVertical="true">
 
+                <!--<Button-->
+                    <!--android:id="@+id/btn_setting_user_info"-->
+                    <!--android:layout_width="wrap_content"-->
+                    <!--android:layout_height="wrap_content"-->
+                    <!--android:text="@string/my_info"-->
+                    <!--android:textColor="@color/colorAccent"-->
+                    <!--android:textSize="@dimen/setting_category_text_size"-->
+                    <!--android:layout_marginRight="@dimen/common_horizontal_padding"-->
+                    <!--android:background="@drawable/selector_common_button"/>-->
                 <Button
-                    android:id="@+id/btn_setting_user_info"
+                    android:id="@+id/btn_setting_cafe_user_info"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@string/my_info"
+                    android:text="@string/my_cafe_info"
                     android:textColor="@color/colorAccent"
                     android:textSize="@dimen/setting_category_text_size"
                     android:layout_marginRight="@dimen/common_horizontal_padding"

@@ -45,6 +45,7 @@
     <string name="login_welcome"> 님 로그인!</string>
     <string name="logout">로그아웃</string>
     <string name="my_info">내정보</string>
+    <string name="my_cafe_info">카페정보변경</string>
     <string name="login_need">로그인이 필요합니다. 로그인 하시겠습니까?</string>
 
     <string name="input_user_dong">어느 동에 계신가요 ?</string>

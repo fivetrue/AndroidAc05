@@ -27,6 +27,7 @@ public enum Event implements Runnable{
 
     EnterSettingActivity,
     ClickSettingMenu_MyInfo,
+    ClickSettingMenu_MyCafeInfo,
     ClickSettingMenu_Logout,
     ClickSettingMenu_NotificationOff,
     ClickSettingMenu_NotificationOn,

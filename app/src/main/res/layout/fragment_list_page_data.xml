@@ -43,11 +43,18 @@
     </RelativeLayout>
 
 
-    <android.support.v7.widget.RecyclerView
-        android:id="@+id/rv_fragment_list_page_data"
+    <android.support.v4.widget.SwipeRefreshLayout
+        android:id="@+id/refresh_fragment_list"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_below="@id/layout_fragment_list_label"/>
+        android:layout_below="@id/layout_fragment_list_label">
+
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/rv_fragment_list_page_data"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"/>
+
+    </android.support.v4.widget.SwipeRefreshLayout>
 
     <View
         android:layout_width="match_parent"

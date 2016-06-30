@@ -34,7 +34,8 @@ public class SettingActivity extends DrawerActivity{
     private static final String TAG = "SettingActivity";
 
     private CircleImageView mUserImage = null;
-    private Button mUserMyInfo = null;
+//    private Button mUserMyInfo = null;
+    private Button mUserCafeMyInfo = null;
     private Button mUserLogout = null;
 
     private SwitchCompat mSwitchPush = null;
@@ -64,21 +65,31 @@ public class SettingActivity extends DrawerActivity{
 
     private void initView(){
         mUserImage = (CircleImageView) findViewById(R.id.iv_setting_user_image);
-        mUserMyInfo = (Button) findViewById(R.id.btn_setting_user_info);
+//        mUserMyInfo = (Button) findViewById(R.id.btn_setting_user_info);
+        mUserCafeMyInfo = (Button) findViewById(R.id.btn_setting_cafe_user_info);
         mUserLogout = (Button) findViewById(R.id.btn_setting_user_logout);
 
         mSwitchPush = (SwitchCompat) findViewById(R.id.sw_setting_push);
 
         mUserImage.setImageUrl(mUserInfo.getProfileImage());
 
-        mUserMyInfo.setOnClickListener(new View.OnClickListener() {
+        mUserImage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Bundle b = new Bundle();
-
-                b.putString("url", mAppConfig.getMyInfoUrl() + mUserInfo.getEmail());
+                b.putString("url", mAppConfig.getMyInfoUrl());
                 addFragment(WebViewFragment.class, b, true);
                 GoogleAnalytics.getInstance().sendLogEventProperties(Event.ClickSettingMenu_MyInfo);
+            }
+        });
+
+        mUserCafeMyInfo.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Bundle b = new Bundle();
+                b.putString("url", mAppConfig.getClubMyInfo() + mUserInfo.getEmail());
+                addFragment(WebViewFragment.class, b, true);
+                GoogleAnalytics.getInstance().sendLogEventProperties(Event.ClickSettingMenu_MyCafeInfo);
             }
         });
 
