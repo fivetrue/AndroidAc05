@@ -11,6 +11,7 @@ import android.net.Uri;
 import android.os.Handler;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.TaskStackBuilder;
+import android.text.TextUtils;
 
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.ImageLoader;
@@ -74,7 +75,7 @@ public class NotificationHelper extends BaseServiceHelper {
         if(data != null){
             NotificationCompat.Builder builder = new NotificationCompat.Builder(getContext());
             builder.setSmallIcon(R.drawable.push_icon)
-                    .setContentTitle(data.getTitle())
+                    .setContentTitle(TextUtils.isEmpty(data.getTitle()) ? context.getString(R.string.app_name) : data.getTitle())
                     .setContentText(data.getMessage())
                     .setDefaults(Notification.DEFAULT_ALL)
                     .setWhen(System.currentTimeMillis())

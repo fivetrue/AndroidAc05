@@ -10,6 +10,12 @@
         <!-- Customize your theme here. -->
     </style>
 
+    <style name="NoticeActivityTheme" parent="AppTheme">
+    </style>
+
+    <style name="CafeActivityTheme" parent="AppTheme">
+    </style>
+
     <style name="CommonButton">
         <item name="android:typeface">sans</item>
         <item name="android:background">@drawable/selector_common_button</item>
@@ -90,7 +96,7 @@
 
     <style name="SubItemText" parent="SmallText">
         <item name="android:gravity">left|center_vertical</item>
-        <item name="android:textColor">@color/colorAccent</item>
+        <item name="android:textColor">@color/colorPrimaryDark</item>
         <item name="android:paddingLeft">@dimen/common_horizontal_padding</item>
         <item name="android:layout_marginLeft">@dimen/common_horizontal_padding</item>
         <item name="android:textSize">@dimen/setting_category_text_size</item>

@@ -108,4 +108,10 @@ public class TownDataListFragment extends BaseDataListFragment<TownDataEntry> im
     public boolean isShowingIcon() {
         return false;
     }
+
+    @Override
+    protected void onRefresh() {
+        super.onRefresh();
+        onRefreshFinish();
+    }
 }

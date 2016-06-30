@@ -3,5 +3,8 @@
     <item android:state_pressed="true"
         android:drawable="@drawable/rect_negative_dark_color"/>
     <item android:state_selected="true"
+        android:drawable="@drawable/rect_negative_dark_color"/>
+
+    <item
         android:drawable="@drawable/rect_negative_color"/>
 </selector>

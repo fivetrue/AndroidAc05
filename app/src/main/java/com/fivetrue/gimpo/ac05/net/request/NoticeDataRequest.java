@@ -16,4 +16,8 @@ public class NoticeDataRequest extends BasicRequest {
     public NoticeDataRequest(Context context, BaseApiResponse response) {
         super(context, API, response);
     }
+
+    public void setType(String type){
+        getParams().put("type", type);
+    }
 }

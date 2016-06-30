@@ -128,4 +128,18 @@ public class PageDataListFragment extends BaseDataListFragment<PageData> impleme
     public boolean isShowingIcon() {
         return false;
     }
+
+    @Override
+    protected void onRefresh() {
+        super.onRefresh();
+        new RSSFeedParser(getPageData().getPageUrl(), new RSSFeedParser.OnLoadFeedListener() {
+            @Override
+            public void onLoad(Feed feed) {
+                mFeed = feed;
+                mAdapter.setData(feed.getMessages());
+                onRefreshFinish();
+            }
+        }).readFeed();
+    }
+
 }

@@ -18,7 +18,7 @@
             android:layout_width="match_parent"
             android:layout_height="100dp"
             android:padding="@dimen/common_horizontal_padding"
-            android:background="@drawable/rect_primary_color">
+            android:background="@color/colorAccent">
 
             <com.fivetrue.gimpo.ac05.view.CircleImageView
                 android:id="@+id/iv_setting_user_image"
@@ -66,7 +66,7 @@
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="@dimen/item_text_height"
-            android:background="@drawable/rect_primary_color">
+            android:background="@color/colorAccent">
 
             <android.support.v7.widget.SwitchCompat
                 android:id="@+id/sw_setting_push"

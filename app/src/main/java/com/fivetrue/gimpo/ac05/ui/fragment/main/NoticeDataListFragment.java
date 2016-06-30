@@ -5,14 +5,20 @@ import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.widget.TextView;
 
+import com.android.volley.VolleyError;
 import com.fivetrue.gimpo.ac05.R;
+import com.fivetrue.gimpo.ac05.net.BaseApiResponse;
+import com.fivetrue.gimpo.ac05.net.NetworkManager;
+import com.fivetrue.gimpo.ac05.net.request.NoticeDataRequest;
 import com.fivetrue.gimpo.ac05.vo.notification.NotificationData;
 import com.fivetrue.gimpo.ac05.ui.adapter.NotificationDataRecyclerAdapter;
 import com.fivetrue.gimpo.ac05.ui.adapter.pager.NoticeDataPagerAdapter;
 import com.fivetrue.gimpo.ac05.ui.fragment.BaseDataListFragment;
 import com.fivetrue.gimpo.ac05.widget.PagerSlidingTabStrip;
+import com.google.gson.reflect.TypeToken;
 
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by kwonojin on 16. 6. 15..
@@ -22,6 +28,14 @@ public class NoticeDataListFragment extends BaseDataListFragment<ArrayList<Notif
     private static final String TAG = "NoticeDataListFragment";
 
     private NotificationDataRecyclerAdapter mAdapter = null;
+
+    private NoticeDataRequest mRequest = null;
+
+    @Override
+    protected void initData() {
+        super.initData();
+        mRequest = new NoticeDataRequest(getActivity(), baseApiResponse);
+    }
 
     @Override
     protected int getPageTitleColor(){
@@ -109,4 +123,28 @@ public class NoticeDataListFragment extends BaseDataListFragment<ArrayList<Notif
     public boolean isShowingIcon() {
         return false;
     }
+
+    @Override
+    protected void onRefresh() {
+        super.onRefresh();
+        mRequest.setType("1");
+        NetworkManager.getInstance().request(mRequest);
+    }
+
+    BaseApiResponse<List<NotificationData>> baseApiResponse = new BaseApiResponse<>(new BaseApiResponse.OnResponseListener<List<NotificationData>>() {
+        @Override
+        public void onResponse(BaseApiResponse<List<NotificationData>> response) {
+            onRefreshFinish();
+            if(response != null){
+                if(mAdapter != null){
+                    mAdapter.setData(response.getData());
+                }
+            }
+        }
+
+        @Override
+        public void onError(VolleyError error) {
+            onRefreshFinish();
+        }
+    }, new TypeToken<List<NotificationData>>(){}.getType());
 }

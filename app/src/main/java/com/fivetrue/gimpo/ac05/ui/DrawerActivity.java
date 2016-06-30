@@ -1,7 +1,9 @@
 package com.fivetrue.gimpo.ac05.ui;
 
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
+import android.support.v4.app.FragmentManager;
 import android.support.v4.widget.DrawerLayout;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -9,6 +11,7 @@ import android.view.View;
 
 import com.fivetrue.gimpo.ac05.R;
 import com.fivetrue.gimpo.ac05.analytics.GoogleAnalytics;
+import com.fivetrue.gimpo.ac05.ui.fragment.BaseFragment;
 import com.fivetrue.gimpo.ac05.ui.fragment.DrawerLeftMenuFragment;
 import com.fivetrue.gimpo.ac05.utils.Log;
 import com.fivetrue.gimpo.ac05.vo.LeftMenu;
@@ -96,6 +99,26 @@ public class DrawerActivity extends BaseActivity implements DrawerLeftMenuFragme
         if (mDrawerLayout.isDrawerOpen(Gravity.START)) {
             mDrawerLayout.closeDrawer(Gravity.START);
         }
+    }
+
+    @Override
+    public BaseFragment addFragment(Class<? extends BaseFragment> cls, Bundle arguments, int anchorLayout, int enterAnim, int exitAnim, boolean addBackstack) {
+        BaseFragment f = super.addFragment(cls, arguments, anchorLayout, enterAnim, exitAnim, addBackstack);
+        if(addBackstack){
+            getFtActionBar().setHomeAsUp(true, Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP);
+        }
+        return f;
+    }
+
+
+    @Override
+    protected boolean popFragment(FragmentManager fm) {
+        boolean b = super.popFragment(fm);
+        if(getCurrentFragmentManager().getBackStackEntryCount() <= 0){
+            getFtActionBar().setHomeAsUp(false, Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP);
+            getFtActionBar().setTitle(R.string.app_name);
+        }
+        return b;
     }
 
     @Override

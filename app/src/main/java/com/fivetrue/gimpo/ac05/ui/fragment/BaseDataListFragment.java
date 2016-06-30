@@ -4,6 +4,7 @@ import android.content.Context;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -31,11 +32,12 @@ abstract public class BaseDataListFragment<T> extends ColorChooserFragment {
 
     private IBaseDataListListener mOnPageDataClickListener = null;
 
-
     private ViewGroup mLayoutLabel = null;
     private TextView mDataTitle = null;
     private ImageView mDataDetail = null;
     private ImageView mDataViewIcon = null;
+
+    private SwipeRefreshLayout mRefreshLayout = null;
     private RecyclerView mRecyclerView = null;
 
     private T mPageData = null;
@@ -80,6 +82,14 @@ abstract public class BaseDataListFragment<T> extends ColorChooserFragment {
         mDataTitle = (TextView) view.findViewById(R.id.tv_fragment_list_page_data_title);
         mDataDetail = (ImageView) view.findViewById(R.id.iv_fragment_list_page_data_detail_info);
         mDataViewIcon = (ImageView) view.findViewById(R.id.iv_fragment_list_page_data_detail_view);
+
+        mRefreshLayout = (SwipeRefreshLayout) view.findViewById(R.id.refresh_fragment_list);
+        mRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                BaseDataListFragment.this.onRefresh();
+            }
+        });
         mRecyclerView = (RecyclerView) view.findViewById(R.id.rv_fragment_list_page_data);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false));
         mRecyclerView.setNestedScrollingEnabled(mScrollEnable);
@@ -133,6 +143,9 @@ abstract public class BaseDataListFragment<T> extends ColorChooserFragment {
         }
     }
 
+
+
+
     @Override
     protected int getPageTitleColor(){
         int color = Color.BLACK;
@@ -171,5 +184,14 @@ abstract public class BaseDataListFragment<T> extends ColorChooserFragment {
 
     protected void onClickPageDetail(T data){
 
+    }
+
+    protected void onRefresh(){
+
+
+    }
+
+    protected void onRefreshFinish(){
+        mRefreshLayout.setRefreshing(false);
     }
 }

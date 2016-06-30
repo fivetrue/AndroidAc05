@@ -183,25 +183,6 @@ public class MainActivity extends DrawerActivity implements BaseDataListFragment
     }
 
     @Override
-    public BaseFragment addFragment(Class<? extends BaseFragment> cls, Bundle arguments, int anchorLayout, int enterAnim, int exitAnim, boolean addBackstack) {
-        BaseFragment f = super.addFragment(cls, arguments, anchorLayout, enterAnim, exitAnim, addBackstack);
-        if(addBackstack){
-            getFtActionBar().setHomeAsUp(true, true);
-        }
-        return f;
-    }
-
-    @Override
-    protected boolean popFragment(FragmentManager fm) {
-        boolean b = super.popFragment(fm);
-        if(getCurrentFragmentManager().getBackStackEntryCount() <= 0){
-            getFtActionBar().setHomeAsUp(false, true);
-            getFtActionBar().setTitle(R.string.app_name);
-        }
-        return b;
-    }
-
-    @Override
     public void onBackPressed() {
         if(getCurrentFragmentManager().getBackStackEntryCount() > 0 || isOpenMenu()){
             super.onBackPressed();

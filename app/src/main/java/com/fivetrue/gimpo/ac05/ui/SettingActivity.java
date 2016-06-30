@@ -75,7 +75,8 @@ public class SettingActivity extends DrawerActivity{
             @Override
             public void onClick(View v) {
                 Bundle b = new Bundle();
-                b.putString("url", mAppConfig.getMyInfoUrl());
+
+                b.putString("url", mAppConfig.getMyInfoUrl() + mUserInfo.getEmail());
                 addFragment(WebViewFragment.class, b, true);
                 GoogleAnalytics.getInstance().sendLogEventProperties(Event.ClickSettingMenu_MyInfo);
             }
