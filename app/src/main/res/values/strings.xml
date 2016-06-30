@@ -63,20 +63,6 @@
 
     <string name="setting_logout_message">로그아웃 시 앱이 종료됩니다.</string>
 
-    <!-- Drip write-->
-    <string name="write_hint">개드립 한번 해보시개ㅋ.</string>
-    <string name="write_btn_write">글쓰기</string>
-    <string name="write_btn_add_image">사진 추가</string>
-    <string name="write_welcome"> 님의 글이 등록 되었습니다!</string>
-    <string name="write_notice">한 번 내 뱉은 드립은 주워 담을 수 없다.</string>
-    <string name="write_empty_notice">드립을 입력하시게.</string>
-
-    <string name="drip_recommend">추천+%s</string>
-    <string name="drip_comment">댓글+%s</string>
-
-    <string name="mypage_user_drip">내가 친 드립 수</string>
-    <string name="mypage_user_drip_recommend">추천 받은 수</string>
-
     <!-- UserInfo -->
     <string name="invalid_user_email">이메일 형식이 잘못 되었습니다.</string>
     <string name="invalid_user_password">패스워드 형식이 잘못 되었습니다.</string>
