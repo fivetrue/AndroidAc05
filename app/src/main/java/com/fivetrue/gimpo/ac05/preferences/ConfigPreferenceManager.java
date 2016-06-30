@@ -60,7 +60,7 @@ public class ConfigPreferenceManager {
     }
 
     public boolean isSettingPush(){
-        return mHelper.getData(SETTING_PUSH, false);
+        return mHelper.getData(SETTING_PUSH, true);
     }
 
     public void setUserInfo(UserInfo userinfo){
