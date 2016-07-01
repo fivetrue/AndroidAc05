@@ -16,6 +16,7 @@ import com.fivetrue.gimpo.ac05.analytics.Event;
 import com.fivetrue.gimpo.ac05.analytics.GoogleAnalytics;
 import com.fivetrue.gimpo.ac05.preferences.ConfigPreferenceManager;
 import com.fivetrue.gimpo.ac05.ui.CafeActivity;
+import com.fivetrue.gimpo.ac05.ui.InfomationImageActivity;
 import com.fivetrue.gimpo.ac05.ui.MainActivity;
 import com.fivetrue.gimpo.ac05.ui.NoticeListActivity;
 import com.fivetrue.gimpo.ac05.ui.SettingActivity;
@@ -88,6 +89,9 @@ public class DrawerLeftMenuFragment extends  BaseListFragment<LeftMenu> {
         mLeftMenu.add(new LeftMenu(getString(R.string.notice)
                 , R.drawable.ic_notification_20dp
                 , NoticeListActivity.class));
+        mLeftMenu.add(new LeftMenu(getString(R.string.infomation)
+                , R.drawable.ic_notification_20dp
+                , InfomationImageActivity.class));
         mLeftMenu.add(new LeftMenu(getString(R.string.cafe)
                 , R.drawable.ic_cafe_20dp
                 , CafeActivity.class));
@@ -132,12 +136,27 @@ public class DrawerLeftMenuFragment extends  BaseListFragment<LeftMenu> {
             mName.setText(userInfo.getName() + " / " + userInfo.getId());
             mEmail.setText(userInfo.getEmail());
             mProfileImage.setImageUrl(userInfo.getProfileImage());
+            mProfileImage.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+
+                }
+            });
             mDistrict.setText(userInfo.getApartDong() + " 동");
             mDistrict.setVisibility(TextUtils.isEmpty(userInfo.getApartDong()) ? View.GONE : View.VISIBLE);
             view.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-
+                    if(mLeftMenu != null){
+                        for(LeftMenu m : mLeftMenu){
+                            if(m.getActivity().equals(SettingActivity.class)){
+                                if(mOnMenuClickItemListener != null){
+                                    mOnMenuClickItemListener.onClickMenu(m);
+                                    return;
+                                }
+                            }
+                        }
+                    }
                 }
             });
         }

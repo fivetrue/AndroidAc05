@@ -50,6 +50,11 @@
             android:theme="@style/NoticeActivityTheme"/>
 
         <activity
+            android:name=".ui.InfomationImageActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/InfomationActivityTheme"/>
+
+        <activity
             android:name=".ui.CafeActivity"
             android:screenOrientation="portrait"
             android:theme="@style/CafeActivityTheme"/>

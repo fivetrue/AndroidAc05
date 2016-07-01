@@ -25,6 +25,7 @@
     <!-- Left Menu-->
     <string name="main">메인</string>
     <string name="notice">알림</string>
+    <string name="infomation">정보</string>
     <string name="cafe">카페</string>
     <string name="setting">설정</string>
 

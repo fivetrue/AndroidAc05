@@ -1,6 +1,7 @@
 package com.fivetrue.gimpo.ac05.ui;
 
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.app.FragmentManager;
@@ -117,18 +118,35 @@ public class MainActivity extends DrawerActivity implements BaseDataListFragment
     }
 
     private void showPageDetailFragment(String title, FeedMessage message, Integer textColor, Integer bgColor){
+        int enterAnim = R.anim.enter_translate_up;
+        int exitAnim = R.anim.exit_translate_down;
+
+        if(Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP){
+            enterAnim = R.anim.enter_smooth;
+            exitAnim = R.anim.exit_smooth;
+        }
+
         BaseFragment f = addFragment(PageDataDetailFragment.class, PageDataDetailFragment.makeArgument(message, textColor, bgColor)
-                , getFragmentAnchorLayoutID(), R.anim.enter_translate_up, R.anim.exit_translate_down, true);
+                , getFragmentAnchorLayoutID(), enterAnim, exitAnim, true);
         if(f != null){
             getFtActionBar().setTitle(title);
         }
     }
 
     private void showWebviewFragment(String title, String url){
+
+        int enterAnim = R.anim.enter_translate_up;
+        int exitAnim = R.anim.exit_translate_down;
+
+        if(Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP){
+            enterAnim = R.anim.enter_smooth;
+            exitAnim = R.anim.exit_smooth;
+        }
+
         Bundle argument = new Bundle();
         argument.putString("url", url);
         BaseFragment f = addFragment(WebViewFragment.class, argument
-                , getFragmentAnchorLayoutID(), R.anim.enter_translate_up, R.anim.exit_translate_down, true);
+                , getFragmentAnchorLayoutID(), enterAnim, exitAnim, true);
         if(f != null){
             getFtActionBar().setTitle(title);
         }

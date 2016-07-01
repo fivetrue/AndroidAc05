@@ -25,6 +25,8 @@ public class AppConfig {
 
     private ArrayList<String> districtList = null;
 
+    private ArrayList<String> infomationImageUrlList = null;
+
 
     public String getAppId() {
         return appId;
@@ -130,6 +132,14 @@ public class AppConfig {
         this.districtList = districtList;
     }
 
+    public ArrayList<String> getInfomationImageUrlList() {
+        return infomationImageUrlList;
+    }
+
+    public void setInfomationImageUrlList(ArrayList<String> infomationImageUrlList) {
+        this.infomationImageUrlList = infomationImageUrlList;
+    }
+
     @Override
     public String toString() {
         return "AppConfig{" +
@@ -146,6 +156,7 @@ public class AppConfig {
                 ", clubMyInfo='" + clubMyInfo + '\'' +
                 ", myInfoUrl='" + myInfoUrl + '\'' +
                 ", districtList=" + districtList +
+                ", infomationImageUrlList=" + infomationImageUrlList +
                 '}';
     }
 }

@@ -11,18 +11,11 @@
         android:gravity="center"
         style="@style/CommonText"/>
 
-    <WebView
-        android:id="@+id/webview_fragment_page_data_detail"
+    <FrameLayout
+        android:id="@+id/layout_fragment_page_data_detail"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_below="@id/tv_fragment_page_data_detail"/>
-
-    <android.support.v4.widget.ContentLoadingProgressBar
-        android:id="@+id/pb_fragment_page_data_detail"
-        android:layout_width="match_parent"
-        android:layout_height="4dp"
-        android:layout_below="@id/tv_fragment_page_data_detail"
-        style="?android:attr/android:progressBarStyleHorizontal"/>
 
     <android.support.design.widget.FloatingActionButton
         android:id="@+id/fab_fragment_page_data_detail"

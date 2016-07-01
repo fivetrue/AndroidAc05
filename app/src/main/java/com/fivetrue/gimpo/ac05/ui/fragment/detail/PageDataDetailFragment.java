@@ -15,24 +15,25 @@ import android.view.animation.AlphaAnimation;
 import android.webkit.WebChromeClient;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
+import android.widget.FrameLayout;
 import android.widget.TextView;
 
 import com.fivetrue.gimpo.ac05.R;
 import com.fivetrue.gimpo.ac05.analytics.Event;
 import com.fivetrue.gimpo.ac05.analytics.GoogleAnalytics;
+import com.fivetrue.gimpo.ac05.ui.fragment.WebViewFragment;
 import com.fivetrue.gimpo.ac05.vo.rss.FeedMessage;
 import com.fivetrue.gimpo.ac05.ui.fragment.BaseFragment;
 
 /**
  * Created by kwonojin on 16. 6. 16..
  */
-public class PageDataDetailFragment extends BaseFragment {
+public class PageDataDetailFragment extends WebViewFragment{
 
     private static final String TAG = "PageDataDetailFragment";
 
     private TextView mPageDataTitle = null;
-    private WebView mWebView = null;
-    private ContentLoadingProgressBar mProgress = null;
+    private FrameLayout mFrameLayout = null;
     private FloatingActionButton mDetailButton = null;
 
     private FeedMessage mData = null;
@@ -40,33 +41,26 @@ public class PageDataDetailFragment extends BaseFragment {
     private int mTextColor = 0;
     private int mTextBgColor = 0;
 
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        initData();
-        GoogleAnalytics.getInstance().sendLogEventProperties(Event.EnterPageDataDetailFragment);
-    }
-
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        return initView(inflater);
+        View parentView = super.onCreateView(inflater, container, savedInstanceState);
+        return initView(inflater, parentView);
     }
 
-    private void initData(){
+    @Override
+    protected void initData(){
         mData = getArguments().getParcelable(FeedMessage.class.getName());
         mTextColor = getArguments().getInt("textColor", getResources().getColor(R.color.colorAccent));
         mTextBgColor = getArguments().getInt("bgColor", getResources().getColor(R.color.colorPrimary));
+        GoogleAnalytics.getInstance().sendLogEventProperties(Event.EnterPageDataDetailFragment);
     }
 
-    private View initView(LayoutInflater inflater){
+    private View initView(LayoutInflater inflater, View parentView){
         View view = inflater.inflate(R.layout.fragment_page_data_detail, null);
         mPageDataTitle = (TextView) view.findViewById(R.id.tv_fragment_page_data_detail);
-        mProgress = (ContentLoadingProgressBar) view.findViewById(R.id.pb_fragment_page_data_detail);
-        mWebView = (WebView) view.findViewById(R.id.webview_fragment_page_data_detail);
-        mWebView.getSettings().setJavaScriptEnabled(true);
-        mWebView.getSettings().setDefaultTextEncodingName("UTF-8");
-        mProgress.setMax(100);
+        mFrameLayout = (FrameLayout) view.findViewById(R.id.layout_fragment_page_data_detail);
+        mFrameLayout.addView(parentView);
         mDetailButton = (FloatingActionButton) view.findViewById(R.id.fab_fragment_page_data_detail);
         mDetailButton.setRippleColor(mTextBgColor);
         mPageDataTitle.setTextColor(mTextColor);
@@ -79,7 +73,7 @@ public class PageDataDetailFragment extends BaseFragment {
 //                    Intent intent = new Intent(Intent.ACTION_VIEW, uri);
 //                    startActivity(intent);
 //                }
-                mWebView.loadUrl(mData.getLink());
+                getWebView().loadUrl(mData.getLink());
                 if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP){
                     Animator anim = ViewAnimationUtils.createCircularReveal(mDetailButton
                             , mDetailButton.getWidth() / 2, mDetailButton.getHeight() / 2
@@ -121,43 +115,9 @@ public class PageDataDetailFragment extends BaseFragment {
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        mWebView.setWebViewClient(webViewClient);
-        mWebView.setWebChromeClient(webChromeClient);
-        mWebView.loadDataWithBaseURL("", mData.getDescription(), "text/html", "UTF-8", "");
+        getWebView().loadDataWithBaseURL("", mData.getDescription(), "text/html", "UTF-8", "");
         mPageDataTitle.setText(mData.getTitle());
     }
-
-    private WebViewClient webViewClient = new WebViewClient(){
-        @Override
-        public boolean shouldOverrideUrlLoading(WebView view, String url) {
-            return super.shouldOverrideUrlLoading(view, url);
-        }
-
-        @Override
-        public void onPageFinished(WebView view, String url) {
-            super.onPageFinished(view, url);
-            mProgress.setVisibility(View.GONE);
-        }
-
-        @Override
-        public void onPageCommitVisible(WebView view, String url) {
-            super.onPageCommitVisible(view, url);
-        }
-
-        @Override
-        public void onPageStarted(WebView view, String url, Bitmap favicon) {
-            super.onPageStarted(view, url, favicon);
-            mProgress.setVisibility(View.VISIBLE);
-        }
-    };
-
-    private WebChromeClient webChromeClient = new WebChromeClient(){
-        @Override
-        public void onProgressChanged(WebView view, int newProgress) {
-            super.onProgressChanged(view, newProgress);
-            mProgress.setProgress(newProgress);
-        }
-    };
 
     public static Bundle makeArgument(FeedMessage data, @Nullable int textColor, @Nullable int bgColor){
         Bundle b = new Bundle();
