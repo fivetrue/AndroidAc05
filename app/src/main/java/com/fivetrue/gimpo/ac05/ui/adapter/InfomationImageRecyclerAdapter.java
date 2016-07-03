@@ -4,7 +4,11 @@ import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
+import android.widget.ImageView;
+import android.widget.ProgressBar;
 
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.ImageLoader;
 import com.android.volley.toolbox.NetworkImageView;
 import com.fivetrue.gimpo.ac05.R;
 import com.fivetrue.gimpo.ac05.image.ImageLoadManager;
@@ -20,13 +24,11 @@ public class InfomationImageRecyclerAdapter extends BaseRecyclerAdapter<String, 
     private static final String TAG = "InfomationImageRecyclerAdapter";
 
     public interface OnInfomationImageItemClickListener{
-        void onClick(View view, Bitmap bitmap);
+        void onClick(View view, String imageUrl, Bitmap bitmap);
     }
 
 
     private OnInfomationImageItemClickListener mOnClickInfomationClickListener = null;
-
-    private SimpleDateFormat mSdf = new SimpleDateFormat("yyyy-MM-dd HH:mm");
 
     public InfomationImageRecyclerAdapter(List<String> data, OnInfomationImageItemClickListener ll) {
         super(data, R.layout.item_infomation_image_list);
@@ -46,13 +48,27 @@ public class InfomationImageRecyclerAdapter extends BaseRecyclerAdapter<String, 
     public void onBindViewHolder(final InfomationDataHolder holder, int position) {
         final String data = getItem(position);
         if (data != null) {
-                holder.imageView.setImageUrl(data, ImageLoadManager.getImageLoader());
+            ImageLoadManager.getInstance().loadImageUrl(data, new ImageLoader.ImageListener() {
+                @Override
+                public void onResponse(ImageLoader.ImageContainer response, boolean isImmediate) {
+                    holder.progressBar.setVisibility(View.GONE);
+                    if(response != null && response.getBitmap() != null && !response.getBitmap().isRecycled()){
+                        holder.imageView.setImageBitmap(response.getBitmap());
+                    }
+                }
+
+                @Override
+                public void onErrorResponse(VolleyError error) {
+                    holder.progressBar.setVisibility(View.GONE);
+                    holder.imageView.setImageBitmap(null);
+                }
+            });
             holder.container.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     if (mOnClickInfomationClickListener != null) {
                         Bitmap bm = ((BitmapDrawable)holder.imageView.getDrawable()).getBitmap();
-                        mOnClickInfomationClickListener.onClick(v, bm);
+                        mOnClickInfomationClickListener.onClick(v, data, bm);
                     }
                 }
             });
@@ -62,12 +78,16 @@ public class InfomationImageRecyclerAdapter extends BaseRecyclerAdapter<String, 
     public static class InfomationDataHolder extends RecyclerView.ViewHolder{
 
         protected View container = null;
-        protected NetworkImageView imageView = null;
+        protected ImageView imageView = null;
+//        protected NetworkImageView imageView = null;
+        protected ProgressBar progressBar = null;
 
         public InfomationDataHolder(View itemView) {
             super(itemView);
             container = itemView.findViewById(R.id.infomation_data_view);
-            imageView = (NetworkImageView) itemView.findViewById(R.id.iv_item_infomation_image_list_image);
+            imageView = (ImageView) itemView.findViewById(R.id.iv_item_infomation_image_list_image);
+//            imageView = (NetworkImageView) itemView.findViewById(R.id.iv_item_infomation_image_list_image);
+            progressBar = (ProgressBar) itemView.findViewById(R.id.pb_item_infomation_image_list);
         }
     }
 }

@@ -11,17 +11,26 @@
         android:layout_marginRight="@dimen/page_item_margin_horizontal"
         android:layout_marginTop="@dimen/page_item_margin_vertical"
         android:layout_marginBottom="@dimen/page_item_margin_vertical"
+        android:minHeight="200dp"
         android:paddingBottom="@dimen/page_item_margin_vertical"
         android:stateListAnimator="@drawable/selector_common_list_item_animator"
         android:background="@drawable/selector_common_list_item_background">
-        <RelativeLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
-            <com.android.volley.toolbox.NetworkImageView
+        <ImageView
             android:id="@+id/iv_item_infomation_image_list_image"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:scaleType="fitXY"/>
-        </RelativeLayout>
+            android:scaleType="center"/>
+
+        <!--<com.android.volley.toolbox.NetworkImageView-->
+            <!--android:id="@+id/iv_item_infomation_image_list_image"-->
+            <!--android:layout_width="match_parent"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:scaleType="center"/>-->
+
+        <ProgressBar
+            android:id="@+id/pb_item_infomation_image_list"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"/>
     </android.support.v7.widget.CardView>
 </RelativeLayout>

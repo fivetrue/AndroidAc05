@@ -26,8 +26,8 @@ android {
         applicationId "com.fivetrue.gimpo.ac05"
         minSdkVersion 17
         targetSdkVersion 23
-        versionCode 1
-        versionName "1.0"
+        versionCode 2016070371
+        versionName "1.0.0"
     }
 
     signingConfigs{

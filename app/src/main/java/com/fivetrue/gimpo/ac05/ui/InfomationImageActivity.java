@@ -1,14 +1,20 @@
 package com.fivetrue.gimpo.ac05.ui;
 
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.widget.DrawerLayout;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.view.Gravity;
 import android.view.View;
 
 import com.fivetrue.gimpo.ac05.ApplicationEX;
+import com.fivetrue.gimpo.ac05.Constants;
 import com.fivetrue.gimpo.ac05.R;
 import com.fivetrue.gimpo.ac05.ui.adapter.InfomationImageRecyclerAdapter;
+import com.fivetrue.gimpo.ac05.ui.fragment.BaseFragment;
 import com.fivetrue.gimpo.ac05.ui.fragment.ImageDetailFragment;
 import com.fivetrue.gimpo.ac05.ui.fragment.WebViewFragment;
 import com.fivetrue.gimpo.ac05.vo.config.AppConfig;
@@ -37,17 +43,21 @@ public class InfomationImageActivity extends DrawerActivity{
         setContentView(R.layout.activity_infomation);
         initData();
         initView();
+        setData(mInfomationUrls);
     }
 
     private void initView(){
         mRecyclerView = (RecyclerView) findViewById(R.id.rv_infomations);
-
+        mRecyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
     }
 
     private void initData(){
         mAppConfig = ((ApplicationEX)getApplicationContext()).getAppConfig();
         if(mAppConfig != null){
-            mInfomationUrls = mAppConfig.getInfomationImageUrlList();
+            mInfomationUrls = new ArrayList<>();
+            for(String path : mAppConfig.getInfomationImageUrlList()){
+                mInfomationUrls.add(Constants.API_SERVER_HOST + path);
+            }
         }
     }
 
@@ -73,17 +83,31 @@ public class InfomationImageActivity extends DrawerActivity{
                 return;
             }
         }
+        if(getCurrentFragmentManager().getBackStackEntryCount() > 0 && getCurrentFragmentManager().getBackStackEntryCount() == 1){
+            getDrawerLayout().setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED, Gravity.LEFT);
+        }
         super.onBackPressed();
     }
 
     private InfomationImageRecyclerAdapter.OnInfomationImageItemClickListener onInfomationImageItemClickListener = new InfomationImageRecyclerAdapter.OnInfomationImageItemClickListener() {
         @Override
-        public void onClick(View view, Bitmap bitmap) {
+        public void onClick(View view, String imageUrl, Bitmap bitmap) {
             if(bitmap != null && !bitmap.isRecycled()){
-                Bundle b = new Bundle();
-                b.putParcelable(Bitmap.class.getName(), bitmap);
-                addFragment(ImageDetailFragment.class, b, getBaseLayoutContainer().getId(), R.anim.enter_transform, R.anim.exit_transform, true);
+                Intent intent = new Intent(InfomationImageActivity.this, ImageDetailActivity.class);
+                intent.putExtra("url", imageUrl);
+                startActivity(intent);
+                overridePendingTransition(R.anim.enter_transform, 0);
             }
         }
     };
+
+    @Override
+    public BaseFragment addFragment(Class<? extends BaseFragment> cls, Bundle arguments, int anchorLayout, int enterAnim, int exitAnim, boolean addBackstack) {
+        BaseFragment f = super.addFragment(cls, arguments, anchorLayout, enterAnim, exitAnim, addBackstack);
+        if(addBackstack){
+            getDrawerLayout().setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED, Gravity.LEFT);
+        }
+        return f;
+
+    }
 }
