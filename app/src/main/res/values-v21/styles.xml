@@ -26,8 +26,8 @@
     </style>
 
     <style name="InfomationActivityTheme" parent="AppTheme">
-        <item name="colorPrimary">@color/colorNegative</item>
-        <item name="colorPrimaryDark">@color/colorNegativeDark</item>
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimaryDark">@color/colorPrimary</item>
     </style>
 
     <style name="CafeActivityTheme" parent="AppTheme">

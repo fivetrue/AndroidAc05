@@ -86,7 +86,7 @@ public class DrawerLeftMenuFragment extends  BaseListFragment<LeftMenu> {
             if(getActivity() instanceof NoticeListActivity){
                 color = getActivity().getResources().getColor(R.color.colorPrimaryDark);
             }else if(getActivity() instanceof  InfomationImageActivity){
-                color = getActivity().getResources().getColor(R.color.colorNegativeDark);
+                color = getActivity().getResources().getColor(R.color.colorPrimary);
             }else if(getActivity() instanceof CafeActivity){
                 color = getActivity().getResources().getColor(R.color.colorCafe);
             }else if(getActivity() instanceof SettingActivity){
