@@ -1,6 +1,8 @@
 package com.fivetrue.gimpo.ac05.ui.fragment;
 
 import android.content.Context;
+import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
@@ -40,6 +42,7 @@ public class DrawerLeftMenuFragment extends  BaseListFragment<LeftMenu> {
 
     public static final String TAG = DrawerLeftMenuFragment.class.getSimpleName();
 
+    private ViewGroup mLayoutUserInfo = null;
     private TextView mName = null;
     private TextView mEmail = null;
     private TextView mDistrict = null;
@@ -78,6 +81,19 @@ public class DrawerLeftMenuFragment extends  BaseListFragment<LeftMenu> {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = super.onCreateView(inflater, container, savedInstanceState);
         setListData(mLeftMenu);
+        if(getActivity() != null && mLayoutUserInfo != null){
+            int color = getActivity().getResources().getColor(R.color.colorPrimaryDark);
+            if(getActivity() instanceof NoticeListActivity){
+                color = getActivity().getResources().getColor(R.color.colorPrimaryDark);
+            }else if(getActivity() instanceof  InfomationImageActivity){
+                color = getActivity().getResources().getColor(R.color.colorNegativeDark);
+            }else if(getActivity() instanceof CafeActivity){
+                color = getActivity().getResources().getColor(R.color.colorCafe);
+            }else if(getActivity() instanceof SettingActivity){
+                color = getActivity().getResources().getColor(R.color.colorPrimaryDark);
+            }
+            mLayoutUserInfo.setBackgroundColor(color);
+        }
         return view;
     }
 
@@ -85,19 +101,24 @@ public class DrawerLeftMenuFragment extends  BaseListFragment<LeftMenu> {
         mLeftMenu = new ArrayList<>();
         mLeftMenu.add(new LeftMenu(getString(R.string.main)
                 , R.drawable.ic_home_20dp
-                , MainActivity.class));
+                , MainActivity.class
+                , Intent.FLAG_ACTIVITY_CLEAR_TOP));
         mLeftMenu.add(new LeftMenu(getString(R.string.notice)
                 , R.drawable.ic_notification_20dp
-                , NoticeListActivity.class));
+                , NoticeListActivity.class
+                , Intent.FLAG_ACTIVITY_CLEAR_TOP));
         mLeftMenu.add(new LeftMenu(getString(R.string.infomation)
-                , R.drawable.ic_notification_20dp
-                , InfomationImageActivity.class));
+                , R.drawable.ic_info_20dp
+                , InfomationImageActivity.class
+                , Intent.FLAG_ACTIVITY_CLEAR_TOP));
         mLeftMenu.add(new LeftMenu(getString(R.string.cafe)
                 , R.drawable.ic_cafe_20dp
-                , CafeActivity.class));
+                , CafeActivity.class
+                , Intent.FLAG_ACTIVITY_CLEAR_TOP));
         mLeftMenu.add(new LeftMenu(getString(R.string.setting)
                 , R.drawable.ic_setting_20dp
-                , SettingActivity.class));
+                , SettingActivity.class
+                , Intent.FLAG_ACTIVITY_CLEAR_TOP));
 
         mConfigPref = new ConfigPreferenceManager(getActivity());
     }
@@ -127,7 +148,7 @@ public class DrawerLeftMenuFragment extends  BaseListFragment<LeftMenu> {
     protected void initListHeader(View view){
         UserInfo userInfo = mConfigPref.getUserInfo();
         if(view != null){
-
+            mLayoutUserInfo = (ViewGroup) view.findViewById(R.id.layout_left_menu_info);
             mName = (TextView) view.findViewById(R.id.tv_left_menu_header_name);
             mEmail = (TextView) view.findViewById(R.id.tv_left_menu_header_email);
             mProfileImage = (CircleImageView) view.findViewById(R.id.iv_left_menu_header);

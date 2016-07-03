@@ -95,7 +95,6 @@ public class BaseActivity extends FragmentActivity {
                     .getLaunchIntentForPackage( getBaseContext().getPackageName() );
             i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
             startActivity(i);
-//            System.exit(0);
         }
     }
 

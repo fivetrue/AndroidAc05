@@ -90,6 +90,11 @@ abstract public class BaseDataListFragment<T> extends ColorChooserFragment {
                 BaseDataListFragment.this.onRefresh();
             }
         });
+        mRefreshLayout.setColorSchemeResources(
+                R.color.colorPrimaryDark,
+                R.color.colorPrimaryDark,
+                R.color.colorPrimaryDark);
+
         mRecyclerView = (RecyclerView) view.findViewById(R.id.rv_fragment_list_page_data);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false));
         mRecyclerView.setNestedScrollingEnabled(mScrollEnable);

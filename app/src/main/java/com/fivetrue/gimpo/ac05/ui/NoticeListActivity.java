@@ -60,9 +60,8 @@ public class NoticeListActivity extends DrawerActivity{
 
         mRecylerView.setLayoutManager(new GridLayoutManager(this, 2, GridLayoutManager.VERTICAL, false));
         mEmptyText.setTextColor(getResources().getColor(R.color.colorAccent));
-        mEmptyText.setBackgroundColor(getResources().getColor(R.color.colorNegative));
 
-        mProgress.getIndeterminateDrawable().setColorFilter(getResources().getColor(R.color.colorNegative)
+        mProgress.getIndeterminateDrawable().setColorFilter(getResources().getColor(R.color.colorPrimaryDark)
                 , android.graphics.PorterDuff.Mode.MULTIPLY);
 
         getFtActionBar().setTitle(R.string.notice);

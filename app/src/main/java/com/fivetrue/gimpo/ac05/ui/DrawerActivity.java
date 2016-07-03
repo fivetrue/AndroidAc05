@@ -202,7 +202,12 @@ public class DrawerActivity extends BaseActivity implements DrawerLeftMenuFragme
     public void onClickMenu(LeftMenu menu) {
         if(menu != null && DrawerActivity.this.getClass() != menu.getActivity() ){
             Intent i = new Intent(DrawerActivity.this, menu.getActivity());
-            i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+            if(menu.getFlag() > 0){
+                i.setFlags(menu.getFlag());
+            }
+            if(menu.getActivity() == MainActivity.class){
+                finishAffinity();
+            }
             startActivity(i);
         }
         closeMenu();

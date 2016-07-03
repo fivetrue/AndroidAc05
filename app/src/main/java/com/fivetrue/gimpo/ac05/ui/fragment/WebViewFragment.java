@@ -1,6 +1,7 @@
 package com.fivetrue.gimpo.ac05.ui.fragment;
 
 import android.annotation.TargetApi;
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -154,19 +155,27 @@ public class WebViewFragment extends BaseFragment{
         return true;
     }
 
-    protected void onOpenFileChooserFromWeb(ValueCallback<Uri> uploadMsg, String acceptType, String capture){
+    protected void onOpenFileChooserFromWeb(ValueCallback<Uri> uploadMsg, String acceptType, String caputre){
         if(getActivity() != null){
             mFileCallback = uploadMsg;
             Intent i = new Intent(Intent.ACTION_GET_CONTENT);
             i.addCategory(Intent.CATEGORY_OPENABLE);
-            i.setType("image/*");
+            if(acceptType != null){
+                i.setType(acceptType);
+            }else{
+                i.setType("*/*");
+            }
             getActivity().startActivityForResult(Intent.createChooser(i, "Select File"), REQUEST_CODE_GET_FILE);
         }
     }
 
-    protected void onGetFile(Intent intent){
+    protected void onGetFile(int resultCode, Intent intent){
         if(intent != null && mFileCallback != null){
-            mFileCallback.onReceiveValue(intent.getData());
+            if(resultCode == Activity.RESULT_OK){
+                mFileCallback.onReceiveValue(intent.getData());
+            }else{
+                mFileCallback.onReceiveValue(null);
+            }
             mFileCallback = null;
         }
     }
@@ -187,9 +196,7 @@ public class WebViewFragment extends BaseFragment{
     public void onActivityResult(int requestCode, int resultCode, Intent intent) {
         switch (requestCode){
             case REQUEST_CODE_GET_FILE:
-                if(resultCode == getActivity().RESULT_OK){
-                    onGetFile(intent);
-                }
+                onGetFile(resultCode, intent);
                 break;
             case REQUEST_CODE_GET_FILE_OVER_L:
                 onGetFileOverL(resultCode, intent);
@@ -242,6 +249,10 @@ public class WebViewFragment extends BaseFragment{
 
         public void openFileChooser(ValueCallback<Uri> uploadMsg) {
             onOpenFileChooserFromWeb(uploadMsg, null, null);
+        }
+
+        public void openFileChooser(ValueCallback<Uri> uploadMsg, String acceptType) {
+            onOpenFileChooserFromWeb(uploadMsg, acceptType, null);
         }
 
         //For Android 4.1
