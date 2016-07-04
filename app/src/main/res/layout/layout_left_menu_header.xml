@@ -4,11 +4,10 @@
     android:layout_height="match_parent">
 
     <LinearLayout
-        android:id="@+id/layout_left_menu_info"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:padding="@dimen/common_horizontal_padding"
-        android:background="@color/colorPrimaryDark"
+        android:background="?attr/colorPrimaryDark"
         android:orientation="vertical">
 
         <RelativeLayout

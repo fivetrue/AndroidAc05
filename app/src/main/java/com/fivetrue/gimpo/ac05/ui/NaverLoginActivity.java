@@ -80,6 +80,7 @@ public class NaverLoginActivity extends BaseActivity implements WebViewFragment.
     private void showLoginWebView(){
         Bundle b = new Bundle();
         b.putString("url", API + mUid.toString());
+        b.putBoolean("hide", true);
         addFragment(WebViewFragment.class, b, false);
     }
 

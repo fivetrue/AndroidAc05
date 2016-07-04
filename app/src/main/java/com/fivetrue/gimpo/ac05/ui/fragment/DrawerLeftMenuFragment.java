@@ -42,7 +42,6 @@ public class DrawerLeftMenuFragment extends  BaseListFragment<LeftMenu> {
 
     public static final String TAG = DrawerLeftMenuFragment.class.getSimpleName();
 
-    private ViewGroup mLayoutUserInfo = null;
     private TextView mName = null;
     private TextView mEmail = null;
     private TextView mDistrict = null;
@@ -81,19 +80,6 @@ public class DrawerLeftMenuFragment extends  BaseListFragment<LeftMenu> {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = super.onCreateView(inflater, container, savedInstanceState);
         setListData(mLeftMenu);
-        if(getActivity() != null && mLayoutUserInfo != null){
-            int color = getActivity().getResources().getColor(R.color.colorPrimaryDark);
-            if(getActivity() instanceof NoticeListActivity){
-                color = getActivity().getResources().getColor(R.color.colorPrimaryDark);
-            }else if(getActivity() instanceof  InfomationImageActivity){
-                color = getActivity().getResources().getColor(R.color.colorPrimary);
-            }else if(getActivity() instanceof CafeActivity){
-                color = getActivity().getResources().getColor(R.color.colorCafe);
-            }else if(getActivity() instanceof SettingActivity){
-                color = getActivity().getResources().getColor(R.color.colorPrimaryDark);
-            }
-            mLayoutUserInfo.setBackgroundColor(color);
-        }
         return view;
     }
 
@@ -148,7 +134,6 @@ public class DrawerLeftMenuFragment extends  BaseListFragment<LeftMenu> {
     protected void initListHeader(View view){
         UserInfo userInfo = mConfigPref.getUserInfo();
         if(view != null){
-            mLayoutUserInfo = (ViewGroup) view.findViewById(R.id.layout_left_menu_info);
             mName = (TextView) view.findViewById(R.id.tv_left_menu_header_name);
             mEmail = (TextView) view.findViewById(R.id.tv_left_menu_header_email);
             mProfileImage = (CircleImageView) view.findViewById(R.id.iv_left_menu_header);
