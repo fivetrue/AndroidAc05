@@ -9,15 +9,20 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.Gravity;
 import android.view.View;
+import android.widget.ProgressBar;
 
+import com.android.volley.VolleyError;
 import com.fivetrue.gimpo.ac05.ApplicationEX;
 import com.fivetrue.gimpo.ac05.Constants;
 import com.fivetrue.gimpo.ac05.R;
+import com.fivetrue.gimpo.ac05.net.BaseApiResponse;
+import com.fivetrue.gimpo.ac05.net.NetworkManager;
+import com.fivetrue.gimpo.ac05.net.request.ImageInfoDataRequest;
 import com.fivetrue.gimpo.ac05.ui.adapter.InfomationImageRecyclerAdapter;
 import com.fivetrue.gimpo.ac05.ui.fragment.BaseFragment;
-import com.fivetrue.gimpo.ac05.ui.fragment.ImageDetailFragment;
 import com.fivetrue.gimpo.ac05.ui.fragment.WebViewFragment;
-import com.fivetrue.gimpo.ac05.vo.config.AppConfig;
+import com.fivetrue.gimpo.ac05.vo.data.ImageInfo;
+import com.google.gson.reflect.TypeToken;
 
 import java.util.ArrayList;
 
@@ -29,11 +34,15 @@ public class InfomationImageActivity extends DrawerActivity{
     private static final String TAG = "InfomationImageActivity";
 
     private RecyclerView mRecyclerView = null;
+    private ProgressBar mProgress = null;
 
     private InfomationImageRecyclerAdapter mAdapter = null;
 
-    private AppConfig mAppConfig = null;
     private ArrayList<String> mInfomationUrls = null;
+
+
+
+    private ImageInfoDataRequest mRequest = null;
 
 
 
@@ -43,25 +52,20 @@ public class InfomationImageActivity extends DrawerActivity{
         setContentView(R.layout.activity_infomation);
         initData();
         initView();
-        setData(mInfomationUrls);
+        NetworkManager.getInstance().request(mRequest);
     }
 
     private void initView(){
-        mRecyclerView = (RecyclerView) findViewById(R.id.rv_infomations);
+        mRecyclerView = (RecyclerView) findViewById(R.id.rv_infomation_image);
+        mProgress = (ProgressBar) findViewById(R.id.pb_infomation_image);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
     }
 
     private void initData(){
-        mAppConfig = ((ApplicationEX)getApplicationContext()).getAppConfig();
-        if(mAppConfig != null){
-            mInfomationUrls = new ArrayList<>();
-            for(String path : mAppConfig.getInfomationImageUrlList()){
-                mInfomationUrls.add(Constants.API_SERVER_HOST + path);
-            }
-        }
+        mRequest = new ImageInfoDataRequest(this, baseApiResponse);
     }
 
-    public void setData(ArrayList<String> datas){
+    public void setData(ArrayList<ImageInfo> datas){
         if(datas != null){
             if(mAdapter == null){
                 mAdapter = new InfomationImageRecyclerAdapter(datas, onInfomationImageItemClickListener);
@@ -91,14 +95,15 @@ public class InfomationImageActivity extends DrawerActivity{
 
     private InfomationImageRecyclerAdapter.OnInfomationImageItemClickListener onInfomationImageItemClickListener = new InfomationImageRecyclerAdapter.OnInfomationImageItemClickListener() {
         @Override
-        public void onClick(View view, String imageUrl, Bitmap bitmap) {
-            if(bitmap != null && !bitmap.isRecycled()){
+        public void onClick(View view, ImageInfo info, Bitmap bitmap) {
+            if(info != null && info.getImageUrl() != null){
                 Intent intent = new Intent(InfomationImageActivity.this, ImageDetailActivity.class);
-                intent.putExtra("url", imageUrl);
+                intent.putExtra("url", info.getImageUrl());
                 startActivity(intent);
                 overridePendingTransition(R.anim.enter_transform, 0);
             }
         }
+
     };
 
     @Override
@@ -108,6 +113,33 @@ public class InfomationImageActivity extends DrawerActivity{
             getDrawerLayout().setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED, Gravity.LEFT);
         }
         return f;
-
     }
+
+    private BaseApiResponse<ArrayList<ImageInfo>> baseApiResponse = new BaseApiResponse<>(new BaseApiResponse.OnResponseListener<ArrayList<ImageInfo>>() {
+
+        private int mRetry = 0;
+        @Override
+        public void onResponse(BaseApiResponse<ArrayList<ImageInfo>> response) {
+            mProgress.setVisibility(View.GONE);
+            if(response != null && response.getData() != null){
+                setData(response.getData());
+            }else{
+                if(mRetry < BaseApiResponse.RETRY_COUNT){
+                    mProgress.setVisibility(View.VISIBLE);
+                    NetworkManager.getInstance().request(mRequest);
+                    mRetry ++;
+                }
+            }
+        }
+
+        @Override
+        public void onError(VolleyError error) {
+            mProgress.setVisibility(View.GONE);
+            if(mRetry < BaseApiResponse.RETRY_COUNT){
+                mProgress.setVisibility(View.VISIBLE);
+                NetworkManager.getInstance().request(mRequest);
+                mRetry ++;
+            }
+        }
+    }, new TypeToken<ArrayList<ImageInfo>>(){}.getType());
 }
