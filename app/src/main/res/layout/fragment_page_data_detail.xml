@@ -23,7 +23,7 @@
         android:layout_height="wrap_content"
         android:layout_marginRight="@dimen/login_fragment_margin_bottom_20dp"
         android:layout_marginBottom="@dimen/login_fragment_margin_bottom_20dp"
-        android:src="@android:drawable/ic_menu_info_details"
+        android:src="@drawable/ic_document_25dp"
         android:layout_alignParentBottom="true"
         android:layout_alignParentRight="true"/>
 

@@ -14,4 +14,15 @@
         android:layout_height="4dp"
         style="?android:attr/android:progressBarStyleHorizontal"/>
 
+
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/fab_fragment_webview"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentBottom="true"
+        android:layout_margin="@dimen/common_horizontal_padding"
+        android:scaleType="centerInside"
+        android:src="@drawable/ic_share_25dp"/>
+
 </RelativeLayout>

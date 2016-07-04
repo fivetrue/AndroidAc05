@@ -4,11 +4,13 @@ import android.annotation.TargetApi;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.ColorStateList;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.widget.ContentLoadingProgressBar;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -43,6 +45,8 @@ public class WebViewFragment extends BaseFragment{
 
     private ContentLoadingProgressBar mProgress = null;
     private WebView mWebView = null;
+    private FloatingActionButton mFabShare = null;
+
     private OnShouldOverrideUrlLoadingListener mOnShouldOverrideUrlLoadingListener = null;
 
     private String mUrl = null;
@@ -82,10 +86,22 @@ public class WebViewFragment extends BaseFragment{
         View view = inflater.inflate(R.layout.fragment_webview, null);
         mProgress = (ContentLoadingProgressBar) view.findViewById(R.id.pb_fragment_webview);
         mWebView = (WebView) view.findViewById(R.id.webview_fragment_webview);
+        mFabShare = (FloatingActionButton) view.findViewById(R.id.fab_fragment_webview);
+        mFabShare.setBackgroundTintList(getResources().getColorStateList(R.color.colorPrimary));
         mWebView.getSettings().setJavaScriptEnabled(true);
         mWebView.getSettings().setPluginState(WebSettings.PluginState.ON);
         mWebView.getSettings().setMediaPlaybackRequiresUserGesture(false);
         mProgress.setMax(100);
+
+        mFabShare.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent i = new Intent(android.content.Intent.ACTION_SEND);
+                i.setType("text/html");
+                i.putExtra(android.content.Intent.EXTRA_TEXT, mUrl);
+                startActivity(i);
+            }
+        });
         return view;
     }
 
@@ -190,6 +206,10 @@ public class WebViewFragment extends BaseFragment{
 
     public WebView getWebView(){
         return mWebView;
+    }
+
+    public FloatingActionButton getShareButton(){
+        return mFabShare;
     }
 
     @Override
