@@ -4,7 +4,6 @@ import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
-import android.support.v4.app.FragmentManager;
 import android.support.v4.view.ViewPager;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
@@ -21,6 +20,7 @@ import com.fivetrue.gimpo.ac05.analytics.UserProperty;
 import com.fivetrue.gimpo.ac05.net.BaseApiResponse;
 import com.fivetrue.gimpo.ac05.net.NetworkManager;
 import com.fivetrue.gimpo.ac05.net.request.MainPageDataRequest;
+import com.fivetrue.gimpo.ac05.preferences.ConfigPreferenceManager;
 import com.fivetrue.gimpo.ac05.vo.IPageData;
 import com.fivetrue.gimpo.ac05.vo.rss.FeedMessage;
 import com.fivetrue.gimpo.ac05.vo.notification.NotificationData;
@@ -57,7 +57,7 @@ public class MainActivity extends DrawerActivity implements BaseDataListFragment
 
     private boolean mDoubleClickBack = false;
 
-    private int mScrollY = 0;
+    private ConfigPreferenceManager mConfigPref = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -86,6 +86,7 @@ public class MainActivity extends DrawerActivity implements BaseDataListFragment
 
     private void initData(){
         mUserInfo = getIntent().getParcelableExtra(UserInfo.class.getName());
+        mConfigPref = new ConfigPreferenceManager(this);
         mPageDataReqeust = new MainPageDataRequest(this, basePageDataApiResponse);
     }
 
@@ -168,12 +169,15 @@ public class MainActivity extends DrawerActivity implements BaseDataListFragment
 
     @Override
     public void onClickPageData(String title, IPageData data, Integer textColor, Integer bgColor) {
+        if(mUserInfo == null){
+            mUserInfo = mConfigPref.getUserInfo();
+        }
         if(data != null){
             if(data instanceof FeedMessage){
                 showPageDetailFragment(title, (FeedMessage) data, textColor, bgColor);
             }else{
                 String url = null;
-                if(data instanceof NotificationData){
+                if(data instanceof NotificationData && mUserInfo != null){
                     url = String.format(Constants.API_CHECK_REDIRECT, ((NotificationData)data).getUri()
                             , ((NotificationData)data).getMulticast_id()
                             , mUserInfo.getEmail());

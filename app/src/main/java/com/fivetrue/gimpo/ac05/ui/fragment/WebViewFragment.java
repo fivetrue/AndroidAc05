@@ -87,7 +87,6 @@ public class WebViewFragment extends BaseFragment{
         mProgress = (ContentLoadingProgressBar) view.findViewById(R.id.pb_fragment_webview);
         mWebView = (WebView) view.findViewById(R.id.webview_fragment_webview);
         mFabShare = (FloatingActionButton) view.findViewById(R.id.fab_fragment_webview);
-        mFabShare.setBackgroundTintList(getResources().getColorStateList(R.color.colorPrimary));
         mFabShare.setVisibility(getArguments().getBoolean("hide", false) ? View.GONE : View.VISIBLE);
         mWebView.getSettings().setJavaScriptEnabled(true);
         mWebView.getSettings().setPluginState(WebSettings.PluginState.ON);
@@ -140,6 +139,7 @@ public class WebViewFragment extends BaseFragment{
 
     protected void onWebPageFinished(WebView view, String url){
         mProgress.setVisibility(View.GONE);
+        mUrl = url;
     }
 
     protected void onWebPageCommitVisible(WebView view, String url){

@@ -16,7 +16,7 @@ import com.fivetrue.gimpo.ac05.view.DetailPhotoView;
  */
 public class ImageDetailActivity extends BaseActivity{
 
-    private static final String TAG = "InfomationImageActivity";
+    private static final String TAG = "ImageDetailActivity";
 
     private DetailPhotoView mImageView = null;
     private ProgressBar mProgress = null;

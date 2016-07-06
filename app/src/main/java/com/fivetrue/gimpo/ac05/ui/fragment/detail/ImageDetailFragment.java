@@ -1,4 +1,4 @@
-package com.fivetrue.gimpo.ac05.ui.fragment;
+package com.fivetrue.gimpo.ac05.ui.fragment.detail;
 
 import android.graphics.Bitmap;
 import android.os.Bundle;
@@ -8,6 +8,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.fivetrue.gimpo.ac05.R;
+import com.fivetrue.gimpo.ac05.ui.fragment.BaseFragment;
 import com.fivetrue.gimpo.ac05.view.DetailPhotoView;
 
 

@@ -2,7 +2,6 @@ package com.fivetrue.gimpo.ac05.ui.fragment;
 
 import android.content.Context;
 import android.content.Intent;
-import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
@@ -18,7 +17,7 @@ import com.fivetrue.gimpo.ac05.analytics.Event;
 import com.fivetrue.gimpo.ac05.analytics.GoogleAnalytics;
 import com.fivetrue.gimpo.ac05.preferences.ConfigPreferenceManager;
 import com.fivetrue.gimpo.ac05.ui.CafeActivity;
-import com.fivetrue.gimpo.ac05.ui.InfomationImageActivity;
+import com.fivetrue.gimpo.ac05.ui.ImageInfomationActivity;
 import com.fivetrue.gimpo.ac05.ui.MainActivity;
 import com.fivetrue.gimpo.ac05.ui.NoticeListActivity;
 import com.fivetrue.gimpo.ac05.ui.SettingActivity;
@@ -95,7 +94,7 @@ public class DrawerLeftMenuFragment extends  BaseListFragment<LeftMenu> {
                 , Intent.FLAG_ACTIVITY_CLEAR_TOP));
         mLeftMenu.add(new LeftMenu(getString(R.string.infomation)
                 , R.drawable.ic_info_20dp
-                , InfomationImageActivity.class
+                , ImageInfomationActivity.class
                 , Intent.FLAG_ACTIVITY_CLEAR_TOP));
         mLeftMenu.add(new LeftMenu(getString(R.string.cafe)
                 , R.drawable.ic_cafe_20dp

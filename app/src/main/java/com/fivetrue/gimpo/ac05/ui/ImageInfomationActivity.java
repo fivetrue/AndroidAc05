@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -12,16 +13,18 @@ import android.view.View;
 import android.widget.ProgressBar;
 
 import com.android.volley.VolleyError;
-import com.fivetrue.gimpo.ac05.ApplicationEX;
-import com.fivetrue.gimpo.ac05.Constants;
 import com.fivetrue.gimpo.ac05.R;
 import com.fivetrue.gimpo.ac05.net.BaseApiResponse;
 import com.fivetrue.gimpo.ac05.net.NetworkManager;
 import com.fivetrue.gimpo.ac05.net.request.ImageInfoDataRequest;
 import com.fivetrue.gimpo.ac05.ui.adapter.InfomationImageRecyclerAdapter;
+import com.fivetrue.gimpo.ac05.ui.adapter.pager.ImageInfoFragmentViewPagerAdapter;
 import com.fivetrue.gimpo.ac05.ui.fragment.BaseFragment;
+import com.fivetrue.gimpo.ac05.ui.fragment.ImageInfomationFragment;
 import com.fivetrue.gimpo.ac05.ui.fragment.WebViewFragment;
 import com.fivetrue.gimpo.ac05.vo.data.ImageInfo;
+import com.fivetrue.gimpo.ac05.vo.data.ImageInfoEntry;
+import com.fivetrue.gimpo.ac05.widget.PagerSlidingTabStrip;
 import com.google.gson.reflect.TypeToken;
 
 import java.util.ArrayList;
@@ -29,36 +32,31 @@ import java.util.ArrayList;
 /**
  * Created by kwonojin on 16. 6. 7..
  */
-public class InfomationImageActivity extends DrawerActivity{
+public class ImageInfomationActivity extends DrawerActivity implements ImageInfomationFragment.OnChooseImageInfomationListener{
 
-    private static final String TAG = "InfomationImageActivity";
+    private static final String TAG = "ImageInfomationActivity";
 
-    private RecyclerView mRecyclerView = null;
+    private PagerSlidingTabStrip mPageTab = null;
+    private ViewPager mViewPager = null;
     private ProgressBar mProgress = null;
 
-    private InfomationImageRecyclerAdapter mAdapter = null;
-
-    private ArrayList<String> mInfomationUrls = null;
-
-
+    private ImageInfoFragmentViewPagerAdapter mAdapter = null;
 
     private ImageInfoDataRequest mRequest = null;
-
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_infomation);
+        setContentView(R.layout.activity_image_infomation);
         initData();
         initView();
         NetworkManager.getInstance().request(mRequest);
     }
 
     private void initView(){
-        mRecyclerView = (RecyclerView) findViewById(R.id.rv_infomation_image);
+        mPageTab = (PagerSlidingTabStrip) findViewById(R.id.tab_image_infomation_strip);
+        mViewPager = (ViewPager) findViewById(R.id.vp_image_infomation);
         mProgress = (ProgressBar) findViewById(R.id.pb_infomation_image);
-        mRecyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
     }
 
     private void initData(){
@@ -66,12 +64,38 @@ public class InfomationImageActivity extends DrawerActivity{
     }
 
     public void setData(ArrayList<ImageInfo> datas){
-        if(datas != null){
-            if(mAdapter == null){
-                mAdapter = new InfomationImageRecyclerAdapter(datas, onInfomationImageItemClickListener);
-                mRecyclerView.setAdapter(mAdapter);
+        if(datas != null && datas.size() > 0){
+            ArrayList<ImageInfoEntry> entries = new ArrayList<>();
+            for(ImageInfo info : datas){
+                if(entries.size() > 0) {
+                    int entryIndex = entries.size() - 1;
+                    if(entries.get(entryIndex).getTitle().equals(info.getImageName())){
+                        entries.get(entryIndex).getImageInfos().add(info);
+                    }else{
+                        ImageInfoEntry entry = new ImageInfoEntry();
+                        entry.setTitle(info.getImageName());
+                        entry.getImageInfos().add(info);
+                        entries.add(entry);
+                    }
+                }else{
+                    ImageInfoEntry entry = new ImageInfoEntry();
+                    entry.setTitle(info.getImageName());
+                    entry.getImageInfos().add(info);
+                    entries.add(entry);
+                }
+
+            }
+
+            if(entries.size() > 0){
+                if(mAdapter == null){
+                    mAdapter = new ImageInfoFragmentViewPagerAdapter(getCurrentFragmentManager(), entries);
+                    mViewPager.setAdapter(mAdapter);
+                    mPageTab.setViewPager(mViewPager);
+                }else{
+                    mAdapter.setData(entries);
+                }
             }else{
-                mAdapter.setData(datas);
+
             }
         }else{
             //TODO : Update data is empty
@@ -92,19 +116,6 @@ public class InfomationImageActivity extends DrawerActivity{
         }
         super.onBackPressed();
     }
-
-    private InfomationImageRecyclerAdapter.OnInfomationImageItemClickListener onInfomationImageItemClickListener = new InfomationImageRecyclerAdapter.OnInfomationImageItemClickListener() {
-        @Override
-        public void onClick(View view, ImageInfo info, Bitmap bitmap) {
-            if(info != null && info.getImageUrl() != null){
-                Intent intent = new Intent(InfomationImageActivity.this, ImageDetailActivity.class);
-                intent.putExtra("url", info.getImageUrl());
-                startActivity(intent);
-                overridePendingTransition(R.anim.enter_transform, 0);
-            }
-        }
-
-    };
 
     @Override
     public BaseFragment addFragment(Class<? extends BaseFragment> cls, Bundle arguments, int anchorLayout, int enterAnim, int exitAnim, boolean addBackstack) {
@@ -142,4 +153,14 @@ public class InfomationImageActivity extends DrawerActivity{
             }
         }
     }, new TypeToken<ArrayList<ImageInfo>>(){}.getType());
+
+    @Override
+    public void onSelected(ImageInfo info, Bitmap bm) {
+        if(info != null && info.getImageUrl() != null){
+            Intent intent = new Intent(ImageInfomationActivity.this, ImageDetailActivity.class);
+            intent.putExtra("url", info.getImageUrl());
+            startActivity(intent);
+            overridePendingTransition(R.anim.enter_transform, 0);
+        }
+    }
 }

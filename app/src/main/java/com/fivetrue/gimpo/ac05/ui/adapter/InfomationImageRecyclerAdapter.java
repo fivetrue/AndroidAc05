@@ -48,12 +48,6 @@ public class InfomationImageRecyclerAdapter extends BaseRecyclerAdapter<ImageInf
     public void onBindViewHolder(final InfomationDataHolder holder, int position) {
         final ImageInfo data = getItem(position);
         if (data != null) {
-            if(position == 0 || (!data.getImageType().equals(getItem(position - 1).getImageType()))){
-                holder.imageTitle.setVisibility(View.VISIBLE);
-                holder.imageTitle.setText(data.getImageName());
-            }else{
-                holder.imageTitle.setVisibility(View.GONE);
-            }
             ImageLoadManager.getInstance().loadImageUrl(data.getImageUrl(), new ImageLoader.ImageListener() {
                 @Override
                 public void onResponse(ImageLoader.ImageContainer response, boolean isImmediate) {
@@ -85,14 +79,14 @@ public class InfomationImageRecyclerAdapter extends BaseRecyclerAdapter<ImageInf
 
         protected View container = null;
         protected ImageView imageView = null;
-        protected TextView imageTitle = null;
+//        protected TextView imageTitle = null;
 //        protected NetworkImageView imageView = null;
         protected ProgressBar progressBar = null;
 
         public InfomationDataHolder(View itemView) {
             super(itemView);
             container = itemView.findViewById(R.id.card_item_infomation_image_list);
-            imageTitle = (TextView) itemView.findViewById(R.id.tv_item_infomation_image_list_title);
+//            imageTitle = (TextView) itemView.findViewById(R.id.tv_item_infomation_image_list_title);
             imageView = (ImageView) itemView.findViewById(R.id.iv_item_infomation_image_list_image);
 //            imageView = (NetworkImageView) itemView.findViewById(R.id.iv_item_infomation_image_list_image);
             progressBar = (ProgressBar) itemView.findViewById(R.id.pb_item_infomation_image_list);

@@ -23,12 +23,12 @@
     </style>
 
     <style name="InfomationActivityTheme" parent="AppTheme">
-        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimary">#97c4ff</item>
         <item name="colorPrimaryDark">@color/colorPrimary</item>
     </style>
 
     <style name="CafeActivityTheme" parent="AppTheme">
-        <item name="colorPrimary">@color/colorCafe</item>
+        <item name="colorPrimary">#FF5e5989</item>
         <item name="colorPrimaryDark">@color/colorCafe</item>
     </style>
 </resources>

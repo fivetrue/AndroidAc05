@@ -10,7 +10,7 @@ public class ImageInfo implements Parcelable{
 	private String imageName = null;
 	private String description = null;
 	private String imageType = null;
-	private int index = 0;
+	private int number = 0;
 
 	public ImageInfo(){
 
@@ -28,7 +28,7 @@ public class ImageInfo implements Parcelable{
 		imageName = in.readString();
 		description = in.readString();
 		imageType = in.readString();
-		index = in.readInt();
+		number = in.readInt();
 	}
 
 	public static final Creator<ImageInfo> CREATOR = new Creator<ImageInfo>() {
@@ -70,17 +70,17 @@ public class ImageInfo implements Parcelable{
 	}
 	
 	public int getIndex() {
-		return index;
+		return number;
 	}
 
 	public void setIndex(int index) {
-		this.index = index;
+		this.number = index;
 	}
 
 	@Override
 	public String toString() {
 		return "ImageInfo [imageUrl=" + imageUrl + ", imageName=" + imageName + ", description=" + description
-				+ ", imageType=" + imageType + ", index=" + index + "]";
+				+ ", imageType=" + imageType + ", index=" + number + "]";
 	}
 
 	@Override
@@ -94,6 +94,6 @@ public class ImageInfo implements Parcelable{
 		dest.writeString(imageName);
 		dest.writeString(description);
 		dest.writeString(imageType);
-		dest.writeInt(index);
+		dest.writeInt(number);
 	}
 }

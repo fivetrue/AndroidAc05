@@ -20,10 +20,10 @@
         android:id="@+id/tab_main_pager_strip"
         android:layout_width="match_parent"
         android:layout_height="40dp"
-        v:indicatorColor="@color/white"
+        v:indicatorColor="?attr/colorAccent"
         v:indicatorHeight="5dp"
-        v:tabsTextColor="@color/colorPrimary"
-        v:tabsBackgroundColor="@color/colorPrimaryDark"/>
+        v:tabsTextColor="?attr/colorPrimary"
+        v:tabsBackgroundColor="?attr/colorPrimaryDark"/>
 
     <android.support.v4.view.ViewPager
         android:id="@+id/vp_main_pager"
