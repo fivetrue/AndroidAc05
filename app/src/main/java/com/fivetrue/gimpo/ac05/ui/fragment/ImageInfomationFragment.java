@@ -11,13 +11,11 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.fivetrue.gimpo.ac05.R;
-import com.fivetrue.gimpo.ac05.ui.adapter.InfomationImageRecyclerAdapter;
+import com.fivetrue.gimpo.ac05.ui.adapter.ImageInfomationRecyclerAdapter;
 import com.fivetrue.gimpo.ac05.utils.Log;
 import com.fivetrue.gimpo.ac05.vo.data.ImageInfo;
 import com.fivetrue.gimpo.ac05.vo.data.ImageInfoEntry;
 import com.fivetrue.gimpo.ac05.widget.PagerSlidingTabStrip;
-
-import java.util.ArrayList;
 
 /**
  * Created by kwonojin on 16. 7. 6..
@@ -35,7 +33,7 @@ public class ImageInfomationFragment extends BaseFragment implements PagerSlidin
     }
 
     private RecyclerView mRecyclerView = null;
-    private InfomationImageRecyclerAdapter mAdapter = null;
+    private ImageInfomationRecyclerAdapter mAdapter = null;
     private ImageInfoEntry mEntry = null;
 
     private OnChooseImageInfomationListener mOnChooseImageInfomationListener = null;
@@ -78,7 +76,7 @@ public class ImageInfomationFragment extends BaseFragment implements PagerSlidin
         if(entry != null){
             if(entry.getImageInfos() != null && entry.getImageInfos().size() > 0) {
                 if (mAdapter == null) {
-                    mAdapter = new InfomationImageRecyclerAdapter(entry.getImageInfos(), onInfomationImageItemClickListener);
+                    mAdapter = new ImageInfomationRecyclerAdapter(entry.getImageInfos(), onInfomationImageItemClickListener);
                     mRecyclerView.setAdapter(mAdapter);
                 } else {
                     mAdapter.setData(entry.getImageInfos());
@@ -111,7 +109,7 @@ public class ImageInfomationFragment extends BaseFragment implements PagerSlidin
         return false;
     }
 
-    private InfomationImageRecyclerAdapter.OnInfomationImageItemClickListener onInfomationImageItemClickListener = new InfomationImageRecyclerAdapter.OnInfomationImageItemClickListener() {
+    private ImageInfomationRecyclerAdapter.OnInfomationImageItemClickListener onInfomationImageItemClickListener = new ImageInfomationRecyclerAdapter.OnInfomationImageItemClickListener() {
         @Override
         public void onClick(View view, ImageInfo info, Bitmap bitmap) {
             Log.i(TAG, "onClick: " + info.toString());

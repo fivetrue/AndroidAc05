@@ -100,12 +100,12 @@ public class MainActivity extends DrawerActivity implements BaseDataListFragment
 
     private void checkUserInfo(){
         if(mUserInfo != null){
-            if(TextUtils.isEmpty(mUserInfo.getApartDong())){
+            if(mUserInfo.getDistrict() <= 0){
                 Intent intent = new Intent(this, UserInfoInputActivity.class);
                 startActivity(intent);
                 overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
             }else{
-                GoogleAnalytics.getInstance().setUserProperties(UserProperty.makeProperty(UserProperty.DISTRICT, mUserInfo.getApartDong()));
+                GoogleAnalytics.getInstance().setUserProperties(UserProperty.makeProperty(UserProperty.DISTRICT, mUserInfo.getDistrict() + ""));
             }
         }
     }

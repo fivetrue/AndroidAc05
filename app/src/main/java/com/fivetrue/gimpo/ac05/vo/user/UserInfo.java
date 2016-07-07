@@ -24,7 +24,7 @@ public class UserInfo implements Parcelable{
     private String gcmId = null;
     private String device = null;
 
-    private String apartDong = "";
+    private int district = 0;
 
     public UserInfo(){
 
@@ -134,12 +134,12 @@ public class UserInfo implements Parcelable{
         this.device = device;
     }
 
-    public String getApartDong() {
-        return apartDong;
+    public int getDistrict() {
+        return district;
     }
 
-    public void setApartDong(String apartDong) {
-        this.apartDong = apartDong;
+    public void setDistrict(int district) {
+        this.district = district;
     }
 
     @Override
@@ -158,7 +158,7 @@ public class UserInfo implements Parcelable{
                 ", birthday='" + birthday + '\'' +
                 ", gcmId='" + gcmId + '\'' +
                 ", device='" + device + '\'' +
-                ", apartDong='" + apartDong + '\'' +
+                ", district=" + district +
                 '}';
     }
 
@@ -175,7 +175,7 @@ public class UserInfo implements Parcelable{
         birthday = p.readString();
         gcmId = p.readString();
         device = p.readString();
-        apartDong = p.readString();
+        district = p.readInt();
     }
 
     @Override
@@ -197,7 +197,7 @@ public class UserInfo implements Parcelable{
         dest.writeString(birthday);
         dest.writeString(gcmId);
         dest.writeString(device);
-        dest.writeString(apartDong);
+        dest.writeInt(district);
     }
 
     public static final Creator<UserInfo> CREATOR = new Creator<UserInfo>() {

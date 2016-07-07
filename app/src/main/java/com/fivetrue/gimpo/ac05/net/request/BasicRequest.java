@@ -43,6 +43,8 @@ public abstract class BasicRequest extends BaseApiRequest {
                     if(value != null && value instanceof String){
                         Log.i(TAG, "setObject: key / value = " + key + " / " + value.toString());
                         getParams().put(key, (String) value);
+                    }else{
+                        getParams().put(key, String.valueOf(value));
                     }
                 } catch (IllegalAccessException e) {
                     e.printStackTrace();

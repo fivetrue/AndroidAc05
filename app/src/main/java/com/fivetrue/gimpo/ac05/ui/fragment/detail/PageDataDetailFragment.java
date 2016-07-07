@@ -19,6 +19,7 @@ import com.fivetrue.gimpo.ac05.analytics.Event;
 import com.fivetrue.gimpo.ac05.analytics.GoogleAnalytics;
 import com.fivetrue.gimpo.ac05.ui.fragment.WebViewFragment;
 import com.fivetrue.gimpo.ac05.vo.rss.FeedMessage;
+import com.fivetrue.gimpo.ac05.ui.fragment.BaseFragment;
 
 /**
  * Created by kwonojin on 16. 6. 16..
@@ -65,11 +66,6 @@ public class PageDataDetailFragment extends WebViewFragment{
         mDetailButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-//                if(mData != null && getActivity() != null){
-//                    Uri uri = Uri.parse(mData.getLink());
-//                    Intent intent = new Intent(Intent.ACTION_VIEW, uri);
-//                    startActivity(intent);
-//                }
                 getWebView().loadUrl(mData.getLink());
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                     Animator anim = ViewAnimationUtils.createCircularReveal(mDetailButton

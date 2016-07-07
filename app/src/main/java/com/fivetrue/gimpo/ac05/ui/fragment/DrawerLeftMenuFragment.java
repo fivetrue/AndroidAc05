@@ -147,8 +147,12 @@ public class DrawerLeftMenuFragment extends  BaseListFragment<LeftMenu> {
 
                 }
             });
-            mDistrict.setText(userInfo.getApartDong() + " 동");
-            mDistrict.setVisibility(TextUtils.isEmpty(userInfo.getApartDong()) ? View.GONE : View.VISIBLE);
+            if(userInfo.getDistrict() > 0){
+                mDistrict.setText(userInfo.getDistrict() + "");
+                mDistrict.setVisibility(View.VISIBLE);
+            }else{
+                mDistrict.setVisibility(View.GONE);
+            }
             view.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {

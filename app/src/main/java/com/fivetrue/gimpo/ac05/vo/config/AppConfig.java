@@ -9,7 +9,7 @@ public class AppConfig {
 
     private String appId = null;
     private String appSercureKey = null;
-    private String appLatestVersion = null;
+    private int appVersionCode = 0;
     private String appVersionName = null;
     private String appMarketUrl = null;
     private String senderId = null;
@@ -23,10 +23,7 @@ public class AppConfig {
 
     private String myInfoUrl = null;
 
-    private ArrayList<String> districtList = null;
-
-    private ArrayList<String> infomationImageUrlList = null;
-
+    private int forceUpdate = 0;
 
     public String getAppId() {
         return appId;
@@ -44,12 +41,12 @@ public class AppConfig {
         this.appSercureKey = appSercureKey;
     }
 
-    public String getAppLatestVersion() {
-        return appLatestVersion;
+    public int getAppVersionCode() {
+        return appVersionCode;
     }
 
-    public void setAppLatestVersion(String appLatestVersion) {
-        this.appLatestVersion = appLatestVersion;
+    public void setAppVersionCode(int appVersionCode) {
+        this.appVersionCode = appVersionCode;
     }
 
     public String getAppVersionName() {
@@ -108,14 +105,6 @@ public class AppConfig {
         this.clubUrl = clubUrl;
     }
 
-    public String getMyInfoUrl() {
-        return myInfoUrl;
-    }
-
-    public void setMyInfoUrl(String myInfoUrl) {
-        this.myInfoUrl = myInfoUrl;
-    }
-
     public String getClubMyInfo() {
         return clubMyInfo;
     }
@@ -124,20 +113,20 @@ public class AppConfig {
         this.clubMyInfo = clubMyInfo;
     }
 
-    public ArrayList<String> getDistrictList() {
-        return districtList;
+    public String getMyInfoUrl() {
+        return myInfoUrl;
     }
 
-    public void setDistrictList(ArrayList<String> districtList) {
-        this.districtList = districtList;
+    public void setMyInfoUrl(String myInfoUrl) {
+        this.myInfoUrl = myInfoUrl;
     }
 
-    public ArrayList<String> getInfomationImageUrlList() {
-        return infomationImageUrlList;
+    public int getForceUpdate() {
+        return forceUpdate;
     }
 
-    public void setInfomationImageUrlList(ArrayList<String> infomationImageUrlList) {
-        this.infomationImageUrlList = infomationImageUrlList;
+    public void setForceUpdate(int forceUpdate) {
+        this.forceUpdate = forceUpdate;
     }
 
     @Override
@@ -145,7 +134,7 @@ public class AppConfig {
         return "AppConfig{" +
                 "appId='" + appId + '\'' +
                 ", appSercureKey='" + appSercureKey + '\'' +
-                ", appLatestVersion='" + appLatestVersion + '\'' +
+                ", appVersionCode=" + appVersionCode +
                 ", appVersionName='" + appVersionName + '\'' +
                 ", appMarketUrl='" + appMarketUrl + '\'' +
                 ", senderId='" + senderId + '\'' +
@@ -155,8 +144,7 @@ public class AppConfig {
                 ", clubUrl='" + clubUrl + '\'' +
                 ", clubMyInfo='" + clubMyInfo + '\'' +
                 ", myInfoUrl='" + myInfoUrl + '\'' +
-                ", districtList=" + districtList +
-                ", infomationImageUrlList=" + infomationImageUrlList +
+                ", forceUpdate=" + forceUpdate +
                 '}';
     }
 }

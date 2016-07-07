@@ -1,5 +1,7 @@
 package com.fivetrue.gimpo.ac05.ui;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Build;
@@ -22,19 +24,23 @@ import com.fivetrue.gimpo.ac05.manager.NaverApiManager;
 import com.fivetrue.gimpo.ac05.net.BaseApiResponse;
 import com.fivetrue.gimpo.ac05.net.NetworkManager;
 import com.fivetrue.gimpo.ac05.net.request.ConfigRequest;
+import com.fivetrue.gimpo.ac05.net.request.DistrictDataReqeust;
 import com.fivetrue.gimpo.ac05.net.request.RegisterUserRequest;
 import com.fivetrue.gimpo.ac05.parser.NaverUserInfoParser;
 import com.fivetrue.gimpo.ac05.preferences.ConfigPreferenceManager;
 import com.fivetrue.gimpo.ac05.service.notification.NotificationHelper;
+import com.fivetrue.gimpo.ac05.utils.AppUtils;
 import com.fivetrue.gimpo.ac05.utils.Log;
 import com.fivetrue.gimpo.ac05.view.CircleImageView;
 import com.fivetrue.gimpo.ac05.vo.config.AppConfig;
 import com.fivetrue.gimpo.ac05.vo.config.Token;
+import com.fivetrue.gimpo.ac05.vo.user.District;
 import com.fivetrue.gimpo.ac05.vo.user.UserInfo;
 import com.google.android.gms.gcm.GoogleCloudMessaging;
 import com.google.gson.reflect.TypeToken;
 
 import java.io.IOException;
+import java.util.ArrayList;
 
 /**
  * 1. get Application config from server
@@ -52,23 +58,25 @@ public class SplashActivity extends BaseActivity {
 
     private static final int RETRY_COUNT = 3;
 
+    private TextView mLoadingMessage = null;
+
+    private ProgressBar mProgress = null;
+    private LinearLayout mUserLayout = null;
+
+    private CircleImageView mUserImage = null;
+    private TextView mUserNickname = null;
+
     private ConfigRequest mConfigReqeust = null;
     private RegisterUserRequest mRegisterUserRequest = null;
     private ConfigPreferenceManager mConfigPref = null;
-
-    private TextView mLoadingMessage = null;
-    private ProgressBar mProgress = null;
-
-    private LinearLayout mUserLayout = null;
-    private CircleImageView mUserImage = null;
-    private TextView mUserNickname = null;
+    private DistrictDataReqeust mDistrictDataRequest = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_splash);
+        initData();
         initView();
-        initModels();
         getApplicationConfig();
     }
 
@@ -85,10 +93,11 @@ public class SplashActivity extends BaseActivity {
                 , android.graphics.PorterDuff.Mode.MULTIPLY);
     }
 
-    private void initModels(){
+    private void initData(){
         mConfigPref = new ConfigPreferenceManager(this);
         mConfigReqeust = new ConfigRequest(this, onConfigResponseListener);
         mRegisterUserRequest = new RegisterUserRequest(this, onRegisterUserInfoResponse);
+        mDistrictDataRequest = new DistrictDataReqeust(this, districtApiResponse);
     }
 
     /**
@@ -108,7 +117,6 @@ public class SplashActivity extends BaseActivity {
         mLoadingMessage.setText(R.string.config_data_register);
         if(appConfig != null){
             Log.i(TAG, "appConfig = " + appConfig.toString());
-            ((ApplicationEX)getApplicationContext()).setAppConfig(appConfig);
             Log.i(TAG, "registerDevice: init NaverApiManager start");
             NaverApiManager.init(SplashActivity.this, appConfig.getNaverClientId(), appConfig.getNaverClientSecret(),
                     getString(R.string.app_name));
@@ -169,7 +177,32 @@ public class SplashActivity extends BaseActivity {
         public void onResponse(BaseApiResponse<AppConfig> response) {
             if(response != null){
                 Log.i(TAG, "onConfigResponse onResponse : " + response.toString());
-                registerDevice(response.getData());
+                mLoadingMessage.setText(R.string.config_check_app_version);
+                if(response.getData() != null){
+                    getApp().setAppConfig(response.getData());
+                    final AppConfig config = response.getData();
+                    int lastestVersion = config.getAppVersionCode();
+                    int appVersion = AppUtils.getApplicationVersionCode(SplashActivity.this);
+                    if(lastestVersion > appVersion && config.getForceUpdate() > 0){
+                        new AlertDialog.Builder(SplashActivity.this)
+                                .setTitle(R.string.notice)
+                                .setMessage(R.string.config_force_update)
+                                .setOnCancelListener(new DialogInterface.OnCancelListener() {
+                                    @Override
+                                    public void onCancel(DialogInterface dialog) {
+                                        AppUtils.goAppStore(SplashActivity.this, config);
+                                    }
+                                }).setOnDismissListener(new DialogInterface.OnDismissListener() {
+                            @Override
+                            public void onDismiss(DialogInterface dialog) {
+                                AppUtils.goAppStore(SplashActivity.this, config);
+
+                            }
+                        }).create().show();
+                    }else{
+                        NetworkManager.getInstance().request(mDistrictDataRequest);
+                    }
+                }
             }else{
                 if(RETRY_COUNT > mRetryCount){
                     NetworkManager.getInstance().request(mConfigReqeust);
@@ -221,37 +254,6 @@ public class SplashActivity extends BaseActivity {
         });
     }
 
-
-    private BaseApiResponse<UserInfo> onRegisterUserInfoResponse = new BaseApiResponse<>(new BaseApiResponse.OnResponseListener<UserInfo>() {
-
-        private int mRetryCount = 0;
-
-        @Override
-        public void onResponse(BaseApiResponse<UserInfo> response) {
-            Log.i(TAG, "onRegisterUserInfoResponse onResponse: " + response.toString());
-            if(response != null && response.getData() != null){
-                final UserInfo userInfo = response.getData();
-                mConfigPref.setUserInfo(userInfo);
-                startApplication(userInfo);
-            }else{
-                if(RETRY_COUNT > mRetryCount){
-                    NetworkManager.getInstance().request(mRegisterUserRequest);
-                    mRetryCount++;
-                }
-            }
-        }
-
-        @Override
-        public void onError(VolleyError error) {
-            if(RETRY_COUNT > mRetryCount){
-                NetworkManager.getInstance().request(mRegisterUserRequest);
-                mRetryCount++;
-            }else{
-                Log.i(TAG, "onRegisterUserInfoResponse error : " + error.toString());
-                startApplication(mConfigPref.getUserInfo());
-            }
-        }
-    }, new TypeToken<UserInfo>(){}.getType());
 
     private void startApplication(final UserInfo naverUserInfo){
         Log.i(TAG, "startApplication: start");
@@ -350,4 +352,58 @@ public class SplashActivity extends BaseActivity {
         }
     }
 
+    private BaseApiResponse<UserInfo> onRegisterUserInfoResponse = new BaseApiResponse<>(new BaseApiResponse.OnResponseListener<UserInfo>() {
+
+        private int mRetryCount = 0;
+
+        @Override
+        public void onResponse(BaseApiResponse<UserInfo> response) {
+            Log.i(TAG, "onRegisterUserInfoResponse onResponse: " + response.toString());
+            if(response != null && response.getData() != null){
+                final UserInfo userInfo = response.getData();
+                mConfigPref.setUserInfo(userInfo);
+                startApplication(userInfo);
+            }else{
+                if(RETRY_COUNT > mRetryCount){
+                    NetworkManager.getInstance().request(mRegisterUserRequest);
+                    mRetryCount++;
+                }
+            }
+        }
+
+        @Override
+        public void onError(VolleyError error) {
+            if(RETRY_COUNT > mRetryCount){
+                NetworkManager.getInstance().request(mRegisterUserRequest);
+                mRetryCount++;
+            }else{
+                Log.i(TAG, "onRegisterUserInfoResponse error : " + error.toString());
+                startApplication(mConfigPref.getUserInfo());
+            }
+        }
+    }, new TypeToken<UserInfo>(){}.getType());
+
+    private BaseApiResponse<ArrayList<District>> districtApiResponse = new BaseApiResponse<>(new BaseApiResponse.OnResponseListener<ArrayList<District>>() {
+        private int mRetry = 0;
+        @Override
+        public void onResponse(BaseApiResponse<ArrayList<District>> response) {
+            if(response != null){
+                getApp().setDistricts(response.getData());
+                registerDevice(getApp().getAppConfig());
+            }else{
+                if(BaseApiResponse.RETRY_COUNT > mRetry){
+                    NetworkManager.getInstance().request(mDistrictDataRequest);
+                    mRetry++;
+                }
+            }
+        }
+
+        @Override
+        public void onError(VolleyError error) {
+            if(BaseApiResponse.RETRY_COUNT > mRetry){
+                NetworkManager.getInstance().request(mDistrictDataRequest);
+                mRetry++;
+            }
+        }
+    }, new TypeToken<ArrayList<District>>(){}.getType());
 }

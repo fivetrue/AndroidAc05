@@ -6,16 +6,17 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.fivetrue.gimpo.ac05.R;
+import com.fivetrue.gimpo.ac05.vo.user.District;
 
 import java.util.List;
 
 /**
  * Created by kwonojin on 16. 6. 25..
  */
-public class SimpleSpinnerAdapter extends BaseListAdapter <String, SimpleSpinnerAdapter.Holder>{
+public class DistrictSpinnerAdapter extends BaseListAdapter <District, DistrictSpinnerAdapter.Holder>{
 
 
-    public SimpleSpinnerAdapter(Context context, List<String> data) {
+    public DistrictSpinnerAdapter(Context context, List<District> data) {
         super(context, data, R.layout.item_simple_spinner);
     }
 
@@ -28,9 +29,13 @@ public class SimpleSpinnerAdapter extends BaseListAdapter <String, SimpleSpinner
 
     @Override
     protected void initView(Holder holder, int position, View convertView, ViewGroup parent) {
-        String data = getItem(position);
+        District data = getItem(position);
         if(holder != null){
-            holder.text.setText(data + (position > 0 ? " 동" : ""));
+            if(data != null){
+                holder.text.setText(data.getDistrictName());
+            }else{
+                holder.text.setText(R.string.input_user_dong);
+            }
         }
     }
 

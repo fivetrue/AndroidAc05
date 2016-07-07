@@ -233,4 +233,8 @@ public class BaseActivity extends FragmentActivity {
     protected boolean doChangeActionbarTitleByFragment(){
         return false;
     }
+
+    public ApplicationEX getApp(){
+        return ((ApplicationEX)getApplicationContext());
+    }
 }

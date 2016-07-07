@@ -27,7 +27,7 @@ public class ConfigRequest extends BasicRequest {
 
     @Override
     public long getCacheTimeMilliseconds() {
-        return 1000 * 60 * 5;
+        return 1000 * 60 * 60 * 2;
     }
 
     @Override

@@ -6,7 +6,6 @@ import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
-import android.widget.TextView;
 
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.ImageLoader;
@@ -19,9 +18,9 @@ import java.util.List;
 /**
  * Created by kwonojin on 16. 6. 15..
  */
-public class InfomationImageRecyclerAdapter extends BaseRecyclerAdapter<ImageInfo, InfomationImageRecyclerAdapter.InfomationDataHolder> {
+public class ImageInfomationRecyclerAdapter extends BaseRecyclerAdapter<ImageInfo, ImageInfomationRecyclerAdapter.InfomationDataHolder> {
 
-    private static final String TAG = "InfomationImageRecyclerAdapter";
+    private static final String TAG = "ImageInfomationRecyclerAdapter";
 
     public interface OnInfomationImageItemClickListener{
         void onClick(View view, ImageInfo info, Bitmap bitmap);
@@ -30,7 +29,7 @@ public class InfomationImageRecyclerAdapter extends BaseRecyclerAdapter<ImageInf
 
     private OnInfomationImageItemClickListener mOnClickInfomationClickListener = null;
 
-    public InfomationImageRecyclerAdapter(List<ImageInfo> data, OnInfomationImageItemClickListener ll) {
+    public ImageInfomationRecyclerAdapter(List<ImageInfo> data, OnInfomationImageItemClickListener ll) {
         super(data, R.layout.item_infomation_image_list);
         mOnClickInfomationClickListener = ll;
     }
@@ -67,8 +66,10 @@ public class InfomationImageRecyclerAdapter extends BaseRecyclerAdapter<ImageInf
                 @Override
                 public void onClick(View v) {
                     if (mOnClickInfomationClickListener != null) {
-                        Bitmap bm = ((BitmapDrawable)holder.imageView.getDrawable()).getBitmap();
-                        mOnClickInfomationClickListener.onClick(v, data, bm);
+                        if(holder.imageView != null && holder.imageView.getDrawable() != null){
+                            Bitmap bm = ((BitmapDrawable)holder.imageView.getDrawable()).getBitmap();
+                            mOnClickInfomationClickListener.onClick(v, data, bm);
+                        }
                     }
                 }
             });
@@ -79,8 +80,6 @@ public class InfomationImageRecyclerAdapter extends BaseRecyclerAdapter<ImageInf
 
         protected View container = null;
         protected ImageView imageView = null;
-//        protected TextView imageTitle = null;
-//        protected NetworkImageView imageView = null;
         protected ProgressBar progressBar = null;
 
         public InfomationDataHolder(View itemView) {

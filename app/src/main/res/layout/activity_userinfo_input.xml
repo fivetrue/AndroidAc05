@@ -10,6 +10,7 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
         android:gravity="center"
+        android:textColor="?attr/colorPrimaryDark"
         android:layout_margin="@dimen/common_horizontal_padding"
         style="@style/CommonText.Medium"/>
 
@@ -22,16 +23,25 @@
         android:background="@drawable/rect_primary_color"/>
 
 
-    <TextView
-        android:id="@+id/tv_userinfo_input_selected"
+    <LinearLayout
+        android:id="@+id/layout_userinfo_input_selected"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_margin="@dimen/common_horizontal_padding"
-        android:textColor="@color/colorPrimaryDark"
         android:layout_below="@id/sp_user_info_input"
-        android:gravity="center"
         android:visibility="invisible"
-        style="@style/CommonText.Large"/>
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/tv_userinfo_input_selected"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/common_horizontal_padding"
+            android:textColor="?attr/colorPrimaryDark"
+            android:gravity="center"
+            style="@style/CommonText.Large"/>
+
+
+    </LinearLayout>
 
     <Button
         android:id="@+id/btn_usernfo_input"
