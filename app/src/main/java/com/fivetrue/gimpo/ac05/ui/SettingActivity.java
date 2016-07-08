@@ -1,5 +1,6 @@
 package com.fivetrue.gimpo.ac05.ui;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.SwitchCompat;
@@ -143,6 +144,14 @@ public class SettingActivity extends DrawerActivity{
             @Override
             public void onClick(View v) {
 
+            }
+        });
+
+        findViewById(R.id.layout_setting_district).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(SettingActivity.this, UserInfoInputActivity.class);
+                startActivity(intent);
             }
         });
 

@@ -237,4 +237,5 @@ public class BaseActivity extends FragmentActivity {
     public ApplicationEX getApp(){
         return ((ApplicationEX)getApplicationContext());
     }
+
 }

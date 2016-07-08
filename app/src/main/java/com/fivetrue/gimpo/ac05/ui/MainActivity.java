@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.v4.app.Fragment;
 import android.support.v4.view.ViewPager;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
@@ -206,8 +207,15 @@ public class MainActivity extends DrawerActivity implements BaseDataListFragment
 
     @Override
     public void onBackPressed() {
-        if(getCurrentFragmentManager().getBackStackEntryCount() > 0 || isOpenMenu()){
+        if(isOpenMenu()){
             super.onBackPressed();
+        }else if(getCurrentFragmentManager().getBackStackEntryCount() > 0){
+            Fragment f = getCurrentFragmentManager().findFragmentById(getFragmentAnchorLayoutID());
+            if(f != null && f instanceof WebViewFragment && ((WebViewFragment) f).canGoback()){
+                ((WebViewFragment) f).goBack();
+            }else{
+                super.onBackPressed();
+            }
         }else{
             if(!mDoubleClickBack){
                 mDoubleClickBack = true;

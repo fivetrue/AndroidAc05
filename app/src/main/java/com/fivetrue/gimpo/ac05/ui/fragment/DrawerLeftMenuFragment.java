@@ -12,6 +12,7 @@ import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.fivetrue.gimpo.ac05.ApplicationEX;
 import com.fivetrue.gimpo.ac05.R;
 import com.fivetrue.gimpo.ac05.analytics.Event;
 import com.fivetrue.gimpo.ac05.analytics.GoogleAnalytics;
@@ -25,6 +26,7 @@ import com.fivetrue.gimpo.ac05.ui.adapter.BaseListAdapter;
 import com.fivetrue.gimpo.ac05.ui.adapter.LeftMenuListAdapter;
 import com.fivetrue.gimpo.ac05.view.CircleImageView;
 import com.fivetrue.gimpo.ac05.vo.LeftMenu;
+import com.fivetrue.gimpo.ac05.vo.user.District;
 import com.fivetrue.gimpo.ac05.vo.user.UserInfo;
 
 import java.util.ArrayList;
@@ -50,6 +52,7 @@ public class DrawerLeftMenuFragment extends  BaseListFragment<LeftMenu> {
     private OnMenuClickItemListener mOnMenuClickItemListener = null;
 
     private ConfigPreferenceManager mConfigPref = null;
+    private ArrayList<District> mDistricts = null;
 
     public DrawerLeftMenuFragment(){
 
@@ -106,6 +109,7 @@ public class DrawerLeftMenuFragment extends  BaseListFragment<LeftMenu> {
                 , Intent.FLAG_ACTIVITY_CLEAR_TOP));
 
         mConfigPref = new ConfigPreferenceManager(getActivity());
+        mDistricts = ((ApplicationEX)getActivity().getApplicationContext()).getDistricts();
     }
 
     @Override
@@ -147,12 +151,21 @@ public class DrawerLeftMenuFragment extends  BaseListFragment<LeftMenu> {
 
                 }
             });
-            if(userInfo.getDistrict() > 0){
-                mDistrict.setText(userInfo.getDistrict() + "");
-                mDistrict.setVisibility(View.VISIBLE);
+
+
+            if(mDistricts != null){
+                District d = new District();
+                d.setDistrictNumber(userInfo.getDistrict());
+                if(mDistricts.contains(d)){
+                    District district = mDistricts.get(mDistricts.indexOf(d));
+                    mDistrict.setText(district.getDistrictName());
+                }else{
+                    mDistrict.setText("-");
+                }
             }else{
-                mDistrict.setVisibility(View.GONE);
+                mDistrict.setText("-");
             }
+
             view.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {

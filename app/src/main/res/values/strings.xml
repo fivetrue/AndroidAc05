@@ -74,7 +74,7 @@
     <string name="invalid_user_email">이메일 형식이 잘못 되었습니다.</string>
     <string name="invalid_user_password">패스워드 형식이 잘못 되었습니다.</string>
 
-    <string name="userinfo_input_wellcome">%s 님 환영합니다.\n원활한 앱 사용을 위하여 간단한 기본 정보를 입력해 주시겠어요?</string>
+    <string name="userinfo_input_wellcome">%s 님!\n원활한 앱 사용을 위하여 간단한 기본 정보를 입력해 주시겠어요?</string>
 
     <!-- Page data-->
     <string name="page_data_empty">정보가 없습니다.</string>
