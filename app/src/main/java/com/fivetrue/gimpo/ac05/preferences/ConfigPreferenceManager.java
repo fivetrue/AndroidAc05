@@ -2,9 +2,14 @@ package com.fivetrue.gimpo.ac05.preferences;
 
 import android.content.Context;
 
+import com.fivetrue.gimpo.ac05.vo.config.AppConfig;
 import com.fivetrue.gimpo.ac05.vo.config.Token;
+import com.fivetrue.gimpo.ac05.vo.user.District;
 import com.fivetrue.gimpo.ac05.vo.user.UserInfo;
 import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
+
+import java.util.ArrayList;
 
 /**
  * Created by ojin.kwon on 2016-02-02.
@@ -19,6 +24,9 @@ public class ConfigPreferenceManager {
     private static final String SETTING_PUSH = "setting_push";
     private static final String USER_INFO = "user_info";
     private static final String USER_TOKEN = "user_token";
+
+    private static final String APP_CONFIG = "app_config";
+    private static final String DISTRICTS_INFO = "districts_info";
 
     private SharedPreferenceHelper mHelper = null;
 
@@ -78,6 +86,40 @@ public class ConfigPreferenceManager {
             userinfo = mGson.fromJson(info, UserInfo.class);
         }
         return userinfo;
+    }
+
+    public void setAppConfig(AppConfig config){
+        if(config != null){
+            mHelper.putData(APP_CONFIG, mGson.toJson(config));
+        }else{
+            mHelper.putData(APP_CONFIG, null);
+        }
+    }
+
+    public ArrayList<District> getDistricts(){
+        ArrayList<District> districts = null;
+        String data = mHelper.getData(DISTRICTS_INFO, null);
+        if(data != null){
+            districts = mGson.fromJson(data, new TypeToken<ArrayList<District>>(){}.getType());
+        }
+        return districts;
+    }
+
+    public void setDistricts(ArrayList<District> districts){
+        if(districts != null){
+            mHelper.putData(DISTRICTS_INFO, mGson.toJson(districts));
+        }else{
+            mHelper.putData(DISTRICTS_INFO, null);
+        }
+    }
+
+    public AppConfig getAppConfig(){
+        AppConfig config = null;
+        String data = mHelper.getData(APP_CONFIG, null);
+        if(data != null){
+            config = mGson.fromJson(data, AppConfig.class);
+        }
+        return config;
     }
 
     public void setToken(Token token){

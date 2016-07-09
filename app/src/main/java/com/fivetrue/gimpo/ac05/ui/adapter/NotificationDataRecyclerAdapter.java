@@ -1,8 +1,8 @@
 package com.fivetrue.gimpo.ac05.ui.adapter;
 
 import android.support.v7.widget.RecyclerView;
+import android.text.TextUtils;
 import android.view.View;
-import android.view.animation.TranslateAnimation;
 import android.widget.TextView;
 
 import com.android.volley.toolbox.NetworkImageView;
@@ -28,7 +28,7 @@ public class NotificationDataRecyclerAdapter extends BaseRecyclerAdapter<Notific
     private SimpleDateFormat mSdf = new SimpleDateFormat("yyyy-MM-dd HH:mm");
 
     public NotificationDataRecyclerAdapter(List<NotificationData> data, NoticeDataPagerAdapter.OnClickNoticeDataListener ll) {
-        super(data, R.layout.item_page_data_list);
+        super(data, R.layout.item_notification_data_list);
         mOnClickPageDataListener = ll;
     }
 
@@ -48,13 +48,17 @@ public class NotificationDataRecyclerAdapter extends BaseRecyclerAdapter<Notific
             holder.title.setText(data.getTitle());
             holder.title.setTextColor(holder.title.getResources().getColor(R.color.colorAccent));
             holder.layoutTop.setBackgroundColor(holder.title.getResources().getColor(R.color.colorPrimaryDark));
-            if(data.getImageUrl() != null){
+            if(!TextUtils.isEmpty(data.getImageUrl())){
+                holder.imageView.setVisibility(View.VISIBLE);
                 holder.imageView.setImageUrl(data.getImageUrl(), ImageLoadManager.getImageLoader());
+            }else{
+                holder.imageView.setVisibility(View.GONE);
             }
             holder.content.setText(data.getMessage());
 
             holder.date.setText(holder.date.getResources().getString(R.string.create_date)
                     + " " + mSdf.format(new Date(data.getCreateTime())));
+            holder.date.setTextColor(holder.date.getResources().getColor(R.color.white));
             holder.container.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -80,14 +84,12 @@ public class NotificationDataRecyclerAdapter extends BaseRecyclerAdapter<Notific
         public PageDataHolder(View itemView) {
             super(itemView);
             container = itemView.findViewById(R.id.page_data_view);
-            title = (TextView) itemView.findViewById(R.id.tv_item_page_data_list_title);
-            date = (TextView) itemView.findViewById(R.id.tv_item_page_data_list_date);
-            layoutTop = itemView.findViewById(R.id.layout_item_page_data_list_top);
-            imageView = (NetworkImageView) itemView.findViewById(R.id.iv_item_page_data_list_image);
-            content = (TextView) itemView.findViewById(R.id.tv_item_page_data_list_content);
-            TranslateAnimation anim = new TranslateAnimation(0, 0, -100, 0);
-            container.setAnimation(anim);
-            container.setVisibility(View.GONE);
+            title = (TextView) itemView.findViewById(R.id.tv_item_notificaiton_data_list_title);
+            date = (TextView) itemView.findViewById(R.id.tv_item_notificaiton_data_list_date);
+            layoutTop = itemView.findViewById(R.id.layout_item_notificaiton_data_list_top);
+            imageView = (NetworkImageView) itemView.findViewById(R.id.iv_item_notification_data_list_image);
+            content = (TextView) itemView.findViewById(R.id.tv_item_notification_data_list_content);
         }
     }
+
 }

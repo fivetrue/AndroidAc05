@@ -109,7 +109,7 @@ public class DrawerLeftMenuFragment extends  BaseListFragment<LeftMenu> {
                 , Intent.FLAG_ACTIVITY_CLEAR_TOP));
 
         mConfigPref = new ConfigPreferenceManager(getActivity());
-        mDistricts = ((ApplicationEX)getActivity().getApplicationContext()).getDistricts();
+        mDistricts = mConfigPref.getDistricts();
     }
 
     @Override

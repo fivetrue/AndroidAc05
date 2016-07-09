@@ -179,7 +179,7 @@ public class SplashActivity extends BaseActivity {
                 Log.i(TAG, "onConfigResponse onResponse : " + response.toString());
                 mLoadingMessage.setText(R.string.config_check_app_version);
                 if(response.getData() != null){
-                    getApp().setAppConfig(response.getData());
+                    mConfigPref.setAppConfig(response.getData());
                     final AppConfig config = response.getData();
                     int lastestVersion = config.getAppVersionCode();
                     int appVersion = AppUtils.getApplicationVersionCode(SplashActivity.this);
@@ -388,8 +388,8 @@ public class SplashActivity extends BaseActivity {
         @Override
         public void onResponse(BaseApiResponse<ArrayList<District>> response) {
             if(response != null){
-                getApp().setDistricts(response.getData());
-                registerDevice(getApp().getAppConfig());
+                mConfigPref.setDistricts(response.getData());
+                registerDevice(mConfigPref.getAppConfig());
             }else{
                 if(BaseApiResponse.RETRY_COUNT > mRetry){
                     NetworkManager.getInstance().request(mDistrictDataRequest);

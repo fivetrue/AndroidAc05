@@ -25,6 +25,8 @@ public class AppConfig {
 
     private int forceUpdate = 0;
 
+    private String adminUrl = null;
+
     public String getAppId() {
         return appId;
     }
@@ -129,6 +131,14 @@ public class AppConfig {
         this.forceUpdate = forceUpdate;
     }
 
+    public String getAdminUrl() {
+        return adminUrl;
+    }
+
+    public void setAdminUrl(String adminUrl) {
+        this.adminUrl = adminUrl;
+    }
+
     @Override
     public String toString() {
         return "AppConfig{" +
@@ -145,6 +155,7 @@ public class AppConfig {
                 ", clubMyInfo='" + clubMyInfo + '\'' +
                 ", myInfoUrl='" + myInfoUrl + '\'' +
                 ", forceUpdate=" + forceUpdate +
+                ", adminUrl='" + adminUrl + '\'' +
                 '}';
     }
 }

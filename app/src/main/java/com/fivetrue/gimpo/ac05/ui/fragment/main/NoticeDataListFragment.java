@@ -1,6 +1,9 @@
 package com.fivetrue.gimpo.ac05.ui.fragment.main;
 
 import android.graphics.Color;
+import android.support.v4.view.ViewCompat;
+import android.support.v4.view.ViewPropertyAnimatorCompat;
+import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.widget.TextView;
@@ -10,6 +13,7 @@ import com.fivetrue.gimpo.ac05.R;
 import com.fivetrue.gimpo.ac05.net.BaseApiResponse;
 import com.fivetrue.gimpo.ac05.net.NetworkManager;
 import com.fivetrue.gimpo.ac05.net.request.NoticeDataRequest;
+import com.fivetrue.gimpo.ac05.view.DividerItemDecoration;
 import com.fivetrue.gimpo.ac05.vo.notification.NotificationData;
 import com.fivetrue.gimpo.ac05.ui.adapter.NotificationDataRecyclerAdapter;
 import com.fivetrue.gimpo.ac05.ui.adapter.pager.NoticeDataPagerAdapter;
@@ -78,6 +82,13 @@ public class NoticeDataListFragment extends BaseDataListFragment<ArrayList<Notif
         if(mAdapter == null){
             mAdapter = new NotificationDataRecyclerAdapter(data, onClickNoticeDataListener);
             view.setAdapter(mAdapter);
+            RecyclerView.ItemAnimator animator = new DefaultItemAnimator();
+            view.setItemAnimator(animator);
+
+            RecyclerView.ItemDecoration itemDecoration =
+                    new DividerItemDecoration(getActivity(), DividerItemDecoration.VERTICAL_LIST);
+            view.addItemDecoration(itemDecoration);
+//            view.setItemAnimator(new CustomItemAnimator());
         }else{
             mAdapter.setData(data);
         }
@@ -147,4 +158,54 @@ public class NoticeDataListFragment extends BaseDataListFragment<ArrayList<Notif
             onRefreshFinish();
         }
     }, new TypeToken<List<NotificationData>>(){}.getType());
+
+
+
+
+
+//    public class CustomItemAnimator extends PendingItemAnimator {
+//
+//        public CustomItemAnimator() {
+//            setAddDuration(300);
+//            setRemoveDuration(300);
+//        }
+//
+//        @Override
+//        protected boolean prepHolderForAnimateRemove(RecyclerView.ViewHolder holder) {
+//            return true;
+//        }
+//
+//        @Override
+//        protected ViewPropertyAnimatorCompat animateRemoveImpl(RecyclerView.ViewHolder holder) {
+//            return ViewCompat.animate(holder.itemView)
+//                    .rotationX(90)
+//                    .translationY( - (holder.itemView.getMeasuredHeight() / 2));
+//        }
+//
+//        @Override
+//        protected void onRemoveCanceled(RecyclerView.ViewHolder holder) {
+//            ViewCompat.setRotationX(holder.itemView, 0);
+//            ViewCompat.setTranslationY(holder.itemView, 0);
+//        }
+//
+//        @Override
+//        protected boolean prepHolderForAnimateAdd(RecyclerView.ViewHolder holder) {
+//            ViewCompat.setRotationX(holder.itemView, 90);
+//            ViewCompat.setTranslationY(holder.itemView, - (holder.itemView.getMeasuredHeight() / 2));
+//            return true;
+//        }
+//
+//        @Override
+//        protected ViewPropertyAnimatorCompat animateAddImpl(RecyclerView.ViewHolder holder) {
+//            return ViewCompat.animate(holder.itemView)
+//                    .rotationX(0)
+//                    .translationY(0);
+//        }
+//
+//        @Override
+//        protected void onAddCanceled(RecyclerView.ViewHolder holder) {
+//            ViewCompat.setRotationX(holder.itemView, 0);
+//            ViewCompat.setTranslationY(holder.itemView, 0);
+//        }
+//    }
 }

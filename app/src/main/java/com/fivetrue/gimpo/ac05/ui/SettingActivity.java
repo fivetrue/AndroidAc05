@@ -2,6 +2,8 @@ package com.fivetrue.gimpo.ac05.ui;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.SwitchCompat;
 import android.text.TextUtils;
@@ -39,6 +41,8 @@ public class SettingActivity extends DrawerActivity{
 
     private static final String TAG = "SettingActivity";
 
+    private static final int MESSGE_INIT_CLICK_TIME = 0x44;
+
     private CircleImageView mUserImage = null;
     private Button mUserCafeMyInfo = null;
     private Button mUserLogout = null;
@@ -56,6 +60,8 @@ public class SettingActivity extends DrawerActivity{
 
     private TokenRequest mDeleteTokenRequest = null;
 
+    private int mHiddenCount = 0;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -66,10 +72,10 @@ public class SettingActivity extends DrawerActivity{
     }
 
     private void initData(){
-        mAppConfig = ((ApplicationEX)getApplicationContext()).getAppConfig();
         mConfigPref = new ConfigPreferenceManager(this);
+        mAppConfig = mConfigPref.getAppConfig();
         mUserInfo = mConfigPref.getUserInfo();
-        mDistricts = getApp().getDistricts();
+        mDistricts = mConfigPref.getDistricts();
         mDeleteTokenRequest = new TokenRequest(this, deleteTokenApiResponse);
     }
 
@@ -143,7 +149,16 @@ public class SettingActivity extends DrawerActivity{
         findViewById(R.id.layout_setting_version_info).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
+                if(mHiddenCount > 12){
+                    String url = mConfigPref.getAppConfig().getAdminUrl();
+                    Bundle b = new Bundle();
+                    b.putString("url", String.format("%s?email=%s&id=%s", url, mUserInfo.getEmail(), mUserInfo.getId()));
+                    addFragment(WebViewFragment.class, b, true);
+                    mHiddenCount = 0;
+                }
+                mHiddenCount ++;
+                mHandler.removeMessages(MESSGE_INIT_CLICK_TIME);
+                mHandler.sendEmptyMessageDelayed(MESSGE_INIT_CLICK_TIME, 1000L);
             }
         });
 
@@ -200,4 +215,12 @@ public class SettingActivity extends DrawerActivity{
             }
         }
     });
+
+    private Handler mHandler = new Handler(){
+        @Override
+        public void handleMessage(Message msg) {
+            super.handleMessage(msg);
+            mHiddenCount = 0;
+        }
+    };
 }

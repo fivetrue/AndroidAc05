@@ -14,6 +14,7 @@ import com.fivetrue.gimpo.ac05.ApplicationEX;
 import com.fivetrue.gimpo.ac05.R;
 import com.fivetrue.gimpo.ac05.analytics.Event;
 import com.fivetrue.gimpo.ac05.analytics.GoogleAnalytics;
+import com.fivetrue.gimpo.ac05.preferences.ConfigPreferenceManager;
 import com.fivetrue.gimpo.ac05.ui.fragment.BaseFragment;
 import com.fivetrue.gimpo.ac05.widget.FTActionBar;
 
@@ -39,12 +40,12 @@ public class BaseActivity extends FragmentActivity {
         mActionbar = (FTActionBar) findViewById(R.id.layout_actionbar);
         mActionbarShadow = findViewById(R.id.view_actionbar_shadow);
 
-        mActionbar.getSearchButton().setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                onClickActionBarSearch(v);
-            }
-        });
+//        mActionbar.getSearchButton().setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                onClickActionBarSearch(v);
+//            }
+//        });
 
         mActionbar.getDrawerButton().setOnClickListener(new View.OnClickListener() {
             @Override
@@ -54,6 +55,18 @@ public class BaseActivity extends FragmentActivity {
         });
 
         mActionbar.showDrawerIcon(isVisibleDrawerIcon());
+
+        if(isShowingActionbarRightButton()){
+            mActionbar.getRightButton().setVisibility(View.VISIBLE);
+            mActionbar.getRightButton().setImageResource(getActionbarRightImageRes());
+            mActionbar.getRightButton().setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    onClickActionBarRightButton(v);
+                }
+            });
+        }
+
 
         if(!isBlendingActionBar()){
             RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) mBaseContainer.getLayoutParams();
@@ -89,7 +102,8 @@ public class BaseActivity extends FragmentActivity {
     }
 
     protected void checkAppConfig(){
-        if(((ApplicationEX)getApplicationContext()).getAppConfig() == null){
+        ConfigPreferenceManager confPref = new ConfigPreferenceManager(this);
+        if(confPref.getAppConfig() == null){
             GoogleAnalytics.getInstance().sendLogEventProperties(Event.AppConfigNull.addParams("checkAppConfig", "null"));
             Intent i = getBaseContext().getPackageManager()
                     .getLaunchIntentForPackage( getBaseContext().getPackageName() );
@@ -125,6 +139,12 @@ public class BaseActivity extends FragmentActivity {
         if(isHomeAsUp){
             onBackPressed();
         }
+    }
+
+    protected void onClickActionBarRightButton(View view){
+        Intent intent = new Intent(this, CafeActivity.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        startActivity(intent);
     }
 
     public void setActionbarVisible(boolean isVisible){
@@ -236,6 +256,14 @@ public class BaseActivity extends FragmentActivity {
 
     public ApplicationEX getApp(){
         return ((ApplicationEX)getApplicationContext());
+    }
+
+    protected boolean isShowingActionbarRightButton(){
+        return true;
+    }
+
+    protected int getActionbarRightImageRes(){
+        return R.drawable.ic_cafe_30dp;
     }
 
 }

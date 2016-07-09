@@ -43,7 +43,7 @@ public class FTActionBar extends RelativeLayout {
     private ImageView mInputIcon = null;
     private ImageView mInputDelete = null;
     private ImageView mSearchInputIcon = null;
-    private ImageView mSearchButton = null;
+//    private ImageView mSearchButton = null;
 
     private View mBackround = null;
 
@@ -73,7 +73,7 @@ public class FTActionBar extends RelativeLayout {
         mTitle = (TextView) findViewById(R.id.tv_actionbar_title);
 
         mLayoutRight = (LinearLayout) findViewById(R.id.layout_actionbar_right);
-//        mRightButton = (ImageView) findViewById(R.id.iv_actionbar_right_button);
+        mRightButton = (ImageView) findViewById(R.id.iv_actionbar_right_button);
 //        mRightSticker = (TextView) findViewById(R.id.tv_actionbar_right_sticker);
 //
 //        mLayoutInput = (LinearLayout) findViewById(R.id.layout_actionbar_search);
@@ -81,7 +81,7 @@ public class FTActionBar extends RelativeLayout {
 //        mInputDelete = (ImageView) findViewById(R.id.iv_actionbar_search_delete_icon);
 //        mSearchInputIcon = (ImageView) findViewById(R.id.iv_actionbar_search_input_icon);
 //        mInput = (EditText) findViewById(R.id.et_actionbar_search_input);
-        mSearchButton = (ImageView) findViewById(R.id.iv_actionbar_search_button);
+//        mSearchButton = (ImageView) findViewById(R.id.iv_actionbar_search_button);
 
         mBackround = findViewById(R.id.view_actionbar_background);
 
@@ -214,9 +214,9 @@ public class FTActionBar extends RelativeLayout {
         mRightSticker.startAnimation(mEmergeAnimation);
     }
 
-    public ImageView getSearchButton(){
-        return mSearchButton;
-    }
+//    public ImageView getSearchButton(){
+//        return mSearchButton;
+//    }
 
     public ImageView getInputDelete(){
         return mInputDelete;
@@ -250,7 +250,7 @@ public class FTActionBar extends RelativeLayout {
 //                mLayoutInput.setVisibility(View.GONE);
                 mLayoutLeft.setVisibility(View.VISIBLE);
                 mLayoutRight.setVisibility(View.VISIBLE);
-                mSearchButton.setVisibility(View.GONE);
+//                mSearchButton.setVisibility(View.GONE);
                 break;
 
             case ACTIONBAR_MODE_DEFAULT_ICON :
@@ -259,7 +259,7 @@ public class FTActionBar extends RelativeLayout {
                 mLayoutRight.setVisibility(View.VISIBLE);
                 mTitle.setVisibility(View.GONE);
                 mLogoIcon.setVisibility(View.VISIBLE);
-                mSearchButton.setVisibility(View.GONE);
+//                mSearchButton.setVisibility(View.GONE);
                 break;
 
             case ACTIONBAR_MODE_DEFAULT_TITLE :
@@ -268,7 +268,7 @@ public class FTActionBar extends RelativeLayout {
                 mLayoutRight.setVisibility(View.VISIBLE);
                 mTitle.setVisibility(View.VISIBLE);
                 mLogoIcon.setVisibility(View.GONE);
-                mSearchButton.setVisibility(View.GONE);
+//                mSearchButton.setVisibility(View.GONE);
                 break;
 
             case ACTIONBAR_MODE_NONE :
@@ -278,7 +278,7 @@ public class FTActionBar extends RelativeLayout {
                 mInputIcon.setVisibility(View.VISIBLE);
                 mLayoutRight.setVisibility(View.VISIBLE);
                 mSearchInputIcon.setVisibility(View.GONE);
-                mSearchButton.setVisibility(View.GONE);
+//                mSearchButton.setVisibility(View.GONE);
                 break;
 
             case ACTIONBAR_MODE_PRODUCT_DETAIL :
@@ -287,7 +287,7 @@ public class FTActionBar extends RelativeLayout {
                 mLayoutRight.setVisibility(View.VISIBLE);
                 mTitle.setVisibility(View.VISIBLE);
                 mLogoIcon.setVisibility(View.GONE);
-                mSearchButton.setVisibility(View.VISIBLE);
+//                mSearchButton.setVisibility(View.VISIBLE);
                 break;
 
             case ACTIONBAR_MODE_EMPTY :
@@ -295,7 +295,7 @@ public class FTActionBar extends RelativeLayout {
 //                mLayoutInput.setVisibility(View.GONE);
                 mLayoutRight.setVisibility(View.GONE);
                 mLayoutLeft.setVisibility(View.VISIBLE);
-                mSearchButton.setVisibility(View.GONE);
+//                mSearchButton.setVisibility(View.GONE);
 
         }
     }

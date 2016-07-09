@@ -2,8 +2,10 @@ package com.fivetrue.gimpo.ac05.ui;
 
 import android.os.Bundle;
 import android.support.v7.widget.GridLayoutManager;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
+import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
@@ -58,7 +60,7 @@ public class NoticeListActivity extends DrawerActivity{
         mEmptyText = (TextView) findViewById(R.id.tv_notice_data_empty);
         mProgress = (ProgressBar) findViewById(R.id.pb_notice_data);
 
-        mRecylerView.setLayoutManager(new GridLayoutManager(this, 2, GridLayoutManager.VERTICAL, false));
+        mRecylerView.setLayoutManager(new LinearLayoutManager(this, LinearLayout.VERTICAL, false));
         mEmptyText.setTextColor(getResources().getColor(R.color.colorAccent));
 
         mProgress.getIndeterminateDrawable().setColorFilter(getResources().getColor(R.color.colorPrimaryDark)

@@ -62,7 +62,7 @@ public class NaverLoginActivity extends BaseActivity implements WebViewFragment.
             showLoginWebView();
         }else{
             boolean isExpried = token.isExpired();
-            AppConfig config = ((ApplicationEX)getApplicationContext()).getAppConfig();
+            AppConfig config = mConfigPref.getAppConfig();
             Log.i(TAG, "checkCachedTokenForLogin: isExpried = " + isExpried);
             if(isExpried){
                 if(token.getRefresh_token() != null){
@@ -95,7 +95,7 @@ public class NaverLoginActivity extends BaseActivity implements WebViewFragment.
         if(response != null){
             AuthLoginResult result = new Gson().fromJson(response, AuthLoginResult.class);
             if(result != null){
-                AppConfig config = ((ApplicationEX)getApplicationContext()).getAppConfig();
+                AppConfig config = mConfigPref.getAppConfig();
                 if(config != null){
                     mAccessTokenRequest.requestAccessToken(config, result);
                     NetworkManager.getInstance().request(mAccessTokenRequest);

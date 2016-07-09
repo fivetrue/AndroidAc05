@@ -40,7 +40,7 @@ public class UserInfoInputActivity extends BaseActivity {
 
     private UserInfo mUserInfo = null;
     private ArrayList<District> mDistricts = new ArrayList<>();
-    private ConfigPreferenceManager mPref = null;
+    private ConfigPreferenceManager mConfigPref = null;
 
     private DistrictSpinnerAdapter mAdapter = null;
 
@@ -56,10 +56,10 @@ public class UserInfoInputActivity extends BaseActivity {
     }
 
     private void initData(){
-        mPref = new ConfigPreferenceManager(this);
-        mUserInfo = mPref.getUserInfo();
+        mConfigPref = new ConfigPreferenceManager(this);
+        mUserInfo = mConfigPref.getUserInfo();
         mDistricts.add(null);
-        mDistricts.addAll(getApp().getDistricts());
+        mDistricts.addAll(mConfigPref.getDistricts() );
         mUpdateUserDistrict = new UpdateUserDistrictRequest(this, updateUserDistrictResponse);
     }
 
@@ -142,7 +142,7 @@ public class UserInfoInputActivity extends BaseActivity {
         @Override
         public void onResponse(BaseApiResponse<UserInfo> response) {
             if(response != null &&  response.getData() != null){
-                mPref.setUserInfo(response.getData());
+                mConfigPref.setUserInfo(response.getData());
             }
             finish();
         }
