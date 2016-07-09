@@ -259,7 +259,7 @@ public class BaseActivity extends FragmentActivity {
     }
 
     protected boolean isShowingActionbarRightButton(){
-        return true;
+        return false;
     }
 
     protected int getActionbarRightImageRes(){

@@ -1,8 +1,6 @@
 package com.fivetrue.gimpo.ac05.ui.fragment.main;
 
 import android.graphics.Color;
-import android.support.v4.view.ViewCompat;
-import android.support.v4.view.ViewPropertyAnimatorCompat;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
@@ -82,13 +80,6 @@ public class NoticeDataListFragment extends BaseDataListFragment<ArrayList<Notif
         if(mAdapter == null){
             mAdapter = new NotificationDataRecyclerAdapter(data, onClickNoticeDataListener);
             view.setAdapter(mAdapter);
-            RecyclerView.ItemAnimator animator = new DefaultItemAnimator();
-            view.setItemAnimator(animator);
-
-            RecyclerView.ItemDecoration itemDecoration =
-                    new DividerItemDecoration(getActivity(), DividerItemDecoration.VERTICAL_LIST);
-            view.addItemDecoration(itemDecoration);
-//            view.setItemAnimator(new CustomItemAnimator());
         }else{
             mAdapter.setData(data);
         }

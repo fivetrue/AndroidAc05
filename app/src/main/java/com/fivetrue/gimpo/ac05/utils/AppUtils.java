@@ -41,9 +41,6 @@ public class AppUtils {
         return name;
     }
 
-    public static String getApplicationVersion(Context context){
-        return getApplicationVersionName(context) + "." + getApplicationVersionCode(context);
-    }
 
     public static void goAppStore(Context context, AppConfig config){
         if(context != null){

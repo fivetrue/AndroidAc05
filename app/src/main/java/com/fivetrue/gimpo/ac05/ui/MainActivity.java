@@ -83,6 +83,7 @@ public class MainActivity extends DrawerActivity implements BaseDataListFragment
         }
 
         GoogleAnalytics.getInstance().sendLogEventProperties(Event.EnterMainActivity);
+        openMenu();
     }
 
     private void initData(){

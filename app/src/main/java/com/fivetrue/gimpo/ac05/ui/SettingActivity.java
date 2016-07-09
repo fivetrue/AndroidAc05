@@ -92,7 +92,7 @@ public class SettingActivity extends DrawerActivity{
 
         mUserImage.setImageUrl(mUserInfo.getProfileImage());
 
-        mVersionInfo.setText(AppUtils.getApplicationVersion(this));
+        mVersionInfo.setText(AppUtils.getApplicationVersionName(this));
 
         District d = new District();
         d.setDistrictNumber(mUserInfo.getDistrict());

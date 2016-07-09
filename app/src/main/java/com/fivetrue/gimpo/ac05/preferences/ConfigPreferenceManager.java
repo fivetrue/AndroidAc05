@@ -28,6 +28,8 @@ public class ConfigPreferenceManager {
     private static final String APP_CONFIG = "app_config";
     private static final String DISTRICTS_INFO = "districts_info";
 
+    private static final String FIRST_OPEN = "first_open";
+
     private SharedPreferenceHelper mHelper = null;
 
     private Gson mGson = null;
@@ -138,4 +140,13 @@ public class ConfigPreferenceManager {
         }
         return token;
     }
+
+    public void setFirstOpen(boolean b){
+        mHelper.putData(FIRST_OPEN, b);
+    }
+
+    public boolean isFirstOpen(){
+        return mHelper.getData(FIRST_OPEN, true);
+    }
+
 }
