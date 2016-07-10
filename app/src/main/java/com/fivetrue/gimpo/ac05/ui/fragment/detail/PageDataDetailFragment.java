@@ -54,72 +54,74 @@ public class PageDataDetailFragment extends WebViewFragment{
 
     private View initView(LayoutInflater inflater, View parentView){
         View view = inflater.inflate(R.layout.fragment_page_data_detail, null);
-        getShareButton().setVisibility(View.GONE);
+        getShareButton().setVisibility(View.VISIBLE);
         mPageDataTitle = (TextView) view.findViewById(R.id.tv_fragment_page_data_detail);
         mFrameLayout = (FrameLayout) view.findViewById(R.id.layout_fragment_page_data_detail);
         mFrameLayout.addView(parentView);
         mDetailButton = (FloatingActionButton) view.findViewById(R.id.fab_fragment_page_data_detail);
+        mDetailButton.setVisibility(View.GONE);
         mDetailButton.setRippleColor(mTextBgColor);
         mPageDataTitle.setTextColor(mTextColor);
         mPageDataTitle.setBackgroundColor(mTextBgColor);
         mDetailButton.setBackgroundTintList(getResources().getColorStateList(R.color.colorPrimaryDark));
-        mDetailButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                getWebView().loadUrl(mData.getLink());
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                    Animator anim = ViewAnimationUtils.createCircularReveal(mDetailButton
-                            , mDetailButton.getWidth() / 2, mDetailButton.getHeight() / 2
-                            , mDetailButton.getWidth(), 0);
-                    anim.setDuration(500L);
-                    anim.addListener(new Animator.AnimatorListener() {
-                        @Override
-                        public void onAnimationStart(Animator animation) {
-
-                        }
-
-                        @TargetApi(Build.VERSION_CODES.LOLLIPOP)
-                        @Override
-                        public void onAnimationEnd(Animator animation) {
-                            Animator anim = ViewAnimationUtils.createCircularReveal(getShareButton()
-                                    , mDetailButton.getWidth() / 2, mDetailButton.getHeight() / 2
-                                    , 0, mDetailButton.getWidth());
-                            anim.setDuration(500L);
-                            mDetailButton.setVisibility(View.GONE);
-                            getShareButton().setVisibility(View.VISIBLE);
-                            anim.start();
-                        }
-
-                        @Override
-                        public void onAnimationCancel(Animator animation) {
-
-                        }
-
-                        @Override
-                        public void onAnimationRepeat(Animator animation) {
-
-                        }
-                    });
-                    anim.start();
-                } else {
-                    AlphaAnimation animation = new AlphaAnimation(1f, 0);
-                    animation.setDuration(500L);
-                    mDetailButton.setAnimation(animation);
-                    mDetailButton.setVisibility(View.GONE);
-                    AlphaAnimation animationShare = new AlphaAnimation(0, 1f);
-                    animationShare.setDuration(500L);
-                    getShareButton().setAnimation(animationShare);
-                    getShareButton().setVisibility(View.VISIBLE);
-                }
-            }
-        });
+//        mDetailButton.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+////                getWebView().loadUrl(mData.getLink());
+//                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+//                    Animator anim = ViewAnimationUtils.createCircularReveal(mDetailButton
+//                            , mDetailButton.getWidth() / 2, mDetailButton.getHeight() / 2
+//                            , mDetailButton.getWidth(), 0);
+//                    anim.setDuration(500L);
+//                    anim.addListener(new Animator.AnimatorListener() {
+//                        @Override
+//                        public void onAnimationStart(Animator animation) {
+//
+//                        }
+//
+//                        @TargetApi(Build.VERSION_CODES.LOLLIPOP)
+//                        @Override
+//                        public void onAnimationEnd(Animator animation) {
+//                            Animator anim = ViewAnimationUtils.createCircularReveal(getShareButton()
+//                                    , mDetailButton.getWidth() / 2, mDetailButton.getHeight() / 2
+//                                    , 0, mDetailButton.getWidth());
+//                            anim.setDuration(500L);
+//                            mDetailButton.setVisibility(View.GONE);
+//                            getShareButton().setVisibility(View.VISIBLE);
+//                            anim.start();
+//                        }
+//
+//                        @Override
+//                        public void onAnimationCancel(Animator animation) {
+//
+//                        }
+//
+//                        @Override
+//                        public void onAnimationRepeat(Animator animation) {
+//
+//                        }
+//                    });
+//                    anim.start();
+//                } else {
+//                    AlphaAnimation animation = new AlphaAnimation(1f, 0);
+//                    animation.setDuration(500L);
+//                    mDetailButton.setAnimation(animation);
+//                    mDetailButton.setVisibility(View.GONE);
+//                    AlphaAnimation animationShare = new AlphaAnimation(0, 1f);
+//                    animationShare.setDuration(500L);
+//                    getShareButton().setAnimation(animationShare);
+//                    getShareButton().setVisibility(View.VISIBLE);
+//                }
+//            }
+//        });
         return view;
     }
 
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        getWebView().loadDataWithBaseURL("", mData.getDescription(), "text/html", "UTF-8", "");
+//        getWebView().loadDataWithBaseURL("", mData.getDescription(), "text/html", "UTF-8", "");
+        getWebView().loadUrl(mData.getLink());
         mPageDataTitle.setText(mData.getTitle());
     }
 

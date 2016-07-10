@@ -23,7 +23,7 @@
         v:indicatorHeight="5dp"
         v:tabsTextColor="@color/white"
         v:indicatorColor="@color/white"
-        v:tabsBackgroundColor="?attr/colorPrimaryDark"/>
+        v:tabsBackgroundColor="@color/colorPrimaryDark"/>
 
     <android.support.v4.view.ViewPager
         android:id="@+id/vp_main_pager"

@@ -2,6 +2,7 @@ package com.fivetrue.gimpo.ac05.ui.fragment;
 
 import android.content.Context;
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
@@ -137,6 +138,9 @@ public class DrawerLeftMenuFragment extends  BaseListFragment<LeftMenu> {
     protected void initListHeader(View view){
         UserInfo userInfo = mConfigPref.getUserInfo();
         if(view != null){
+            if(Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP){
+                view.findViewById(R.id.layout_left_menu_top).setBackgroundColor(getResources().getColor(R.color.colorPrimaryDark));
+            }
             mName = (TextView) view.findViewById(R.id.tv_left_menu_header_name);
             mEmail = (TextView) view.findViewById(R.id.tv_left_menu_header_email);
             mProfileImage = (CircleImageView) view.findViewById(R.id.iv_left_menu_header);
