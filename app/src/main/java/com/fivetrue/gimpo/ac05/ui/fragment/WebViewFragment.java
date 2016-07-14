@@ -18,6 +18,7 @@ import android.view.View;
 import android.view.ViewAnimationUtils;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
+import android.view.animation.AlphaAnimation;
 import android.view.inputmethod.InputMethodManager;
 import android.webkit.JavascriptInterface;
 import android.webkit.PermissionRequest;
@@ -135,7 +136,10 @@ public class WebViewFragment extends BaseFragment{
                             mFabShare.getWidth()).start();
                     mFabShare.setVisibility(View.VISIBLE);
                 } else {
-                    mFabShare.animate().alpha(1).start();
+                    AlphaAnimation anim = new AlphaAnimation(0, 1);
+                    anim.setDuration(300L);
+                    mFabShare.setAnimation(anim);
+                    mFabShare.setVisibility(View.VISIBLE);
                 }
             }
         }
@@ -175,7 +179,11 @@ public class WebViewFragment extends BaseFragment{
                     });
                     anim.start();
                 }else{
-                    mFabShare.animate().alpha(0).start();
+                    AlphaAnimation anim = new AlphaAnimation(1, 0);
+                    anim.setDuration(300L);
+                    mFabShare.setAnimation(anim);
+                    mFabShare.setVisibility(View.GONE);
+                    mFabShare.setTag(null);
                 }
             }
         }
