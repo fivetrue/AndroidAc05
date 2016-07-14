@@ -20,8 +20,8 @@ repositories {
 
 android {
 
-    def VERSION_NAME = "1.0.0"
-    def VERSION_CODE = 115
+    def VERSION_NAME = "1.0.1"
+    def VERSION_CODE = 122
     def RELEASE_DATE = "20160709"
 
     compileSdkVersion 23
