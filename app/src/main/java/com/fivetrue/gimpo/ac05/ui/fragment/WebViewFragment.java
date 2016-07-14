@@ -1,5 +1,6 @@
 package com.fivetrue.gimpo.ac05.ui.fragment;
 
+import android.animation.Animator;
 import android.annotation.TargetApi;
 import android.app.Activity;
 import android.content.Context;
@@ -14,7 +15,10 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.v4.widget.ContentLoadingProgressBar;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewAnimationUtils;
 import android.view.ViewGroup;
+import android.view.ViewTreeObserver;
+import android.view.inputmethod.InputMethodManager;
 import android.webkit.JavascriptInterface;
 import android.webkit.PermissionRequest;
 import android.webkit.ValueCallback;
@@ -52,6 +56,8 @@ public class WebViewFragment extends BaseFragment{
     private String mUrl = null;
     private ValueCallback<Uri> mFileCallback;
     private ValueCallback<Uri[]> mFilePathCallbacks = null;
+
+    private int mOldScrollY = 0;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -93,6 +99,19 @@ public class WebViewFragment extends BaseFragment{
         mWebView.getSettings().setMediaPlaybackRequiresUserGesture(false);
         mProgress.setMax(100);
 
+        mWebView.getViewTreeObserver().addOnScrollChangedListener(new ViewTreeObserver.OnScrollChangedListener() {
+            @Override
+            public void onScrollChanged() {
+                int y = mWebView.getScrollY();
+                if (mOldScrollY < y) {
+                    hideFab();
+                } else {
+                    showFab();
+                }
+                mOldScrollY = y;
+            }
+        });
+
         mFabShare.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -103,6 +122,63 @@ public class WebViewFragment extends BaseFragment{
             }
         });
         return view;
+    }
+
+    private void showFab(){
+        if(getActivity() != null && mFabShare != null){
+            if(!mFabShare.isShown()){
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                    ViewAnimationUtils.createCircularReveal(mFabShare,
+                            mFabShare.getWidth() / 2,
+                            mFabShare.getWidth() / 2,
+                            0,
+                            mFabShare.getWidth()).start();
+                    mFabShare.setVisibility(View.VISIBLE);
+                } else {
+                    mFabShare.animate().alpha(1).start();
+                }
+            }
+        }
+    }
+
+    private void hideFab(){
+        if(getActivity() != null && mFabShare != null){
+            if(mFabShare.isShown() && mFabShare.getTag() == null){
+                mFabShare.setTag("");
+                if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP){
+                    Animator anim = ViewAnimationUtils.createCircularReveal(mFabShare,
+                            mFabShare.getWidth() / 2,
+                            mFabShare.getWidth() / 2,
+                            mFabShare.getWidth(),
+                            0);
+                    anim.addListener(new Animator.AnimatorListener() {
+                        @Override
+                        public void onAnimationStart(Animator animation) {
+
+                        }
+
+                        @Override
+                        public void onAnimationEnd(Animator animation) {
+                            mFabShare.setVisibility(View.GONE);
+                            mFabShare.setTag(null);
+                        }
+
+                        @Override
+                        public void onAnimationCancel(Animator animation) {
+
+                        }
+
+                        @Override
+                        public void onAnimationRepeat(Animator animation) {
+
+                        }
+                    });
+                    anim.start();
+                }else{
+                    mFabShare.animate().alpha(0).start();
+                }
+            }
+        }
     }
 
     @Override
@@ -288,5 +364,9 @@ public class WebViewFragment extends BaseFragment{
 
     public void goBack(){
         mWebView.goBack();
+    }
+
+    public String getUrl(){
+        return mUrl;
     }
 }

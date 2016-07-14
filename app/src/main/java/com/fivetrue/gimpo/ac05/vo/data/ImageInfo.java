@@ -11,6 +11,7 @@ public class ImageInfo implements Parcelable{
 	private String description = null;
 	private String imageType = null;
 	private int number = 0;
+	private long createTime = 0;
 
 	public ImageInfo(){
 
@@ -29,6 +30,7 @@ public class ImageInfo implements Parcelable{
 		description = in.readString();
 		imageType = in.readString();
 		number = in.readInt();
+		createTime = in.readLong();
 	}
 
 	public static final Creator<ImageInfo> CREATOR = new Creator<ImageInfo>() {
@@ -77,10 +79,32 @@ public class ImageInfo implements Parcelable{
 		this.number = index;
 	}
 
+	public int getNumber() {
+		return number;
+	}
+
+	public void setNumber(int number) {
+		this.number = number;
+	}
+
+	public long getCreateTime() {
+		return createTime;
+	}
+
+	public void setCreateTime(long createTime) {
+		this.createTime = createTime;
+	}
+
 	@Override
 	public String toString() {
-		return "ImageInfo [imageUrl=" + imageUrl + ", imageName=" + imageName + ", description=" + description
-				+ ", imageType=" + imageType + ", index=" + number + "]";
+		return "ImageInfo{" +
+				"imageUrl='" + imageUrl + '\'' +
+				", imageName='" + imageName + '\'' +
+				", description='" + description + '\'' +
+				", imageType='" + imageType + '\'' +
+				", number=" + number +
+				", createTime=" + createTime +
+				'}';
 	}
 
 	@Override
@@ -95,5 +119,7 @@ public class ImageInfo implements Parcelable{
 		dest.writeString(description);
 		dest.writeString(imageType);
 		dest.writeInt(number);
+		dest.writeLong(createTime);
 	}
+
 }

@@ -54,6 +54,8 @@ public class ImageInfomationActivity extends DrawerActivity implements ImageInfo
         mPageTab = (PagerSlidingTabStrip) findViewById(R.id.tab_image_infomation_strip);
         mViewPager = (ViewPager) findViewById(R.id.vp_image_infomation);
         mProgress = (ProgressBar) findViewById(R.id.pb_infomation_image);
+
+        mViewPager.setOffscreenPageLimit(3);
     }
 
     private void initData(){
@@ -160,4 +162,12 @@ public class ImageInfomationActivity extends DrawerActivity implements ImageInfo
             overridePendingTransition(R.anim.enter_transform, 0);
         }
     }
+
+    @Override
+    public void onUpdateTabContent(PagerSlidingTabStrip.PagerTabContent content) {
+        if(mPageTab != null){
+            mPageTab.notifyDataSetChanged();
+        }
+    }
+
 }

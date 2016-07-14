@@ -6,7 +6,6 @@ import android.view.View;
 import android.widget.TextView;
 
 import com.fivetrue.gimpo.ac05.R;
-import com.fivetrue.gimpo.ac05.vo.rss.FeedMessage;
 import com.fivetrue.gimpo.ac05.ui.adapter.TownDataRecyclerAdapter;
 import com.fivetrue.gimpo.ac05.ui.fragment.BaseDataListFragment;
 import com.fivetrue.gimpo.ac05.vo.data.TownData;
@@ -20,6 +19,8 @@ import com.fivetrue.gimpo.ac05.widget.PagerSlidingTabStrip;
 public class TownDataListFragment extends BaseDataListFragment<TownDataEntry> implements PagerSlidingTabStrip.PagerTabContent {
 
     private TownDataRecyclerAdapter mAdapter = null;
+
+    private boolean mShowingNew = false;
 
     @Override
     protected int getPageTitleColor(){
@@ -83,6 +84,14 @@ public class TownDataListFragment extends BaseDataListFragment<TownDataEntry> im
         public void onClickPageData(View view, TownData data) {
             TownDataListFragment.this.onClickPageData(data.getTitle(), data, getPageTitleColor(), getPageTitleBgColor());
         }
+
+        @Override
+        public void onShowingNew(TownData data) {
+            if(!mShowingNew){
+                mShowingNew = true;
+                onChangePagerContent(TownDataListFragment.this);
+            }
+        }
     };
 
     @Override
@@ -92,7 +101,7 @@ public class TownDataListFragment extends BaseDataListFragment<TownDataEntry> im
 
     @Override
     public int getIconResource() {
-        return 0;
+        return R.drawable.new_noti_icon;
     }
 
     @Override
@@ -106,7 +115,7 @@ public class TownDataListFragment extends BaseDataListFragment<TownDataEntry> im
 
     @Override
     public boolean isShowingIcon() {
-        return false;
+        return mShowingNew;
     }
 
     @Override

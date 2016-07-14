@@ -4,6 +4,7 @@ import android.support.v7.widget.RecyclerView;
 import android.text.Html;
 import android.view.View;
 import android.view.animation.TranslateAnimation;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.android.volley.toolbox.NetworkImageView;
@@ -12,6 +13,8 @@ import com.fivetrue.gimpo.ac05.image.ImageLoadManager;
 import com.fivetrue.gimpo.ac05.utils.Log;
 import com.fivetrue.gimpo.ac05.vo.data.TownData;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -23,12 +26,15 @@ public class TownDataRecyclerAdapter extends BaseRecyclerAdapter<TownData, TownD
 
     public interface OnClickPageDataListener{
         void onClickPageData(View view, TownData data);
+        void onShowingNew(TownData data);
     }
 
     private int mContentColor = 0;
     private int mContentBgColor = 0;
 
     private OnClickPageDataListener mOnClickPageDataListener = null;
+
+    private SimpleDateFormat mSdf = new SimpleDateFormat("yyyy-MM-dd");
 
     public TownDataRecyclerAdapter(List<TownData> data, int contentColor, int contentBgColor) {
         super(data, R.layout.item_page_data_list);
@@ -60,10 +66,18 @@ public class TownDataRecyclerAdapter extends BaseRecyclerAdapter<TownData, TownD
                     imgUrl = imgUrl.substring(0, imgUrl.indexOf("\""));
                     Log.i(TAG, "setPageData: " + imgUrl);
                     holder.imageView.setImageUrl(imgUrl, ImageLoadManager.getImageLoader());
-                }            }
+                }
+            }
             if(data.getDate() != null){
                 String date = holder.date.getResources().getString(R.string.create_date) + " " + data.getDate();
                 holder.date.setText(date);
+                String currentDate = mSdf.format(new Date(System.currentTimeMillis() - (1000 * 60 * 60 * 24 * 7)));
+                if(data.getDate().compareTo(currentDate) < 0){
+                    holder.newIcon.setVisibility(View.GONE);
+                }else{
+                    holder.newIcon.setVisibility(View.VISIBLE);
+                    mOnClickPageDataListener.onShowingNew(data);
+                }
             }
             holder.container.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -89,6 +103,7 @@ public class TownDataRecyclerAdapter extends BaseRecyclerAdapter<TownData, TownD
         protected TextView title = null;
         protected TextView date = null;
         protected NetworkImageView imageView = null;
+        protected ImageView newIcon = null;
         protected TextView content = null;
 
         public PageDataHolder(View itemView) {
@@ -98,6 +113,7 @@ public class TownDataRecyclerAdapter extends BaseRecyclerAdapter<TownData, TownD
             date = (TextView) itemView.findViewById(R.id.tv_item_page_data_list_date);
             layoutTop = itemView.findViewById(R.id.layout_item_page_data_list_top);
             imageView = (NetworkImageView) itemView.findViewById(R.id.iv_item_page_data_list_image);
+            newIcon = (ImageView) itemView.findViewById(R.id.iv_item_page_data_list_new);
             content = (TextView) itemView.findViewById(R.id.tv_item_page_data_list_content);
             TranslateAnimation anim = new TranslateAnimation(0, 0, -100, 0);
             container.setAnimation(anim);

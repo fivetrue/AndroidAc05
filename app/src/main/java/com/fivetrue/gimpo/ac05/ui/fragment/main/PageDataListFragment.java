@@ -24,6 +24,7 @@ public class PageDataListFragment extends BaseDataListFragment<PageData> impleme
     private PageDataRecyclerAdapter mAdapter = null;
 
     private Feed mFeed = null;
+    private boolean mShowingNew = false;
 
     public PageDataListFragment(){
 
@@ -37,6 +38,14 @@ public class PageDataListFragment extends BaseDataListFragment<PageData> impleme
                     @Override
                     public void onClickPageData(View view, FeedMessage data) {
                         PageDataListFragment.this.onClickPageData(data.getTitle(), data, getPageTitleColor(), getPageTitleBgColor());
+                    }
+
+                    @Override
+                    public void onShowingNewIcon(FeedMessage data) {
+                        if(!mShowingNew){
+                            mShowingNew = true;
+                            onChangePagerContent(PageDataListFragment.this);
+                        }
                     }
                 });
                 view.setAdapter(mAdapter);
@@ -116,7 +125,7 @@ public class PageDataListFragment extends BaseDataListFragment<PageData> impleme
 
     @Override
     public int getIconResource() {
-        return 0;
+        return R.drawable.new_noti_icon;
     }
 
     @Override
@@ -126,7 +135,7 @@ public class PageDataListFragment extends BaseDataListFragment<PageData> impleme
 
     @Override
     public boolean isShowingIcon() {
-        return false;
+        return mShowingNew;
     }
 
     @Override

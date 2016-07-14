@@ -24,6 +24,8 @@ public class NoticeDataPagerAdapter extends BasePagerAdapter {
 
     public interface OnClickNoticeDataListener{
         void onClick(View view, NotificationData data);
+
+        void onShowNewItem(NotificationData data);
     }
 
     private List<NotificationData> mData = null;

@@ -1,5 +1,6 @@
 package com.fivetrue.gimpo.ac05.ui.fragment;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
@@ -13,7 +14,6 @@ import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import com.fivetrue.gimpo.ac05.ApplicationEX;
 import com.fivetrue.gimpo.ac05.R;
 import com.fivetrue.gimpo.ac05.analytics.Event;
 import com.fivetrue.gimpo.ac05.analytics.GoogleAnalytics;
@@ -84,6 +84,12 @@ public class DrawerLeftMenuFragment extends  BaseListFragment<LeftMenu> {
         View view = super.onCreateView(inflater, container, savedInstanceState);
         setListData(mLeftMenu);
         return view;
+    }
+
+    public void showNewIcon(Class< ? extends Activity> moveActivityClass){
+        if(getAdapter() != null && moveActivityClass != null){
+            ((LeftMenuListAdapter)getAdapter()).showNewIcon(moveActivityClass);
+        }
     }
 
     private void initData(){

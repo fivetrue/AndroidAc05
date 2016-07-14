@@ -1,5 +1,6 @@
 package com.fivetrue.gimpo.ac05.ui;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
@@ -7,7 +8,6 @@ import android.os.Handler;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.ViewPager;
 import android.support.v7.widget.RecyclerView;
-import android.text.TextUtils;
 import android.view.View;
 import android.widget.ProgressBar;
 import android.widget.Toast;
@@ -20,9 +20,13 @@ import com.fivetrue.gimpo.ac05.analytics.GoogleAnalytics;
 import com.fivetrue.gimpo.ac05.analytics.UserProperty;
 import com.fivetrue.gimpo.ac05.net.BaseApiResponse;
 import com.fivetrue.gimpo.ac05.net.NetworkManager;
+import com.fivetrue.gimpo.ac05.net.request.ImageInfoDataRequest;
 import com.fivetrue.gimpo.ac05.net.request.MainPageDataRequest;
+import com.fivetrue.gimpo.ac05.net.request.NoticeDataRequest;
 import com.fivetrue.gimpo.ac05.preferences.ConfigPreferenceManager;
+import com.fivetrue.gimpo.ac05.ui.fragment.DrawerLeftMenuFragment;
 import com.fivetrue.gimpo.ac05.vo.IPageData;
+import com.fivetrue.gimpo.ac05.vo.data.ImageInfo;
 import com.fivetrue.gimpo.ac05.vo.rss.FeedMessage;
 import com.fivetrue.gimpo.ac05.vo.notification.NotificationData;
 import com.fivetrue.gimpo.ac05.service.notification.NotificationHelper;
@@ -36,6 +40,8 @@ import com.fivetrue.gimpo.ac05.vo.data.MainDataEntry;
 import com.fivetrue.gimpo.ac05.vo.user.UserInfo;
 import com.fivetrue.gimpo.ac05.widget.PagerSlidingTabStrip;
 import com.google.gson.reflect.TypeToken;
+
+import java.util.ArrayList;
 
 /**
  * Created by kwonojin on 16. 6. 7..
@@ -54,7 +60,10 @@ public class MainActivity extends DrawerActivity implements BaseDataListFragment
     private MainFragmentViewPagerAdapter mAdapter = null;
 
     private UserInfo mUserInfo = null;
+
     private MainPageDataRequest mPageDataReqeust = null;
+    private NoticeDataRequest mNoticeDataRequest = null;
+    private ImageInfoDataRequest mImageInfoDataRequest = null;
 
     private boolean mDoubleClickBack = false;
 
@@ -69,6 +78,8 @@ public class MainActivity extends DrawerActivity implements BaseDataListFragment
         checkUserInfo();
         mProgressBar.setVisibility(View.VISIBLE);
         NetworkManager.getInstance().request(mPageDataReqeust);
+        NetworkManager.getInstance().request(mNoticeDataRequest);
+        NetworkManager.getInstance().request(mImageInfoDataRequest);
         if(getIntent() != null && getIntent().getDataString() != null){
             String data = getIntent().getData().toString();
             if(data != null && (data.startsWith("http") || data.startsWith("https"))){
@@ -90,12 +101,15 @@ public class MainActivity extends DrawerActivity implements BaseDataListFragment
         mUserInfo = getIntent().getParcelableExtra(UserInfo.class.getName());
         mConfigPref = new ConfigPreferenceManager(this);
         mPageDataReqeust = new MainPageDataRequest(this, basePageDataApiResponse);
+        mNoticeDataRequest = new NoticeDataRequest(this, baseNoticeDataApiResponse);
+        mImageInfoDataRequest = new ImageInfoDataRequest(this, baseImageInfoApiResponse);
     }
 
     private void initView(){
         mBackground = findViewById(R.id.view_main_background);
         mTabPager = (PagerSlidingTabStrip) findViewById(R.id.tab_main_pager_strip);
         mViewPager = (ViewPager) findViewById(R.id.vp_main_pager);
+        mViewPager.setOffscreenPageLimit(3);
 
         mProgressBar = (ProgressBar) findViewById(R.id.pb_main);
     }
@@ -155,20 +169,6 @@ public class MainActivity extends DrawerActivity implements BaseDataListFragment
         }
     }
 
-    private BaseApiResponse<MainDataEntry> basePageDataApiResponse = new BaseApiResponse<>(new BaseApiResponse.OnResponseListener<MainDataEntry>() {
-        @Override
-        public void onResponse(BaseApiResponse<MainDataEntry> response) {
-            mPageDataReqeust.setCache(true);
-            setData(response.getData());
-            mProgressBar.setVisibility(View.GONE);
-        }
-
-        @Override
-        public void onError(VolleyError error) {
-            mProgressBar.setVisibility(View.GONE);
-        }
-    }, new TypeToken<MainDataEntry>(){}.getType());
-
     @Override
     public void onClickPageData(String title, IPageData data, Integer textColor, Integer bgColor) {
         if(mUserInfo == null){
@@ -200,10 +200,15 @@ public class MainActivity extends DrawerActivity implements BaseDataListFragment
 
     @Override
     public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
-//        int backgroundHeight = mBackground.getHeight();
-//        backgroundHeight = (int) (backgroundHeight * 0.1);
-//        mBackground.scrollTo(0, (int) -(backgroundHeight * scrollOffset));
         mBackground.scrollTo(0, dy);
+    }
+
+    public void showNewIconLeftFragment(Class< ? extends Activity> className){
+        for(Fragment f : getCurrentFragmentManager().getFragments()){
+            if(f != null && f instanceof DrawerLeftMenuFragment){
+                ((DrawerLeftMenuFragment) f).showNewIcon(className);
+            }
+        }
     }
 
     @Override
@@ -233,4 +238,61 @@ public class MainActivity extends DrawerActivity implements BaseDataListFragment
             }
         }
     }
+
+    @Override
+    public void onChangePageContent(PagerSlidingTabStrip.PagerTabContent content) {
+        mTabPager.notifyDataSetChanged();
+        showNewIconLeftFragment(MainActivity.class);
+    }
+
+    private BaseApiResponse<MainDataEntry> basePageDataApiResponse = new BaseApiResponse<>(new BaseApiResponse.OnResponseListener<MainDataEntry>() {
+        @Override
+        public void onResponse(BaseApiResponse<MainDataEntry> response) {
+            mPageDataReqeust.setCache(true);
+            setData(response.getData());
+            mProgressBar.setVisibility(View.GONE);
+        }
+
+        @Override
+        public void onError(VolleyError error) {
+            mProgressBar.setVisibility(View.GONE);
+        }
+    }, new TypeToken<MainDataEntry>(){}.getType());
+
+
+    private BaseApiResponse <ArrayList<NotificationData>> baseNoticeDataApiResponse = new BaseApiResponse<>(new BaseApiResponse.OnResponseListener<ArrayList<NotificationData>>() {
+        @Override
+        public void onResponse(BaseApiResponse<ArrayList<NotificationData>> response) {
+            if(response != null && response.getData() != null){
+                for(NotificationData data : response.getData()){
+                    if(data.getCreateTime() >= System.currentTimeMillis() - (1000 * 60 * 60 * 24 * 3)){
+                        showNewIconLeftFragment(NoticeListActivity.class);
+                    }
+                }
+            }
+        }
+
+        @Override
+        public void onError(VolleyError error) {
+
+        }
+    }, new TypeToken<ArrayList<NotificationData>>(){}.getType());
+
+    private BaseApiResponse<ArrayList<ImageInfo>> baseImageInfoApiResponse = new BaseApiResponse<>(new BaseApiResponse.OnResponseListener<ArrayList<ImageInfo>>() {
+
+        @Override
+        public void onResponse(BaseApiResponse<ArrayList<ImageInfo>> response) {
+            if(response != null && response.getData() != null){
+                for(ImageInfo data : response.getData()){
+                    if(data.getCreateTime() >= System.currentTimeMillis() - (1000 * 60 * 60 * 24 * 3)){
+                        showNewIconLeftFragment(ImageInfomationActivity.class);
+                    }
+                }
+            }
+        }
+
+        @Override
+        public void onError(VolleyError error) {
+        }
+    }, new TypeToken<ArrayList<ImageInfo>>(){}.getType());
 }

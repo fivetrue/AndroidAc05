@@ -94,6 +94,11 @@ public class NoticeListActivity extends DrawerActivity{
             addFragment(WebViewFragment.class, b, getBaseLayoutContainer().getId(), R.anim.enter_transform, R.anim.exit_transform, true);
             GoogleAnalytics.getInstance().sendLogEventProperties(Event.ClickNoticeData);
         }
+
+        @Override
+        public void onShowNewItem(NotificationData data) {
+
+        }
     };
 
     private BaseApiResponse <ArrayList<NotificationData>> baseApiResponse = new BaseApiResponse<>(new BaseApiResponse.OnResponseListener<ArrayList<NotificationData>>() {

@@ -26,6 +26,8 @@ public class ImageInfomationFragment extends BaseFragment implements PagerSlidin
 
     public interface OnChooseImageInfomationListener{
         void onSelected(ImageInfo info, Bitmap bm);
+
+        void onUpdateTabContent(PagerSlidingTabStrip.PagerTabContent content);
     }
 
     public ImageInfomationFragment(){
@@ -37,6 +39,8 @@ public class ImageInfomationFragment extends BaseFragment implements PagerSlidin
     private ImageInfoEntry mEntry = null;
 
     private OnChooseImageInfomationListener mOnChooseImageInfomationListener = null;
+
+    private boolean mShowingIcon = false;
 
     @Override
     public void onAttach(Context context) {
@@ -81,6 +85,16 @@ public class ImageInfomationFragment extends BaseFragment implements PagerSlidin
                 } else {
                     mAdapter.setData(entry.getImageInfos());
                 }
+
+                for(ImageInfo info : entry.getImageInfos()){
+                    if(info.getCreateTime() > System.currentTimeMillis() - (1000 * 60 * 60 * 24 * 7)){
+                        mShowingIcon = true;
+                        if(mOnChooseImageInfomationListener != null){
+                            mOnChooseImageInfomationListener.onUpdateTabContent(this);
+                        }
+                        break;
+                    }
+                }
             }
         }
     }
@@ -92,7 +106,7 @@ public class ImageInfomationFragment extends BaseFragment implements PagerSlidin
 
     @Override
     public int getIconResource() {
-        return 0;
+        return R.drawable.new_noti_icon;
     }
 
     @Override
@@ -106,7 +120,7 @@ public class ImageInfomationFragment extends BaseFragment implements PagerSlidin
 
     @Override
     public boolean isShowingIcon() {
-        return false;
+        return mShowingIcon;
     }
 
     private ImageInfomationRecyclerAdapter.OnInfomationImageItemClickListener onInfomationImageItemClickListener = new ImageInfomationRecyclerAdapter.OnInfomationImageItemClickListener() {

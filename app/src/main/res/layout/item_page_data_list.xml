@@ -39,10 +39,21 @@
                 android:layout_height="wrap_content"
                 android:layout_alignParentRight="true"
                 android:layout_below="@id/layout_item_page_data_list_top"
-                android:layout_margin="@dimen/page_item_margin_horizontal"
+                android:layout_marginRight="@dimen/page_item_margin_horizontal"
+                android:layout_marginLeft="@dimen/page_item_margin_horizontal"
+                android:layout_marginTop="@dimen/page_item_margin_horizontal"
                 android:textColor="@android:color/black"
                 android:gravity="center"
                 style="@style/CommonText.Tiny"/>
+
+            <ImageView
+                android:id="@+id/iv_item_page_data_list_new"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/new_noti_icon"
+                android:layout_below="@id/layout_item_page_data_list_top"
+                android:layout_toLeftOf="@id/tv_item_page_data_list_date"
+                android:layout_marginTop="@dimen/page_item_margin_horizontal"/>
 
             <RelativeLayout
                 android:layout_width="match_parent"

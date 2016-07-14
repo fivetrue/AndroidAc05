@@ -15,7 +15,7 @@ import android.widget.TextView;
 
 import com.fivetrue.gimpo.ac05.R;
 import com.fivetrue.gimpo.ac05.vo.IPageData;
-import com.fivetrue.gimpo.ac05.vo.rss.FeedMessage;
+import com.fivetrue.gimpo.ac05.widget.PagerSlidingTabStrip;
 
 /**
  * Created by kwonojin on 16. 6. 15..
@@ -24,7 +24,7 @@ abstract public class BaseDataListFragment<T> extends ColorChooserFragment {
 
     private static final String TAG = "PageDataListFragment";
 
-    public interface IBaseDataListListener {
+    public interface IBaseDataListListener extends PagerSlidingTabStrip.OnPageContentChangeListener {
         void onClickPageData(String title, IPageData data, Integer textColor, Integer bgColor);
         void onScrollStateChanged(RecyclerView recyclerView, int newState);
         void onScrolled(RecyclerView recyclerView, int dx, int dy);
@@ -178,6 +178,12 @@ abstract public class BaseDataListFragment<T> extends ColorChooserFragment {
     protected void onClickPageData(String title, IPageData data, Integer textColor, Integer bgColor){
         if(mOnPageDataClickListener != null){
             mOnPageDataClickListener.onClickPageData(title, data, textColor, bgColor);
+        }
+    }
+
+    protected void onChangePagerContent(PagerSlidingTabStrip.PagerTabContent data){
+        if(mOnPageDataClickListener != null){
+            mOnPageDataClickListener.onChangePageContent(data);
         }
     }
 

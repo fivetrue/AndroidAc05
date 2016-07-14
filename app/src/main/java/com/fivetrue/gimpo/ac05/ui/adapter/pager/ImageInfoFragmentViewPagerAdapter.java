@@ -6,17 +6,10 @@ import android.support.v4.app.FragmentManager;
 import com.fivetrue.gimpo.ac05.ui.adapter.BaseFragmentPagerAdapter;
 import com.fivetrue.gimpo.ac05.ui.fragment.BaseFragment;
 import com.fivetrue.gimpo.ac05.ui.fragment.ImageInfomationFragment;
-import com.fivetrue.gimpo.ac05.ui.fragment.main.NoticeDataListFragment;
-import com.fivetrue.gimpo.ac05.ui.fragment.main.PageDataListFragment;
-import com.fivetrue.gimpo.ac05.ui.fragment.main.TownDataListFragment;
-import com.fivetrue.gimpo.ac05.vo.data.ImageInfo;
 import com.fivetrue.gimpo.ac05.vo.data.ImageInfoEntry;
-import com.fivetrue.gimpo.ac05.vo.data.MainDataEntry;
-import com.fivetrue.gimpo.ac05.vo.data.PageData;
-import com.fivetrue.gimpo.ac05.vo.data.TownDataEntry;
-import com.fivetrue.gimpo.ac05.vo.notification.NotificationData;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 /**
  * Created by kwonojin on 16. 6. 29..
@@ -25,10 +18,13 @@ public class ImageInfoFragmentViewPagerAdapter extends BaseFragmentPagerAdapter 
 
     private ArrayList<ImageInfoEntry> mImageInfoDatas = null;
 
+    private HashMap<ImageInfoEntry, BaseFragment> mFragmentMap = null;
+
 
     public ImageInfoFragmentViewPagerAdapter(FragmentManager fm, ArrayList<ImageInfoEntry> datas) {
         super(fm);
         mImageInfoDatas = datas;
+        mFragmentMap = new HashMap<>();
     }
 
     @Override
@@ -44,10 +40,14 @@ public class ImageInfoFragmentViewPagerAdapter extends BaseFragmentPagerAdapter 
     @Override
     public Object getItem(int position) {
         ImageInfoEntry infoEntry = mImageInfoDatas.get(position);
-        Bundle b = new Bundle();
-        b.putParcelable(ImageInfoEntry.class.getName(), infoEntry);
-        BaseFragment f = new ImageInfomationFragment();
-        f.setArguments(b);
+        BaseFragment f = mFragmentMap.get(infoEntry);
+        if(f == null){
+            Bundle b = new Bundle();
+            b.putParcelable(ImageInfoEntry.class.getName(), infoEntry);
+            f = new ImageInfomationFragment();
+            f.setArguments(b);
+            mFragmentMap.put(infoEntry, f);
+        }
         return f;
     }
 
