@@ -1,6 +1,7 @@
 package com.fivetrue.gimpo.ac05.rss;
 
 import android.os.AsyncTask;
+import android.util.Log;
 
 import com.fivetrue.gimpo.ac05.vo.rss.Feed;
 import com.fivetrue.gimpo.ac05.vo.rss.FeedMessage;
@@ -16,6 +17,8 @@ import java.net.URL;
 import java.util.concurrent.Executor;
 
 public class RSSFeedParser extends AsyncTask<Void, Void, Feed>{
+
+	private static final String TAG = "RSSFeedParser";
 
 	private static Executor sExecutor = AsyncTask.THREAD_POOL_EXECUTOR;
 
@@ -160,6 +163,9 @@ public class RSSFeedParser extends AsyncTask<Void, Void, Feed>{
 			e.printStackTrace();
 		} catch (IOException e) {
 			e.printStackTrace();
+		} catch (RuntimeException e){
+			e.printStackTrace();
+			Log.e(TAG, "doInBackground: " + " feed Url open error.");
 		}
 		return feed;
 	}

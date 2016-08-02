@@ -31,7 +31,7 @@ public class PageDataListFragment extends BaseDataListFragment<PageData> impleme
     }
 
     private void setInternalData(RecyclerView view, PageData data, Feed feed){
-        if(feed.getMessages() != null){
+        if(feed != null && feed.getMessages() != null){
             if(mAdapter == null){
                 mAdapter = new PageDataRecyclerAdapter(feed.getMessages(), getPageContentColor(), getPageContentBgColor());
                 mAdapter.setOnClickPageDataListener(new PageDataRecyclerAdapter.OnClickPageDataListener() {
