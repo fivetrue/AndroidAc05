@@ -16,8 +16,14 @@
     <style name="NoticeActivityTheme" parent="AppTheme">
     </style>
 
-    <style name="CafeActivityTheme" parent="AppTheme">
+    <style name="AppTheme.ImageDetail">
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+    </style>
 
+    <style name="AppTheme.Cafe">
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
     </style>
 
     <style name="CommonButton">

@@ -28,6 +28,7 @@ import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 
+import com.fivetrue.fivetrueandroid.ui.fragment.BaseFragment;
 import com.fivetrue.gimpo.ac05.R;
 import com.fivetrue.gimpo.ac05.analytics.Event;
 import com.fivetrue.gimpo.ac05.analytics.GoogleAnalytics;
@@ -36,7 +37,7 @@ import com.fivetrue.gimpo.ac05.utils.Log;
 /**
  * Created by kwonojin on 16. 6. 10..
  */
-public class WebViewFragment extends BaseFragment{
+public class WebViewFragment extends BaseFragment {
 
     private static final String TAG = "WebViewFragment";
 

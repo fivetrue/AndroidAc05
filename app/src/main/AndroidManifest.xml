@@ -32,11 +32,6 @@
         </activity>
 
         <activity
-            android:name=".ui.NaverLoginActivity"
-            android:screenOrientation="portrait"
-            android:theme="@style/TransparentAppTheme"/>
-
-        <activity
             android:name=".ui.MainActivity"
             android:screenOrientation="portrait"/>
 
@@ -57,7 +52,7 @@
         <activity
             android:name=".ui.CafeActivity"
             android:screenOrientation="portrait"
-            android:theme="@style/CafeActivityTheme"/>
+            android:theme="@style/AppTheme.ImageDetail"/>
 
         <activity
             android:name=".ui.SettingActivity"
@@ -65,7 +60,8 @@
 
         <activity
             android:name=".ui.ImageDetailActivity"
-            android:screenOrientation="portrait"/>
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme.ImageDetail"/>
 
         <service
             android:name=".service.NotificationService"/>

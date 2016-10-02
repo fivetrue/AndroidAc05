@@ -7,6 +7,7 @@ import android.widget.ProgressBar;
 
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.ImageLoader;
+import com.fivetrue.fivetrueandroid.ui.BaseActivity;
 import com.fivetrue.gimpo.ac05.R;
 import com.fivetrue.gimpo.ac05.image.ImageLoadManager;
 import com.fivetrue.gimpo.ac05.view.DetailPhotoView;
@@ -14,7 +15,7 @@ import com.fivetrue.gimpo.ac05.view.DetailPhotoView;
 /**
  * Created by kwonojin on 16. 6. 7..
  */
-public class ImageDetailActivity extends BaseActivity{
+public class ImageDetailActivity extends BaseActivity {
 
     private static final String TAG = "ImageDetailActivity";
 

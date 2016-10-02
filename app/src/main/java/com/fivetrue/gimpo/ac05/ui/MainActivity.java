@@ -13,6 +13,7 @@ import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import com.android.volley.VolleyError;
+import com.fivetrue.fivetrueandroid.ui.BaseActivity;
 import com.fivetrue.gimpo.ac05.Constants;
 import com.fivetrue.gimpo.ac05.R;
 import com.fivetrue.gimpo.ac05.analytics.Event;
@@ -46,7 +47,7 @@ import java.util.ArrayList;
 /**
  * Created by kwonojin on 16. 6. 7..
  */
-public class MainActivity extends DrawerActivity implements BaseDataListFragment.IBaseDataListListener {
+public class MainActivity extends BaseActivity implements BaseDataListFragment.IBaseDataListListener {
 
     private static final String TAG = "MainActivity";
 

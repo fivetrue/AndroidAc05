@@ -2,8 +2,10 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/Gimpo-AC-05.iml" filepath="$PROJECT_DIR$/Gimpo-AC-05.iml" />
+      <module fileurl="file://$PROJECT_DIR$/AndroidAC05.iml" filepath="$PROJECT_DIR$/AndroidAC05.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
+      <module fileurl="file://$PROJECT_DIR$/fivetrueLibrary/fivetrue/fivetrue.iml" filepath="$PROJECT_DIR$/fivetrueLibrary/fivetrue/fivetrue.iml" />
+      <module fileurl="file://$PROJECT_DIR$/fivetrueLibrary/fivetrueLibrary.iml" filepath="$PROJECT_DIR$/fivetrueLibrary/fivetrueLibrary.iml" />
     </modules>
   </component>
 </project>
