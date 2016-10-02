@@ -1,0 +1,3 @@
+[submodule "fivetrueLibrary"]
+	path = fivetrueLibrary
+	url = https://fivetrue1101@github.com/fivetrue/FivetrueAndroid.git
