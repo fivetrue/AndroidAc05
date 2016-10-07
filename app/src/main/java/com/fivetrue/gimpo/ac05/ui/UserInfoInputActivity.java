@@ -12,11 +12,10 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.android.volley.VolleyError;
+import com.fivetrue.fivetrueandroid.net.BaseApiResponse;
+import com.fivetrue.fivetrueandroid.net.NetworkManager;
+import com.fivetrue.fivetrueandroid.ui.BaseActivity;
 import com.fivetrue.gimpo.ac05.R;
-import com.fivetrue.gimpo.ac05.analytics.Event;
-import com.fivetrue.gimpo.ac05.analytics.GoogleAnalytics;
-import com.fivetrue.gimpo.ac05.net.BaseApiResponse;
-import com.fivetrue.gimpo.ac05.net.NetworkManager;
 import com.fivetrue.gimpo.ac05.net.request.UpdateUserDistrictRequest;
 import com.fivetrue.gimpo.ac05.preferences.ConfigPreferenceManager;
 import com.fivetrue.gimpo.ac05.ui.adapter.DistrictSpinnerAdapter;
@@ -52,7 +51,6 @@ public class UserInfoInputActivity extends BaseActivity {
         setContentView(R.layout.activity_userinfo_input);
         initData();
         initView();
-        GoogleAnalytics.getInstance().sendLogEventProperties(Event.EnterUserInfoInputActivity);
     }
 
     private void initData(){
@@ -90,8 +88,6 @@ public class UserInfoInputActivity extends BaseActivity {
                     AlphaAnimation animation = new AlphaAnimation(0, 1);
                     mLayoutUserSelected.setAnimation(animation);
                     mLayoutUserSelected.setVisibility(View.VISIBLE);
-                    GoogleAnalytics.getInstance().sendLogEventProperties(Event.ClickUserInfoInput_SelectedDistrict.addParams("District",
-                            mAdapter.getItem(position).toString()));
                 }else{
                     mUserInfo.setDistrict(0);
                     mSelectedText.setText("");
@@ -115,7 +111,6 @@ public class UserInfoInputActivity extends BaseActivity {
             @Override
             public void onClick(View v) {
                 if (mUserInfo != null && mUserInfo.getDistrict() > 0) {
-                    GoogleAnalytics.getInstance().sendLogEventProperties(Event.ClickUserInfoInput_FinishUserInput.addParams("District", "mUserInfo.getApartDong"));
                     mUpdateUserDistrict.setObject(mUserInfo);
                     NetworkManager.getInstance().request(mUpdateUserDistrict);
                 } else {
@@ -138,7 +133,7 @@ public class UserInfoInputActivity extends BaseActivity {
         }
     }
 
-    private BaseApiResponse<UserInfo> updateUserDistrictResponse = new BaseApiResponse<>(new BaseApiResponse.OnResponseListener<UserInfo>() {
+    private BaseApiResponse.OnResponseListener<UserInfo> updateUserDistrictResponse = new BaseApiResponse.OnResponseListener<UserInfo>() {
         @Override
         public void onResponse(BaseApiResponse<UserInfo> response) {
             if(response != null &&  response.getData() != null){
@@ -151,7 +146,7 @@ public class UserInfoInputActivity extends BaseActivity {
         public void onError(VolleyError error) {
             finish();
         }
-    }, new TypeToken<UserInfo>(){}.getType());
+    };
 
     @Override
     public void finish() {

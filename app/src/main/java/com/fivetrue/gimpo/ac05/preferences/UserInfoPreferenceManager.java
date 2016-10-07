@@ -2,6 +2,8 @@ package com.fivetrue.gimpo.ac05.preferences;
 
 import android.content.Context;
 
+import com.fivetrue.fivetrueandroid.preferences.SharedPreferenceHelper;
+
 /**
  * Created by HanyLuv on 2016-04-05.
  */

@@ -1,7 +1,7 @@
 package com.fivetrue.gimpo.ac05.net.response;
 
 
-import com.fivetrue.gimpo.ac05.net.BaseApiResponse;
+import com.fivetrue.fivetrueandroid.net.BaseApiResponse;
 import com.google.gson.reflect.TypeToken;
 
 import org.json.JSONObject;

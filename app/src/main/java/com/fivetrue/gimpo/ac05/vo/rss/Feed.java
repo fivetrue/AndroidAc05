@@ -4,7 +4,6 @@ import android.os.Parcel;
 import android.os.Parcelable;
 
 import java.util.ArrayList;
-import java.util.List;
 
 /*
  * Stores an RSS feed
@@ -19,7 +18,7 @@ public class Feed implements Parcelable{
 	final String pubDate;
 	final String lastBuildDate;
 
-	List<FeedMessage> entries = new ArrayList<>();
+	ArrayList<FeedMessage> entries = new ArrayList<>();
 
 	public Feed(String title, String link, String description, String language,
 			String copyright, String pubDate, String lastBuildDate) {
@@ -55,7 +54,7 @@ public class Feed implements Parcelable{
 		}
 	};
 
-	public List<FeedMessage> getMessages() {
+	public ArrayList<FeedMessage> getMessages() {
 		return entries;
 	}
 

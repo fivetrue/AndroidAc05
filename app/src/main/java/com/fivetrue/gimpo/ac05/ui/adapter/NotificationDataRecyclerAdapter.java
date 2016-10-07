@@ -7,8 +7,9 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.android.volley.toolbox.NetworkImageView;
+import com.fivetrue.fivetrueandroid.image.ImageLoadManager;
+import com.fivetrue.fivetrueandroid.ui.adapter.BaseRecyclerAdapter;
 import com.fivetrue.gimpo.ac05.R;
-import com.fivetrue.gimpo.ac05.image.ImageLoadManager;
 import com.fivetrue.gimpo.ac05.vo.notification.NotificationData;
 import com.fivetrue.gimpo.ac05.ui.adapter.pager.NoticeDataPagerAdapter;
 
@@ -24,13 +25,10 @@ public class NotificationDataRecyclerAdapter extends BaseRecyclerAdapter<Notific
     private static final String TAG = "NotificationDataRecyclerAdapter";
 
 
-    private NoticeDataPagerAdapter.OnClickNoticeDataListener mOnClickPageDataListener = null;
-
     private SimpleDateFormat mSdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
-    public NotificationDataRecyclerAdapter(List<NotificationData> data, NoticeDataPagerAdapter.OnClickNoticeDataListener ll) {
+    public NotificationDataRecyclerAdapter(List<NotificationData> data) {
         super(data, R.layout.item_notification_data_list);
-        mOnClickPageDataListener = ll;
     }
 
 
@@ -62,7 +60,6 @@ public class NotificationDataRecyclerAdapter extends BaseRecyclerAdapter<Notific
 
             if(data.getCreateTime() > System.currentTimeMillis() - (1000 * 60 * 60 * 24 * 3)){
                 holder.newIcon.setVisibility(View.VISIBLE);
-                mOnClickPageDataListener.onShowNewItem(data);
             }else{
                 holder.newIcon.setVisibility(View.GONE);
             }
@@ -70,9 +67,7 @@ public class NotificationDataRecyclerAdapter extends BaseRecyclerAdapter<Notific
             holder.container.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    if (mOnClickPageDataListener != null) {
-                        mOnClickPageDataListener.onClick(v, data);
-                    }
+                    onClickItem(v, data);
                 }
             });
             holder.container.setVisibility(View.VISIBLE);

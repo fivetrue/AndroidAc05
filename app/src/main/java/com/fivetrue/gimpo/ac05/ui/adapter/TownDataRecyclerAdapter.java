@@ -2,15 +2,16 @@ package com.fivetrue.gimpo.ac05.ui.adapter;
 
 import android.support.v7.widget.RecyclerView;
 import android.text.Html;
+import android.util.Log;
 import android.view.View;
 import android.view.animation.TranslateAnimation;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.android.volley.toolbox.NetworkImageView;
+import com.fivetrue.fivetrueandroid.image.ImageLoadManager;
+import com.fivetrue.fivetrueandroid.ui.adapter.BaseRecyclerAdapter;
 import com.fivetrue.gimpo.ac05.R;
-import com.fivetrue.gimpo.ac05.image.ImageLoadManager;
-import com.fivetrue.gimpo.ac05.utils.Log;
 import com.fivetrue.gimpo.ac05.vo.data.TownData;
 
 import java.text.SimpleDateFormat;

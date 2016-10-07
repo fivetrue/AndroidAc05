@@ -15,7 +15,7 @@ import android.widget.TextView;
 
 import com.fivetrue.gimpo.ac05.R;
 import com.fivetrue.gimpo.ac05.vo.IPageData;
-import com.fivetrue.gimpo.ac05.widget.PagerSlidingTabStrip;
+import com.fivetrue.fivetrueandroid.widget.PagerSlidingTabStrip;
 
 /**
  * Created by kwonojin on 16. 6. 15..

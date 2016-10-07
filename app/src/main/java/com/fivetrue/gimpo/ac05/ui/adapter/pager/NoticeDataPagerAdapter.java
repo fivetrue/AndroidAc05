@@ -6,10 +6,10 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.android.volley.toolbox.NetworkImageView;
+import com.fivetrue.fivetrueandroid.image.ImageLoadManager;
+import com.fivetrue.fivetrueandroid.ui.adapter.BasePagerAdapter;
 import com.fivetrue.gimpo.ac05.R;
-import com.fivetrue.gimpo.ac05.image.ImageLoadManager;
 import com.fivetrue.gimpo.ac05.vo.notification.NotificationData;
-import com.fivetrue.gimpo.ac05.ui.adapter.BasePagerAdapter;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;

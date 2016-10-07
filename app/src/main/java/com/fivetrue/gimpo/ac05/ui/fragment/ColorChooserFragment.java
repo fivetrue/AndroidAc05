@@ -2,12 +2,13 @@ package com.fivetrue.gimpo.ac05.ui.fragment;
 
 import android.graphics.Color;
 
+import com.fivetrue.fivetrueandroid.ui.fragment.BaseFragment;
 import com.fivetrue.gimpo.ac05.R;
 
 /**
  * Created by kwonojin on 16. 6. 21..
  */
-public abstract class ColorChooserFragment extends BaseFragment{
+public abstract class ColorChooserFragment extends BaseFragment {
 
     abstract protected int getPageTitleColor();
 

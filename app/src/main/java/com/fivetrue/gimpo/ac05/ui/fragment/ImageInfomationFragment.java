@@ -6,16 +6,17 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.fivetrue.fivetrueandroid.ui.fragment.BaseFragment;
 import com.fivetrue.gimpo.ac05.R;
 import com.fivetrue.gimpo.ac05.ui.adapter.ImageInfomationRecyclerAdapter;
-import com.fivetrue.gimpo.ac05.utils.Log;
 import com.fivetrue.gimpo.ac05.vo.data.ImageInfo;
 import com.fivetrue.gimpo.ac05.vo.data.ImageInfoEntry;
-import com.fivetrue.gimpo.ac05.widget.PagerSlidingTabStrip;
+import com.fivetrue.fivetrueandroid.widget.PagerSlidingTabStrip;
 
 /**
  * Created by kwonojin on 16. 7. 6..

@@ -15,11 +15,8 @@ import android.widget.FrameLayout;
 import android.widget.TextView;
 
 import com.fivetrue.gimpo.ac05.R;
-import com.fivetrue.gimpo.ac05.analytics.Event;
-import com.fivetrue.gimpo.ac05.analytics.GoogleAnalytics;
 import com.fivetrue.gimpo.ac05.ui.fragment.WebViewFragment;
 import com.fivetrue.gimpo.ac05.vo.rss.FeedMessage;
-import com.fivetrue.gimpo.ac05.ui.fragment.BaseFragment;
 
 /**
  * Created by kwonojin on 16. 6. 16..
@@ -49,7 +46,6 @@ public class PageDataDetailFragment extends WebViewFragment{
         mData = getArguments().getParcelable(FeedMessage.class.getName());
         mTextColor = getArguments().getInt("textColor", getResources().getColor(R.color.colorAccent));
         mTextBgColor = getArguments().getInt("bgColor", getResources().getColor(R.color.colorPrimary));
-        GoogleAnalytics.getInstance().sendLogEventProperties(Event.EnterPageDataDetailFragment);
     }
 
     private View initView(LayoutInflater inflater, View parentView){

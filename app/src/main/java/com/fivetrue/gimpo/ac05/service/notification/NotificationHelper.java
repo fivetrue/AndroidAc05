@@ -15,8 +15,8 @@ import android.text.TextUtils;
 
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.ImageLoader;
+import com.fivetrue.fivetrueandroid.image.ImageLoadManager;
 import com.fivetrue.gimpo.ac05.R;
-import com.fivetrue.gimpo.ac05.image.ImageLoadManager;
 import com.fivetrue.gimpo.ac05.service.BaseServiceHelper;
 import com.fivetrue.gimpo.ac05.ui.SplashActivity;
 import com.fivetrue.gimpo.ac05.vo.notification.NotificationData;

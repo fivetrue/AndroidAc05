@@ -15,6 +15,22 @@
       },
       "oauth_client": [
         {
+          "client_id": "11419798935-fk90ltu4q9reeo81h5fbeubcg5meg556.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.fivetrue.gimpo.ac05",
+            "certificate_hash": "E0E8ECE135120B14E12D2218FAC90C07BDAFFC4E"
+          }
+        },
+        {
+          "client_id": "11419798935-9l4cn0bmulsf1scg2uctku5jn1fkmc5b.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.fivetrue.gimpo.ac05",
+            "certificate_hash": "DCE34E76A4C9DFBFC59049A7B246DDFD3D471EE5"
+          }
+        },
+        {
           "client_id": "11419798935-dbaf8kclepmf7o0d9il94pag6ds1c5ch.apps.googleusercontent.com",
           "client_type": 3
         }

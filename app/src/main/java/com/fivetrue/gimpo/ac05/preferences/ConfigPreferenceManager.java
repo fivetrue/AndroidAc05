@@ -2,6 +2,7 @@ package com.fivetrue.gimpo.ac05.preferences;
 
 import android.content.Context;
 
+import com.fivetrue.fivetrueandroid.preferences.SharedPreferenceHelper;
 import com.fivetrue.gimpo.ac05.vo.config.AppConfig;
 import com.fivetrue.gimpo.ac05.vo.config.Token;
 import com.fivetrue.gimpo.ac05.vo.user.District;

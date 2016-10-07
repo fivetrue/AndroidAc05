@@ -3,8 +3,7 @@ package com.fivetrue.gimpo.ac05.receiver;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-
-import com.fivetrue.gimpo.ac05.utils.Log;
+import android.util.Log;
 
 /**
  * Created by kwonojin on 16. 6. 3..

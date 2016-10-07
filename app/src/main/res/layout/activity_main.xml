@@ -1,40 +1,202 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:v="http://schemas.android.com/apk/res-auto"
-    android:layout_width="match_parent" android:layout_height="match_parent">
+<android.support.v4.widget.DrawerLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/drawer_layout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fitsSystemWindows="true">
 
-    <ImageView
+    <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:src="@drawable/common_background_bg"
-        android:scaleType="fitXY"/>
+        android:fitsSystemWindows="true">
+        <android.support.design.widget.AppBarLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            style="@style/AppTheme.PopupOverlay">
 
-    <ImageView
-        android:id="@+id/view_main_background"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:src="@drawable/common_background"
-        android:scaleType="fitXY"/>
+            <android.support.v7.widget.Toolbar
+                android:id="@+id/toolbar"
+                android:layout_width="match_parent"
+                android:layout_height="?attr/actionBarSize"
+                android:theme="@style/AppTheme.Toolbar"
+                app:popupTheme="@style/AppTheme.PopupOverlay"
+                app:layout_scrollFlags="scroll|enterAlways"/>
 
-    <com.fivetrue.gimpo.ac05.widget.PagerSlidingTabStrip
-        android:id="@+id/tab_main_pager_strip"
-        android:layout_width="match_parent"
-        android:layout_height="40dp"
-        v:indicatorHeight="5dp"
-        v:tabsTextColor="@color/white"
-        v:indicatorColor="@color/white"
-        v:tabsBackgroundColor="@color/colorPrimaryDark"/>
+        </android.support.design.widget.AppBarLayout>
 
-    <android.support.v4.view.ViewPager
-        android:id="@+id/vp_main_pager"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_below="@id/tab_main_pager_strip"/>
+        <ImageView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:src="@drawable/common_background_bg"
+            android:scaleType="fitXY"/>
 
-    <ProgressBar
-        android:id="@+id/pb_main"
+        <ImageView
+            android:id="@+id/view_main_background"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:src="@drawable/common_background"
+            android:scaleType="fitXY"/>
+
+
+        <android.support.v4.widget.NestedScrollView
+            android:id="@+id/sv_main"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:fitsSystemWindows="true"
+            app:layout_behavior="@string/appbar_scrolling_view_behavior">
+                <LinearLayout
+                    android:id="@+id/layout_main_container"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:paddingTop="?attr/actionBarSize"
+                    android:orientation="vertical">
+                    <RelativeLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
+
+                    </RelativeLayout>
+
+                    <!--<include layout="@layout/layout_divider_vertical" />-->
+
+                    <!--<LinearLayout-->
+                        <!--android:id="@+id/layout_main_notice"-->
+                        <!--android:layout_width="match_parent"-->
+                        <!--android:layout_height="wrap_content"-->
+                        <!--android:layout_marginTop="10dp"-->
+                        <!--android:background="@color/colorAccent"-->
+                        <!--android:orientation="vertical">-->
+                        <!--<TextView-->
+                            <!--android:id="@+id/tv_main_recently_notice"-->
+                            <!--android:layout_width="match_parent"-->
+                            <!--android:layout_height="40dp"-->
+                            <!--android:gravity="center_vertical"-->
+                            <!--android:text="@string/public_notice"-->
+                            <!--android:paddingLeft="10dp"-->
+                            <!--android:paddingRight="10dp"-->
+                            <!--android:drawableLeft="@drawable/ic_notification_20dp"-->
+                            <!--android:drawablePadding="20dp"-->
+                            <!--android:drawableRight="@drawable/ic_arrow_right_20dp"-->
+                            <!--android:textColor="@color/colorPrimaryDark"-->
+                            <!--android:background="@drawable/selector_common_list_item_background"/>-->
+
+                        <!--<View-->
+                            <!--android:layout_width="match_parent"-->
+                            <!--android:layout_height="0.5dp"-->
+                            <!--android:paddingLeft="10dp"-->
+                            <!--android:paddingRight="10dp"-->
+                            <!--android:background="@color/colorPrimaryDark"/>-->
+                        <!--<android.support.v7.widget.RecyclerView-->
+                            <!--android:id="@+id/rv_main_notice"-->
+                            <!--android:layout_width="match_parent"-->
+                            <!--android:layout_height="wrap_content"-->
+                            <!--android:layout_marginBottom="5dp"-->
+                            <!--android:layout_marginTop="5dp"/>-->
+                    <!--</LinearLayout>-->
+
+                    <!--<include layout="@layout/layout_divider_vertical" />-->
+
+                    <!--<LinearLayout-->
+                        <!--android:id="@+id/layout_main_town_data"-->
+                        <!--android:layout_width="match_parent"-->
+                        <!--android:layout_height="wrap_content"-->
+                        <!--android:layout_marginTop="10dp"-->
+                        <!--android:background="@color/colorAccent"-->
+                        <!--android:orientation="vertical">-->
+                        <!--<TextView-->
+                            <!--android:id="@+id/tv_main_recently_town_data"-->
+                            <!--android:layout_width="match_parent"-->
+                            <!--android:layout_height="40dp"-->
+                            <!--android:gravity="center_vertical"-->
+                            <!--android:text="@string/town_news"-->
+                            <!--android:paddingLeft="10dp"-->
+                            <!--android:paddingRight="10dp"-->
+                            <!--android:drawableLeft="@drawable/ic_info_20dp"-->
+                            <!--android:drawablePadding="20dp"-->
+                            <!--android:drawableRight="@drawable/ic_arrow_right_20dp"-->
+                            <!--android:textColor="@color/colorPrimaryDark"-->
+                            <!--android:background="@drawable/selector_common_list_item_background"/>-->
+
+                        <!--<View-->
+                            <!--android:layout_width="match_parent"-->
+                            <!--android:layout_height="0.5dp"-->
+                            <!--android:paddingLeft="10dp"-->
+                            <!--android:paddingRight="10dp"-->
+                            <!--android:background="@color/colorPrimaryDark"/>-->
+
+                        <!--<android.support.v7.widget.RecyclerView-->
+                            <!--android:id="@+id/rv_main_town_data"-->
+                            <!--android:layout_width="match_parent"-->
+                            <!--android:layout_height="wrap_content"-->
+                            <!--android:layout_marginBottom="5dp"-->
+                            <!--android:layout_marginTop="5dp"/>-->
+                    <!--</LinearLayout>-->
+                    <!--<View-->
+                        <!--android:layout_width="match_parent"-->
+                        <!--android:layout_height="1dp"-->
+                        <!--android:background="@drawable/common_action_bg_shadow"/>-->
+
+                    <!--<include layout="@layout/layout_divider_vertical" />-->
+
+                    <!--<LinearLayout-->
+                        <!--android:id="@+id/layout_main_notification_data"-->
+                        <!--android:layout_width="match_parent"-->
+                        <!--android:layout_height="wrap_content"-->
+                        <!--android:layout_marginTop="10dp"-->
+                        <!--android:background="@color/colorAccent"-->
+                        <!--android:orientation="vertical">-->
+                        <!--<TextView-->
+                            <!--android:id="@+id/tv_main_recently_notification_data"-->
+                            <!--android:layout_width="match_parent"-->
+                            <!--android:layout_height="40dp"-->
+                            <!--android:gravity="center_vertical"-->
+                            <!--android:text="@string/notice"-->
+                            <!--android:drawableLeft="@drawable/ic_info_20dp"-->
+                            <!--android:paddingLeft="10dp"-->
+                            <!--android:paddingRight="10dp"-->
+                            <!--android:drawablePadding="20dp"-->
+                            <!--android:drawableRight="@drawable/ic_arrow_right_20dp"-->
+                            <!--android:textColor="@color/colorPrimaryDark"-->
+                            <!--android:background="@drawable/selector_common_list_item_background"/>-->
+
+                        <!--<View-->
+                            <!--android:layout_width="match_parent"-->
+                            <!--android:layout_height="0.5dp"-->
+                            <!--android:paddingLeft="10dp"-->
+                            <!--android:paddingRight="10dp"-->
+                            <!--android:background="@color/colorPrimaryDark"/>-->
+
+                        <!--<android.support.v7.widget.RecyclerView-->
+                            <!--android:id="@+id/rv_main_notification_data"-->
+                            <!--android:layout_width="match_parent"-->
+                            <!--android:layout_height="wrap_content"-->
+                            <!--android:layout_marginBottom="5dp"-->
+                            <!--android:layout_marginTop="5dp"/>-->
+                    <!--</LinearLayout>-->
+                    <!--<View-->
+                        <!--android:layout_width="match_parent"-->
+                        <!--android:layout_height="1dp"-->
+                        <!--android:background="@drawable/common_action_bg_shadow"/>-->
+
+                </LinearLayout>
+        </android.support.v4.widget.NestedScrollView>
+
+        <ProgressBar
+            android:id="@+id/pb_main"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:visibility="gone"/>
+    </RelativeLayout>
+
+    <android.support.design.widget.NavigationView
+        android:id="@+id/nav_view"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_centerInParent="true"
-        android:visibility="gone"/>
-</RelativeLayout>
+        android:layout_height="match_parent"
+        android:layout_gravity="start"
+        android:fitsSystemWindows="true"
+        app:headerLayout="@layout/nav_header_main"
+        app:menu="@menu/menu_main_drawer" />
+
+</android.support.v4.widget.DrawerLayout>

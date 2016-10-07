@@ -3,10 +3,18 @@ package com.fivetrue.gimpo.ac05.vo.data;
 
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.util.Log;
 
-import com.fivetrue.gimpo.ac05.vo.IPageData;
+import com.fivetrue.gimpo.ac05.vo.IBaseItem;
 
-public class TownData implements Parcelable, IPageData {
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Locale;
+
+public class TownData implements Parcelable, IBaseItem {
+
+	private static final String TAG = "TownData";
 	
 	private int postId = 0;
 	private String title = null;
@@ -31,8 +39,13 @@ public class TownData implements Parcelable, IPageData {
 		this.postId = postId;
 	}
 
+	@Override
+	public String getImageUrl() {
+		return null;
+	}
+
 	public String getTitle() {
-		return title;
+		return author;
 	}
 
 	public void setTitle(String title) {
@@ -80,7 +93,30 @@ public class TownData implements Parcelable, IPageData {
 	}
 
 	public String getContent() {
-		return content;
+		return title;
+	}
+
+	@Override
+	public String getSubContent() {
+		return null;
+	}
+
+	@Override
+	public long getTime() {
+		long milliseconds = 0;
+		Date date = null;
+		try {
+			date = new SimpleDateFormat("yyyy-MM-dd", Locale.KOREA).parse(getDate());
+			milliseconds= date.getTime();
+		} catch (ParseException e) {
+			Log.w(TAG, "getTime: ", e);
+		}
+		return milliseconds;
+	}
+
+	@Override
+	public boolean isShowingNew() {
+		return (System.currentTimeMillis() - (ONE_DAY * 5)) < getTime();
 	}
 
 	public void setContent(String content) {

@@ -3,7 +3,7 @@ package com.fivetrue.gimpo.ac05.net.response;
 
 import android.text.TextUtils;
 
-import com.fivetrue.gimpo.ac05.net.BaseApiResponse;
+import com.fivetrue.fivetrueandroid.net.BaseApiResponse;
 import com.fivetrue.gimpo.ac05.vo.config.Token;
 import com.google.gson.reflect.TypeToken;
 

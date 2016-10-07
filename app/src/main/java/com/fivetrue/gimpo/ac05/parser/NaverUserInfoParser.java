@@ -1,6 +1,7 @@
 package com.fivetrue.gimpo.ac05.parser;
 
-import com.fivetrue.gimpo.ac05.utils.Log;
+import android.util.Log;
+
 import com.fivetrue.gimpo.ac05.vo.user.UserInfo;
 
 import org.w3c.dom.Document;
@@ -79,13 +80,13 @@ public class NaverUserInfoParser {
                     }
                 }
             }catch (ParserConfigurationException e) {
-                Log.d("XML parse Error:", e.getMessage());
+                Log.w(TAG, "XML parse Error:", e);
                 return null;
             } catch (SAXException e) {
-                Log.d("Wrong XML File Structure", e.getMessage());
+                Log.w(TAG, "Wrong XML File Structure", e);
                 return null;
             } catch (IOException e) {
-                Log.d("IOException", e.getMessage());
+                Log.w(TAG, "IOException", e);
                 return null;
             }
 

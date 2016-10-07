@@ -1,9 +1,8 @@
 <resources>
 
     <!-- Base application theme. -->
-    <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
+    <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
         <!-- Customize your theme here. -->
-        <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
     </style>
     <style name="TransparentAppTheme" parent="AppTheme">
@@ -16,7 +15,16 @@
     <style name="NoticeActivityTheme" parent="AppTheme">
     </style>
 
-    <style name="AppTheme.ImageDetail">
+    <style name="AppTheme.Toolbar">
+        <item name="android:textColorSecondary">@android:color/white</item>
+        <item name="android:textColorPrimary">@android:color/white</item>
+        <item name="android:textColor">@android:color/white</item>
+        <item name="android:background">?attr/colorPrimaryDark</item>
+    </style>
+
+    <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
+
+    <style name="AppTheme.NoActionBar">
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
     </style>
@@ -25,6 +33,7 @@
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
     </style>
+
 
     <style name="CommonButton">
         <item name="android:typeface">sans</item>

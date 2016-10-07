@@ -7,6 +7,7 @@ import java.util.ArrayList;
 public class MainDataEntry {
 
 	private ArrayList<NotificationData> notices = new ArrayList<>();
+	private ArrayList<NotificationData> notification = new ArrayList<>();
 	private TownDataEntry town = null;
 	private ArrayList<PageData> pages = new ArrayList<>();
 
@@ -32,6 +33,14 @@ public class MainDataEntry {
 
 	public void setPages(ArrayList<PageData> pages) {
 		this.pages = pages;
+	}
+
+	public ArrayList<NotificationData> getNotification() {
+		return notification;
+	}
+
+	public void setNotification(ArrayList<NotificationData> notification) {
+		this.notification = notification;
 	}
 
 	@Override

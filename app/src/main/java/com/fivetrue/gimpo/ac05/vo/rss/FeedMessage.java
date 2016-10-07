@@ -2,10 +2,19 @@ package com.fivetrue.gimpo.ac05.vo.rss;
 
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.util.Log;
 
+import com.fivetrue.gimpo.ac05.vo.IBaseItem;
 import com.fivetrue.gimpo.ac05.vo.IPageData;
 
-public class FeedMessage implements Parcelable, IPageData{
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Locale;
+
+public class FeedMessage implements Parcelable, IBaseItem{
+
+	private static final String TAG = "FeedMessage";
 
 	String title;
 	String description;
@@ -19,18 +28,41 @@ public class FeedMessage implements Parcelable, IPageData{
 	}
 
 	@Override
+	public String getImageUrl() {
+		return null;
+	}
+
+	@Override
 	public String getTitle() {
-		return title;
+		return author;
 	}
 
 	@Override
 	public String getContent() {
-		return description;
+		return title;
 	}
 
 	@Override
-	public String getUrl() {
-		return link;
+	public String getSubContent() {
+		return pubDate;
+	}
+
+	@Override
+	public long getTime() {
+		long milliseconds = 0;
+		Date date = null;
+		try {
+			date = new SimpleDateFormat("yyyy-MM-dd  HH:mm:ss", Locale.KOREA).parse(getPubDate());
+			milliseconds= date.getTime();
+		} catch (ParseException e) {
+			Log.w(TAG, "getTime: ", e);
+		}
+		return milliseconds;
+	}
+
+	@Override
+	public boolean isShowingNew() {
+		return (System.currentTimeMillis() - (ONE_DAY * 5)) < getTime();
 	}
 
 	public void setTitle(String title) {

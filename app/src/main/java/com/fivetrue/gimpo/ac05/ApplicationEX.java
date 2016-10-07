@@ -3,9 +3,8 @@ package com.fivetrue.gimpo.ac05;
 import android.app.Application;
 
 import com.crashlytics.android.Crashlytics;
-import com.fivetrue.gimpo.ac05.analytics.GoogleAnalytics;
-import com.fivetrue.gimpo.ac05.image.ImageLoadManager;
-import com.fivetrue.gimpo.ac05.net.NetworkManager;
+import com.fivetrue.fivetrueandroid.image.ImageLoadManager;
+import com.fivetrue.fivetrueandroid.net.NetworkManager;
 
 import io.fabric.sdk.android.Fabric;
 
@@ -20,6 +19,5 @@ public class ApplicationEX extends Application {
         Fabric.with(this, new Crashlytics());
         NetworkManager.init(this);
         ImageLoadManager.init(NetworkManager.getInstance().getRequestQueue());
-        GoogleAnalytics.init(this);
     }
 }

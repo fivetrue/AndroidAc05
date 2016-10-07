@@ -7,10 +7,10 @@ import android.widget.ProgressBar;
 
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.ImageLoader;
+import com.fivetrue.fivetrueandroid.image.ImageLoadManager;
 import com.fivetrue.fivetrueandroid.ui.BaseActivity;
 import com.fivetrue.gimpo.ac05.R;
-import com.fivetrue.gimpo.ac05.image.ImageLoadManager;
-import com.fivetrue.gimpo.ac05.view.DetailPhotoView;
+import com.fivetrue.fivetrueandroid.view.DetailPhotoView;
 
 /**
  * Created by kwonojin on 16. 6. 7..
@@ -34,7 +34,6 @@ public class ImageDetailActivity extends BaseActivity {
     }
 
     private void initView(){
-        setActionbarVisible(false);
         mImageView = (DetailPhotoView) findViewById(R.id.iv_detail_image);
         mProgress = (ProgressBar) findViewById(R.id.pb_detail_image);
 

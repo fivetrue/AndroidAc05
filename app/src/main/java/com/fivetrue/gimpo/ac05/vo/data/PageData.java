@@ -3,10 +3,11 @@ package com.fivetrue.gimpo.ac05.vo.data;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import com.fivetrue.gimpo.ac05.vo.IBaseItem;
 import com.fivetrue.gimpo.ac05.vo.IPageData;
 import com.fivetrue.gimpo.ac05.vo.rss.Feed;
 
-public class PageData implements Parcelable, IPageData{
+public class PageData implements Parcelable, IBaseItem{
 
 
     public PageData(){
@@ -32,6 +33,11 @@ public class PageData implements Parcelable, IPageData{
     private Feed feed = null;
 
     @Override
+    public String getImageUrl() {
+        return null;
+    }
+
+    @Override
     public String getTitle() {
         return pageTitle;
     }
@@ -42,8 +48,18 @@ public class PageData implements Parcelable, IPageData{
     }
 
     @Override
-    public String getUrl() {
+    public String getSubContent() {
         return pageUrl;
+    }
+
+    @Override
+    public long getTime() {
+        return 0;
+    }
+
+    @Override
+    public boolean isShowingNew() {
+        return false;
     }
 
     public int getPageId() {

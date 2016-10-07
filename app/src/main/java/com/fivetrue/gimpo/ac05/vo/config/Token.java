@@ -2,8 +2,7 @@ package com.fivetrue.gimpo.ac05.vo.config;
 
 import android.os.Parcel;
 import android.os.Parcelable;
-
-import com.fivetrue.gimpo.ac05.utils.Log;
+import android.util.Log;
 
 /**
  * Created by kwonojin on 16. 6. 13..

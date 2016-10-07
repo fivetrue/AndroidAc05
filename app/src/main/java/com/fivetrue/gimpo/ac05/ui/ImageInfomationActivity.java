@@ -5,23 +5,21 @@ import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.ViewPager;
-import android.support.v4.widget.DrawerLayout;
-import android.view.Gravity;
 import android.view.View;
 import android.widget.ProgressBar;
 
 import com.android.volley.VolleyError;
+import com.fivetrue.fivetrueandroid.net.BaseApiResponse;
+import com.fivetrue.fivetrueandroid.net.NetworkManager;
+import com.fivetrue.fivetrueandroid.ui.BaseActivity;
 import com.fivetrue.gimpo.ac05.R;
-import com.fivetrue.gimpo.ac05.net.BaseApiResponse;
-import com.fivetrue.gimpo.ac05.net.NetworkManager;
 import com.fivetrue.gimpo.ac05.net.request.ImageInfoDataRequest;
 import com.fivetrue.gimpo.ac05.ui.adapter.pager.ImageInfoFragmentViewPagerAdapter;
-import com.fivetrue.gimpo.ac05.ui.fragment.BaseFragment;
 import com.fivetrue.gimpo.ac05.ui.fragment.ImageInfomationFragment;
 import com.fivetrue.gimpo.ac05.ui.fragment.WebViewFragment;
 import com.fivetrue.gimpo.ac05.vo.data.ImageInfo;
 import com.fivetrue.gimpo.ac05.vo.data.ImageInfoEntry;
-import com.fivetrue.gimpo.ac05.widget.PagerSlidingTabStrip;
+import com.fivetrue.fivetrueandroid.widget.PagerSlidingTabStrip;
 import com.google.gson.reflect.TypeToken;
 
 import java.util.ArrayList;
@@ -29,7 +27,7 @@ import java.util.ArrayList;
 /**
  * Created by kwonojin on 16. 6. 7..
  */
-public class ImageInfomationActivity extends DrawerActivity implements ImageInfomationFragment.OnChooseImageInfomationListener{
+public class ImageInfomationActivity extends BaseActivity implements ImageInfomationFragment.OnChooseImageInfomationListener{
 
     private static final String TAG = "ImageInfomationActivity";
 
@@ -110,22 +108,10 @@ public class ImageInfomationActivity extends DrawerActivity implements ImageInfo
                 return;
             }
         }
-        if(getCurrentFragmentManager().getBackStackEntryCount() > 0 && getCurrentFragmentManager().getBackStackEntryCount() == 1){
-            getDrawerLayout().setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED, Gravity.LEFT);
-        }
         super.onBackPressed();
     }
 
-    @Override
-    public BaseFragment addFragment(Class<? extends BaseFragment> cls, Bundle arguments, int anchorLayout, int enterAnim, int exitAnim, boolean addBackstack) {
-        BaseFragment f = super.addFragment(cls, arguments, anchorLayout, enterAnim, exitAnim, addBackstack);
-        if(addBackstack){
-            getDrawerLayout().setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED, Gravity.LEFT);
-        }
-        return f;
-    }
-
-    private BaseApiResponse<ArrayList<ImageInfo>> baseApiResponse = new BaseApiResponse<>(new BaseApiResponse.OnResponseListener<ArrayList<ImageInfo>>() {
+    private BaseApiResponse.OnResponseListener<ArrayList<ImageInfo>> baseApiResponse = new BaseApiResponse.OnResponseListener<ArrayList<ImageInfo>>() {
 
         private int mRetry = 0;
         @Override
@@ -151,7 +137,7 @@ public class ImageInfomationActivity extends DrawerActivity implements ImageInfo
                 mRetry ++;
             }
         }
-    }, new TypeToken<ArrayList<ImageInfo>>(){}.getType());
+    };
 
     @Override
     public void onSelected(ImageInfo info, Bitmap bm) {

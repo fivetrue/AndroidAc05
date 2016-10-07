@@ -2,8 +2,8 @@ package com.fivetrue.gimpo.ac05.net.request;
 
 import android.content.Context;
 
-import com.fivetrue.gimpo.ac05.net.BaseApiRequest;
-import com.fivetrue.gimpo.ac05.net.BaseApiResponse;
+import com.fivetrue.fivetrueandroid.net.BaseApiRequest;
+import com.fivetrue.fivetrueandroid.net.BaseApiResponse;
 import com.fivetrue.gimpo.ac05.vo.config.AppConfig;
 import com.fivetrue.gimpo.ac05.vo.config.AuthLoginResult;
 import com.fivetrue.gimpo.ac05.vo.config.Token;
@@ -11,7 +11,7 @@ import com.fivetrue.gimpo.ac05.vo.config.Token;
 /**
  * Created by kwonojin on 16. 6. 13..
  */
-public class TokenRequest extends BaseApiRequest{
+public class TokenRequest extends BaseApiRequest {
 
     private static final String API = "https://nid.naver.com/oauth2.0/token";
 

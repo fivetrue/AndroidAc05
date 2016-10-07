@@ -10,7 +10,7 @@ import com.fivetrue.gimpo.ac05.ui.adapter.TownDataRecyclerAdapter;
 import com.fivetrue.gimpo.ac05.ui.fragment.BaseDataListFragment;
 import com.fivetrue.gimpo.ac05.vo.data.TownData;
 import com.fivetrue.gimpo.ac05.vo.data.TownDataEntry;
-import com.fivetrue.gimpo.ac05.widget.PagerSlidingTabStrip;
+import com.fivetrue.fivetrueandroid.widget.PagerSlidingTabStrip;
 
 
 /**
@@ -82,7 +82,7 @@ public class TownDataListFragment extends BaseDataListFragment<TownDataEntry> im
     private TownDataRecyclerAdapter.OnClickPageDataListener onClickTownDataListener = new TownDataRecyclerAdapter.OnClickPageDataListener() {
         @Override
         public void onClickPageData(View view, TownData data) {
-            TownDataListFragment.this.onClickPageData(data.getTitle(), data, getPageTitleColor(), getPageTitleBgColor());
+//            TownDataListFragment.this.onClickPageData(data.getTitle(), data, getPageTitleColor(), getPageTitleBgColor());
         }
 
         @Override

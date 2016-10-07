@@ -2,10 +2,10 @@ package com.fivetrue.gimpo.ac05.manager;
 
 import android.content.Context;
 import android.os.AsyncTask;
+import android.util.Log;
 import android.util.Pair;
 
 import com.fivetrue.gimpo.ac05.preferences.ConfigPreferenceManager;
-import com.fivetrue.gimpo.ac05.utils.Log;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -106,7 +106,7 @@ public class NaverApiManager {
         protected String doInBackground(String... params) {
             String result = null;
             if(params != null && params.length > 0){
-                Log.i(TAG, "RequestApiTask start ");
+                Log.d(TAG, "doInBackground() called with: params = [" + params + "]");
                 String api = params[0];
                 String at = mConfigPref.getToken().getAccess_token();
                 result = requestNaverApi(mContext, at, api);

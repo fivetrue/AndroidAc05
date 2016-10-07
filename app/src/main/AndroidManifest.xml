@@ -24,7 +24,8 @@
         android:name=".ApplicationEX">
         <activity
             android:name=".ui.SplashActivity"
-            android:screenOrientation="portrait">
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme.NoActionBar">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
@@ -52,7 +53,7 @@
         <activity
             android:name=".ui.CafeActivity"
             android:screenOrientation="portrait"
-            android:theme="@style/AppTheme.ImageDetail"/>
+            android:theme="@style/AppTheme.NoActionBar"/>
 
         <activity
             android:name=".ui.SettingActivity"
@@ -61,7 +62,7 @@
         <activity
             android:name=".ui.ImageDetailActivity"
             android:screenOrientation="portrait"
-            android:theme="@style/AppTheme.ImageDetail"/>
+            android:theme="@style/AppTheme.NoActionBar"/>
 
         <service
             android:name=".service.NotificationService"/>

@@ -7,6 +7,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.widget.TextView;
 
+import com.fivetrue.fivetrueandroid.ui.BaseActivity;
 import com.fivetrue.gimpo.ac05.R;
 import com.fivetrue.gimpo.ac05.vo.rss.Feed;
 import com.fivetrue.gimpo.ac05.rss.RSSFeedParser;
@@ -16,7 +17,7 @@ import com.fivetrue.gimpo.ac05.vo.data.PageData;
 /**
  * Created by kwonojin on 16. 6. 17..
  */
-public class PageDataListActivity extends BaseActivity{
+public class PageDataListActivity extends BaseActivity {
 
 
     private PageData mEntry = null;
@@ -92,7 +93,6 @@ public class PageDataListActivity extends BaseActivity{
                 mEmptyText.setVisibility(View.GONE);
 
             }
-            getFtActionBar().setTitle(feed.getTitle());
         }
     }
 }

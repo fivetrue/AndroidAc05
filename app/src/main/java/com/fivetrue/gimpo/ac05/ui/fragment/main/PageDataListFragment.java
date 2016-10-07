@@ -12,7 +12,7 @@ import com.fivetrue.gimpo.ac05.rss.RSSFeedParser;
 import com.fivetrue.gimpo.ac05.ui.adapter.PageDataRecyclerAdapter;
 import com.fivetrue.gimpo.ac05.ui.fragment.BaseDataListFragment;
 import com.fivetrue.gimpo.ac05.vo.data.PageData;
-import com.fivetrue.gimpo.ac05.widget.PagerSlidingTabStrip;
+import com.fivetrue.fivetrueandroid.widget.PagerSlidingTabStrip;
 
 /**
  * Created by kwonojin on 16. 6. 15..
@@ -37,7 +37,7 @@ public class PageDataListFragment extends BaseDataListFragment<PageData> impleme
                 mAdapter.setOnClickPageDataListener(new PageDataRecyclerAdapter.OnClickPageDataListener() {
                     @Override
                     public void onClickPageData(View view, FeedMessage data) {
-                        PageDataListFragment.this.onClickPageData(data.getTitle(), data, getPageTitleColor(), getPageTitleBgColor());
+//                        PageDataListFragment.this.onClickPageData(data.getTitle(), data, getPageTitleColor(), getPageTitleBgColor());
                     }
 
                     @Override

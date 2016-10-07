@@ -1,70 +1,90 @@
 package com.fivetrue.gimpo.ac05.ui;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.annotation.NonNull;
+import android.support.design.widget.NavigationView;
 import android.support.v4.app.Fragment;
-import android.support.v4.view.ViewPager;
+import android.support.v4.view.GravityCompat;
+import android.support.v4.widget.DrawerLayout;
+import android.support.v4.widget.NestedScrollView;
+import android.support.v7.app.ActionBarDrawerToggle;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.LinearSnapHelper;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.Toolbar;
+import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
+import android.widget.LinearLayout;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.android.volley.VolleyError;
+import com.fivetrue.fivetrueandroid.BuildConfig;
+import com.fivetrue.fivetrueandroid.net.BaseApiResponse;
+import com.fivetrue.fivetrueandroid.net.ErrorCode;
+import com.fivetrue.fivetrueandroid.net.NetworkManager;
 import com.fivetrue.fivetrueandroid.ui.BaseActivity;
+import com.fivetrue.fivetrueandroid.ui.adapter.BaseRecyclerAdapter;
+import com.fivetrue.fivetrueandroid.view.CircleImageView;
 import com.fivetrue.gimpo.ac05.Constants;
 import com.fivetrue.gimpo.ac05.R;
-import com.fivetrue.gimpo.ac05.analytics.Event;
-import com.fivetrue.gimpo.ac05.analytics.GoogleAnalytics;
-import com.fivetrue.gimpo.ac05.analytics.UserProperty;
-import com.fivetrue.gimpo.ac05.net.BaseApiResponse;
-import com.fivetrue.gimpo.ac05.net.NetworkManager;
-import com.fivetrue.gimpo.ac05.net.request.ImageInfoDataRequest;
 import com.fivetrue.gimpo.ac05.net.request.MainPageDataRequest;
-import com.fivetrue.gimpo.ac05.net.request.NoticeDataRequest;
 import com.fivetrue.gimpo.ac05.preferences.ConfigPreferenceManager;
-import com.fivetrue.gimpo.ac05.ui.fragment.DrawerLeftMenuFragment;
-import com.fivetrue.gimpo.ac05.vo.IPageData;
-import com.fivetrue.gimpo.ac05.vo.data.ImageInfo;
+import com.fivetrue.gimpo.ac05.rss.RSSFeedParser;
+import com.fivetrue.gimpo.ac05.ui.adapter.BaseItemListAdapter;
+import com.fivetrue.gimpo.ac05.vo.IBaseItem;
+import com.fivetrue.gimpo.ac05.vo.data.MainDataEntry;
+import com.fivetrue.gimpo.ac05.vo.data.PageData;
+import com.fivetrue.gimpo.ac05.vo.rss.Feed;
 import com.fivetrue.gimpo.ac05.vo.rss.FeedMessage;
 import com.fivetrue.gimpo.ac05.vo.notification.NotificationData;
 import com.fivetrue.gimpo.ac05.service.notification.NotificationHelper;
-import com.fivetrue.gimpo.ac05.ui.adapter.pager.MainFragmentViewPagerAdapter;
-import com.fivetrue.gimpo.ac05.ui.fragment.BaseDataListFragment;
-import com.fivetrue.gimpo.ac05.ui.fragment.BaseFragment;
 import com.fivetrue.gimpo.ac05.ui.fragment.WebViewFragment;
 import com.fivetrue.gimpo.ac05.ui.fragment.detail.PageDataDetailFragment;
-import com.fivetrue.gimpo.ac05.utils.Log;
-import com.fivetrue.gimpo.ac05.vo.data.MainDataEntry;
 import com.fivetrue.gimpo.ac05.vo.user.UserInfo;
-import com.fivetrue.gimpo.ac05.widget.PagerSlidingTabStrip;
-import com.google.gson.reflect.TypeToken;
 
 import java.util.ArrayList;
+
+import jp.wasabeef.recyclerview.animators.SlideInRightAnimator;
 
 /**
  * Created by kwonojin on 16. 6. 7..
  */
-public class MainActivity extends BaseActivity implements BaseDataListFragment.IBaseDataListListener {
+public class MainActivity extends BaseActivity implements NavigationView.OnNavigationItemSelectedListener {
 
     private static final String TAG = "MainActivity";
 
-    private PagerSlidingTabStrip mTabPager = null;
-    private ViewPager mViewPager = null;
+    private DrawerLayout mDrawerLayout = null;
+
+    private NestedScrollView mScrollView = null;
+    private LinearLayout mLayoutMainContainer = null;
+
+    private CircleImageView mNavImage = null;
+    private TextView mNavAccount = null;
+    private TextView mNavName = null;
 
     private View mBackground = null;
-
     private ProgressBar mProgressBar = null;
 
-    private MainFragmentViewPagerAdapter mAdapter = null;
+//    private RecyclerView mNoticeDataList = null;
+//    private BaseItemListAdapter<NotificationData> mNoticeListAdapter = null;
+//
+//    private RecyclerView mTownDataList = null;
+//    private BaseItemListAdapter<TownData> mTownDataListAdapter = null;
+//
+//    private RecyclerView mNotificationDataList = null;
+//    private BaseItemListAdapter<NotificationData> mNotificationListAdapter = null;
 
     private UserInfo mUserInfo = null;
 
-    private MainPageDataRequest mPageDataReqeust = null;
-    private NoticeDataRequest mNoticeDataRequest = null;
-    private ImageInfoDataRequest mImageInfoDataRequest = null;
+    private MainPageDataRequest mMainDataRequest = null;
 
     private boolean mDoubleClickBack = false;
 
@@ -77,10 +97,6 @@ public class MainActivity extends BaseActivity implements BaseDataListFragment.I
         initData();
         initView();
         checkUserInfo();
-        mProgressBar.setVisibility(View.VISIBLE);
-        NetworkManager.getInstance().request(mPageDataReqeust);
-        NetworkManager.getInstance().request(mNoticeDataRequest);
-        NetworkManager.getInstance().request(mImageInfoDataRequest);
         if(getIntent() != null && getIntent().getDataString() != null){
             String data = getIntent().getData().toString();
             if(data != null && (data.startsWith("http") || data.startsWith("https"))){
@@ -94,25 +110,63 @@ public class MainActivity extends BaseActivity implements BaseDataListFragment.I
             }
         }
 
-        GoogleAnalytics.getInstance().sendLogEventProperties(Event.EnterMainActivity);
-        openMenu();
+        /**
+         * request main datas.
+         */
+        mProgressBar.setVisibility(View.VISIBLE);
+        NetworkManager.getInstance().request(mMainDataRequest);
     }
 
     private void initData(){
         mUserInfo = getIntent().getParcelableExtra(UserInfo.class.getName());
         mConfigPref = new ConfigPreferenceManager(this);
-        mPageDataReqeust = new MainPageDataRequest(this, basePageDataApiResponse);
-        mNoticeDataRequest = new NoticeDataRequest(this, baseNoticeDataApiResponse);
-        mImageInfoDataRequest = new ImageInfoDataRequest(this, baseImageInfoApiResponse);
+        mMainDataRequest = new MainPageDataRequest(this, baseMainDataEntryOnResponseListener);
+        mMainDataRequest.setPage(0);
+        mMainDataRequest.setCount(6);
     }
 
     private void initView(){
-        mBackground = findViewById(R.id.view_main_background);
-        mTabPager = (PagerSlidingTabStrip) findViewById(R.id.tab_main_pager_strip);
-        mViewPager = (ViewPager) findViewById(R.id.vp_main_pager);
-        mViewPager.setOffscreenPageLimit(3);
 
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+        mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
+        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
+                this, mDrawerLayout, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
+        mDrawerLayout.setDrawerListener(toggle);
+        toggle.syncState();
+
+        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+        navigationView.setNavigationItemSelectedListener(this);
+        View headerView = navigationView.getHeaderView(0);
+
+        mNavImage = (CircleImageView) headerView.findViewById(R.id.iv_nav_header);
+        mNavAccount = (TextView) headerView.findViewById(R.id.tv_nav_header_name_account);
+        mNavName = (TextView) headerView.findViewById(R.id.tv_nav_header_name);
+
+        mNavImage.setImageUrl(mUserInfo.getProfileImage());
+        mNavAccount.setText(mUserInfo.getEmail());
+        mNavName.setText(mUserInfo.getName());
+
+        mScrollView = (NestedScrollView) findViewById(R.id.sv_main);
+        mLayoutMainContainer = (LinearLayout) findViewById(R.id.layout_main_container);
+        mBackground = findViewById(R.id.view_main_background);
         mProgressBar = (ProgressBar) findViewById(R.id.pb_main);
+
+//        mNoticeDataList = (RecyclerView) findViewById(R.id.rv_main_notice);
+//        mNoticeDataList.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
+//        mNoticeDataList.setItemAnimator(new SlideInRightAnimator());
+//
+//        mTownDataList = (RecyclerView) findViewById(R.id.rv_main_town_data);
+//        mTownDataList.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
+//        mTownDataList.setItemAnimator(new SlideInRightAnimator());
+//
+//        mNotificationDataList = (RecyclerView) findViewById(R.id.rv_main_notification_data);
+//        mNotificationDataList.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
+//        mNotificationDataList.setItemAnimator(new SlideInRightAnimator());
+//
+//        new LinearSnapHelper().attachToRecyclerView(mNoticeDataList);
+//        new LinearSnapHelper().attachToRecyclerView(mTownDataList);
+//        new LinearSnapHelper().attachToRecyclerView(mNotificationDataList);
     }
 
     private void checkUserInfo(){
@@ -121,17 +175,7 @@ public class MainActivity extends BaseActivity implements BaseDataListFragment.I
                 Intent intent = new Intent(this, UserInfoInputActivity.class);
                 startActivity(intent);
                 overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
-            }else{
-                GoogleAnalytics.getInstance().setUserProperties(UserProperty.makeProperty(UserProperty.DISTRICT, mUserInfo.getDistrict() + ""));
             }
-        }
-    }
-
-    private void setData(MainDataEntry data){
-        if(mAdapter == null){
-            mAdapter = new MainFragmentViewPagerAdapter(getSupportFragmentManager(), data);
-            mViewPager.setAdapter(mAdapter);
-            mTabPager.setViewPager(mViewPager);
         }
     }
 
@@ -144,10 +188,10 @@ public class MainActivity extends BaseActivity implements BaseDataListFragment.I
             exitAnim = R.anim.exit_smooth;
         }
 
-        BaseFragment f = addFragment(PageDataDetailFragment.class, PageDataDetailFragment.makeArgument(message, textColor, bgColor)
+        Fragment f = addFragment(PageDataDetailFragment.class, PageDataDetailFragment.makeArgument(message, textColor, bgColor)
                 , getFragmentAnchorLayoutID(), enterAnim, exitAnim, true);
         if(f != null){
-            getFtActionBar().setTitle(title);
+            getSupportActionBar().setTitle(title);
         }
     }
 
@@ -163,59 +207,26 @@ public class MainActivity extends BaseActivity implements BaseDataListFragment.I
 
         Bundle argument = new Bundle();
         argument.putString("url", url);
-        BaseFragment f = addFragment(WebViewFragment.class, argument
+        Fragment f = addFragment(WebViewFragment.class, argument
                 , getFragmentAnchorLayoutID(), enterAnim, exitAnim, true);
         if(f != null){
-            getFtActionBar().setTitle(title);
+            getSupportActionBar().setTitle(title);
         }
     }
 
-    @Override
-    public void onClickPageData(String title, IPageData data, Integer textColor, Integer bgColor) {
-        if(mUserInfo == null){
-            mUserInfo = mConfigPref.getUserInfo();
+    protected boolean closeDrawer(){
+        boolean b = false;
+        if(mDrawerLayout != null && mDrawerLayout.isDrawerOpen(GravityCompat.START)){
+            b = true;
+            mDrawerLayout.closeDrawer(GravityCompat.START);
         }
-        if(data != null){
-            if(data instanceof FeedMessage){
-                showPageDetailFragment(title, (FeedMessage) data, textColor, bgColor);
-            }else{
-                String url = null;
-                if(data instanceof NotificationData && mUserInfo != null){
-                    url = String.format(Constants.API_CHECK_REDIRECT, ((NotificationData)data).getUri()
-                            , ((NotificationData)data).getMulticast_id()
-                            , mUserInfo.getEmail());
-                }else{
-                    url = data.getUrl();
-                }
-                showWebviewFragment(title, url);
-
-            }
-            Log.i(TAG, "onClickPageData: " + data.toString());
-        }
-    }
-
-    @Override
-    public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
-
-    }
-
-    @Override
-    public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
-        mBackground.scrollTo(0, dy);
-    }
-
-    public void showNewIconLeftFragment(Class< ? extends Activity> className){
-        for(Fragment f : getCurrentFragmentManager().getFragments()){
-            if(f != null && f instanceof DrawerLeftMenuFragment){
-                ((DrawerLeftMenuFragment) f).showNewIcon(className);
-            }
-        }
+        return b;
     }
 
     @Override
     public void onBackPressed() {
-        if(isOpenMenu()){
-            super.onBackPressed();
+        if(closeDrawer()){
+            return;
         }else if(getCurrentFragmentManager().getBackStackEntryCount() > 0){
             Fragment f = getCurrentFragmentManager().findFragmentById(getFragmentAnchorLayoutID());
             if(f != null && f instanceof WebViewFragment && ((WebViewFragment) f).canGoback()){
@@ -234,66 +245,142 @@ public class MainActivity extends BaseActivity implements BaseDataListFragment.I
                     }
                 }, 2000L);
             }else{
-                GoogleAnalytics.getInstance().sendLogEventProperties(Event.ExitAppByBackPress);
                 super.onBackPressed();
             }
         }
     }
 
-    @Override
-    public void onChangePageContent(PagerSlidingTabStrip.PagerTabContent content) {
-        mTabPager.notifyDataSetChanged();
-        showNewIconLeftFragment(MainActivity.class);
+    private void addRecyclerContainer(ArrayList<? extends IBaseItem> list, String title, int leftDrawable, View.OnClickListener onClickCategory){
+        if(list != null && list.size() > 0 && title != null){
+            View view = LayoutInflater.from(this).inflate(R.layout.layout_recycler_container, null);
+            TextView tv = (TextView) view.findViewById(R.id.tv_recycler_container_title);
+            RecyclerView rv = (RecyclerView) view.findViewById(R.id.rv_recycler_conatainer_list);
+            tv.setText(title);
+            if(leftDrawable != 0){
+                tv.setCompoundDrawables(getResources().getDrawable(leftDrawable)
+                        , null, null
+                        , getResources().getDrawable(R.drawable.ic_square_arrow_right_20dp));
+            }
+            tv.setOnClickListener(onClickCategory);
+            rv.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
+            rv.setItemAnimator(new SlideInRightAnimator());
+            BaseItemListAdapter adapter = new BaseItemListAdapter<>(list);
+            adapter.setOnItemClickListener(new BaseRecyclerAdapter.OnItemClickListener<IBaseItem>() {
+                @Override
+                public void onClick(View view, IBaseItem data) {
+                    if(data != null){
+                        showWebviewFragment(data.getContent(), data.getUrl());
+                    }
+                }
+            });
+            rv.setAdapter(adapter);
+            new LinearSnapHelper().attachToRecyclerView(rv);
+            mLayoutMainContainer.addView(view);
+        }
     }
 
-    private BaseApiResponse<MainDataEntry> basePageDataApiResponse = new BaseApiResponse<>(new BaseApiResponse.OnResponseListener<MainDataEntry>() {
+    private void setMainData(MainDataEntry entry){
+        if(entry != null){
+            addRecyclerContainer(entry.getNotices(), getString(R.string.public_notice), R.drawable.ic_public_notification_20dp, new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+
+                }
+            });
+            addRecyclerContainer(entry.getTown().getList(), entry.getTown().getTitle(), R.drawable.ic_info_20dp, new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+
+                }
+            });
+
+            addRecyclerContainer(entry.getNotification(), getString(R.string.notice), R.drawable.ic_notification_20dp, new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+
+                }
+            });
+            for(final PageData data : entry.getPages()){
+                new RSSFeedParser(data.getPageUrl(), new RSSFeedParser.OnLoadFeedListener() {
+                    @Override
+                    public void onLoad(Feed feed) {
+                        addRecyclerContainer(feed.getMessages(), feed.getCopyright(), R.drawable.ic_document_20dp, new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+
+                            }
+                        });
+                    }
+                }).readFeed();
+            }
+        }
+    }
+
+    private BaseApiResponse.OnResponseListener<MainDataEntry> baseMainDataEntryOnResponseListener = new BaseApiResponse.OnResponseListener<MainDataEntry>() {
         @Override
         public void onResponse(BaseApiResponse<MainDataEntry> response) {
-            mPageDataReqeust.setCache(true);
-            setData(response.getData());
+            if(BuildConfig.DEBUG)
+                Log.d(TAG, "onResponse() called with: response = [" + response + "]");
             mProgressBar.setVisibility(View.GONE);
-        }
-
-        @Override
-        public void onError(VolleyError error) {
-            mProgressBar.setVisibility(View.GONE);
-        }
-    }, new TypeToken<MainDataEntry>(){}.getType());
-
-
-    private BaseApiResponse <ArrayList<NotificationData>> baseNoticeDataApiResponse = new BaseApiResponse<>(new BaseApiResponse.OnResponseListener<ArrayList<NotificationData>>() {
-        @Override
-        public void onResponse(BaseApiResponse<ArrayList<NotificationData>> response) {
-            if(response != null && response.getData() != null){
-                for(NotificationData data : response.getData()){
-                    if(data.getCreateTime() >= System.currentTimeMillis() - (1000 * 60 * 60 * 24 * 3)){
-                        showNewIconLeftFragment(NoticeListActivity.class);
+            if(response != null){
+                if(response.getErrorCode() == ErrorCode.OK){
+                    if(response.getData() != null){
+                        setMainData(response.getData());
                     }
+                }else{
+                    Toast.makeText(MainActivity.this, response.getMessage(), Toast.LENGTH_SHORT).show();
                 }
             }
         }
 
         @Override
         public void onError(VolleyError error) {
-
+            if(BuildConfig.DEBUG) Log.d(TAG, "onError() called with: error = [" + error + "]");
+            mProgressBar.setVisibility(View.GONE);
         }
-    }, new TypeToken<ArrayList<NotificationData>>(){}.getType());
+    };
 
-    private BaseApiResponse<ArrayList<ImageInfo>> baseImageInfoApiResponse = new BaseApiResponse<>(new BaseApiResponse.OnResponseListener<ArrayList<ImageInfo>>() {
+    @Override
+    public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+        closeDrawer();
+        if(item != null){
+            switch(item.getItemId()){
+                case R.id.nav_main :
 
-        @Override
-        public void onResponse(BaseApiResponse<ArrayList<ImageInfo>> response) {
-            if(response != null && response.getData() != null){
-                for(ImageInfo data : response.getData()){
-                    if(data.getCreateTime() >= System.currentTimeMillis() - (1000 * 60 * 60 * 24 * 3)){
-                        showNewIconLeftFragment(ImageInfomationActivity.class);
-                    }
-                }
+                    return true;
+                case R.id.nav_info :
+
+                    return true;
+                case R.id.nav_noti :
+                    return true;
+
+                case R.id.nav_cafe :
+
+                    return true;
+
+                case R.id.nav_setting :
+
+                    return true;
             }
         }
+        return false;
+    }
+
+    private RecyclerView.OnItemTouchListener onItemTouchListener = new RecyclerView.OnItemTouchListener() {
+        @Override
+        public boolean onInterceptTouchEvent(RecyclerView rv, MotionEvent e) {
+           return false;
+        }
 
         @Override
-        public void onError(VolleyError error) {
+        public void onTouchEvent(RecyclerView rv, MotionEvent e) {
+
         }
-    }, new TypeToken<ArrayList<ImageInfo>>(){}.getType());
+
+        @Override
+        public void onRequestDisallowInterceptTouchEvent(boolean disallowIntercept) {
+
+        }
+    };
+
 }

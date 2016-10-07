@@ -9,21 +9,20 @@ import com.fivetrue.gimpo.ac05.vo.notification.NotificationData;
 import com.google.gson.reflect.TypeToken;
 
 import java.lang.reflect.Type;
-import java.util.ArrayList;
 
 /**
  * Created by kwonojin on 16. 3. 19..
  */
-public class NoticeDataRequest extends BasicRequest<ArrayList<NotificationData>> {
+public class NotificationDataRequest extends BasicRequest<NotificationData> {
 
     private static final String API = Constants.API_SERVER_HOST + "/api/data/noti";
 
     private boolean mCached = true;
     private long mCacheTime = 1000 * 60 * 10;
 
-    public NoticeDataRequest(Context context, BaseApiResponse.OnResponseListener<ArrayList<NotificationData>> response) {
+    public NotificationDataRequest(Context context, BaseApiResponse.OnResponseListener<NotificationData> response) {
         super(context, API, response);
-        getParams().put("type", "1");
+        getParams().put("type", "0");
     }
 
     @Override
@@ -42,6 +41,6 @@ public class NoticeDataRequest extends BasicRequest<ArrayList<NotificationData>>
 
     @Override
     protected Type getClassType() {
-        return new TypeToken<ArrayList<NotificationData>>(){}.getType();
+        return new TypeToken<NotificationData>(){}.getType();
     }
 }

@@ -7,6 +7,7 @@ import android.os.Message;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.SwitchCompat;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.CompoundButton;
@@ -14,19 +15,17 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.android.volley.VolleyError;
+import com.fivetrue.fivetrueandroid.net.BaseApiResponse;
+import com.fivetrue.fivetrueandroid.net.NetworkManager;
+import com.fivetrue.fivetrueandroid.ui.BaseActivity;
+import com.fivetrue.fivetrueandroid.utils.AppUtils;
+import com.fivetrue.fivetrueandroid.view.CircleImageView;
 import com.fivetrue.gimpo.ac05.ApplicationEX;
 import com.fivetrue.gimpo.ac05.R;
-import com.fivetrue.gimpo.ac05.analytics.Event;
-import com.fivetrue.gimpo.ac05.analytics.GoogleAnalytics;
-import com.fivetrue.gimpo.ac05.net.BaseApiResponse;
-import com.fivetrue.gimpo.ac05.net.NetworkManager;
 import com.fivetrue.gimpo.ac05.net.request.TokenRequest;
 import com.fivetrue.gimpo.ac05.net.response.TokenApiResponse;
 import com.fivetrue.gimpo.ac05.preferences.ConfigPreferenceManager;
 import com.fivetrue.gimpo.ac05.ui.fragment.WebViewFragment;
-import com.fivetrue.gimpo.ac05.utils.AppUtils;
-import com.fivetrue.gimpo.ac05.utils.Log;
-import com.fivetrue.gimpo.ac05.view.CircleImageView;
 import com.fivetrue.gimpo.ac05.vo.config.AppConfig;
 import com.fivetrue.gimpo.ac05.vo.config.Token;
 import com.fivetrue.gimpo.ac05.vo.user.District;
@@ -37,7 +36,7 @@ import java.util.ArrayList;
 /**
  * Created by kwonojin on 16. 6. 7..
  */
-public class SettingActivity extends DrawerActivity{
+public class SettingActivity extends BaseActivity{
 
     private static final String TAG = "SettingActivity";
 
@@ -68,7 +67,6 @@ public class SettingActivity extends DrawerActivity{
         setContentView(R.layout.activity_setting);
         initData();
         initView();
-        GoogleAnalytics.getInstance().sendLogEventProperties(Event.EnterSettingActivity);
     }
 
     private void initData(){
@@ -109,7 +107,6 @@ public class SettingActivity extends DrawerActivity{
                 Bundle b = new Bundle();
                 b.putString("url", mAppConfig.getMyInfoUrl());
                 addFragment(WebViewFragment.class, b, true);
-                GoogleAnalytics.getInstance().sendLogEventProperties(Event.ClickSettingMenu_MyInfo);
             }
         });
 
@@ -119,7 +116,6 @@ public class SettingActivity extends DrawerActivity{
                 Bundle b = new Bundle();
                 b.putString("url", mAppConfig.getClubMyInfo() + mUserInfo.getEmail());
                 addFragment(WebViewFragment.class, b, true);
-                GoogleAnalytics.getInstance().sendLogEventProperties(Event.ClickSettingMenu_MyCafeInfo);
             }
         });
 
@@ -130,7 +126,6 @@ public class SettingActivity extends DrawerActivity{
                 Token token = mConfigPref.getToken();
                 mDeleteTokenRequest.requestDeleteToken(mAppConfig, token);
                 NetworkManager.getInstance().request(mDeleteTokenRequest);
-                GoogleAnalytics.getInstance().sendLogEventProperties(Event.ClickSettingMenu_Logout);
             }
         });
 
@@ -141,7 +136,6 @@ public class SettingActivity extends DrawerActivity{
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
 
                 mConfigPref.setSettingPush(isChecked);
-                GoogleAnalytics.getInstance().sendLogEventProperties(isChecked ? Event.ClickSettingMenu_NotificationOn : Event.ClickSettingMenu_NotificationOff);
             }
         });
 

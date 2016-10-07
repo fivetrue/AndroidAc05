@@ -4,12 +4,12 @@ import android.content.ContextWrapper;
 import android.os.Parcel;
 import android.os.Parcelable;
 
-import com.fivetrue.gimpo.ac05.vo.IPageData;
+import com.fivetrue.gimpo.ac05.vo.IBaseItem;
 
 /**
  * Created by ojin.kwon on 2016-02-25.
  */
-public final class NotificationData implements Parcelable, IPageData {
+public final class NotificationData implements Parcelable, IBaseItem {
 
     private String multicast_id = null;
     private int id = -1;
@@ -66,8 +66,18 @@ public final class NotificationData implements Parcelable, IPageData {
     }
 
     @Override
-    public String getUrl() {
-        return uri;
+    public String getSubContent() {
+        return null;
+    }
+
+    @Override
+    public long getTime() {
+        return createTime;
+    }
+
+    @Override
+    public boolean isShowingNew() {
+        return System.currentTimeMillis() - ONE_DAY * 3 < createTime;
     }
 
     public void setTitle(String title) {

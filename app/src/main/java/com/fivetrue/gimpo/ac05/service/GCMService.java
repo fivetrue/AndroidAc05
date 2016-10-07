@@ -1,11 +1,11 @@
 package com.fivetrue.gimpo.ac05.service;
 
 import android.os.Bundle;
+import android.util.Log;
 
 import com.fivetrue.gimpo.ac05.preferences.ConfigPreferenceManager;
 import com.fivetrue.gimpo.ac05.vo.notification.NotificationData;
 import com.fivetrue.gimpo.ac05.ui.SplashActivity;
-import com.fivetrue.gimpo.ac05.utils.Log;
 import com.google.android.gms.gcm.GcmListenerService;
 import com.google.gson.Gson;
 

@@ -3,8 +3,8 @@ package com.fivetrue.gimpo.ac05.ui.adapter.pager;
 import android.os.Bundle;
 import android.support.v4.app.FragmentManager;
 
-import com.fivetrue.gimpo.ac05.ui.adapter.BaseFragmentPagerAdapter;
-import com.fivetrue.gimpo.ac05.ui.fragment.BaseFragment;
+import com.fivetrue.fivetrueandroid.ui.adapter.BaseFragmentPagerAdapter;
+import com.fivetrue.fivetrueandroid.ui.fragment.BaseFragment;
 import com.fivetrue.gimpo.ac05.ui.fragment.ImageInfomationFragment;
 import com.fivetrue.gimpo.ac05.vo.data.ImageInfoEntry;
 

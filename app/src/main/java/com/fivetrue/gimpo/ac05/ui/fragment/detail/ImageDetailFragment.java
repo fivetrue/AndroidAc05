@@ -7,9 +7,9 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.fivetrue.fivetrueandroid.ui.fragment.BaseFragment;
 import com.fivetrue.gimpo.ac05.R;
-import com.fivetrue.gimpo.ac05.ui.fragment.BaseFragment;
-import com.fivetrue.gimpo.ac05.view.DetailPhotoView;
+import com.fivetrue.fivetrueandroid.view.DetailPhotoView;
 
 
 /**

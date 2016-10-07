@@ -175,6 +175,7 @@ public class UserInfo implements Parcelable{
         birthday = p.readString();
         gcmId = p.readString();
         device = p.readString();
+        profileImage = p.readString();
         district = p.readInt();
     }
 
@@ -197,6 +198,7 @@ public class UserInfo implements Parcelable{
         dest.writeString(birthday);
         dest.writeString(gcmId);
         dest.writeString(device);
+        dest.writeString(profileImage);
         dest.writeInt(district);
     }
 

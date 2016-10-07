@@ -5,6 +5,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.fivetrue.fivetrueandroid.ui.adapter.BaseListAdapter;
 import com.fivetrue.gimpo.ac05.R;
 import com.fivetrue.gimpo.ac05.vo.user.District;
 
@@ -13,7 +14,7 @@ import java.util.List;
 /**
  * Created by kwonojin on 16. 6. 25..
  */
-public class DistrictSpinnerAdapter extends BaseListAdapter <District, DistrictSpinnerAdapter.Holder>{
+public class DistrictSpinnerAdapter extends BaseListAdapter<District, DistrictSpinnerAdapter.Holder> {
 
 
     public DistrictSpinnerAdapter(Context context, List<District> data) {

@@ -13,6 +13,7 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.widget.ContentLoadingProgressBar;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewAnimationUtils;
@@ -30,9 +31,6 @@ import android.webkit.WebViewClient;
 
 import com.fivetrue.fivetrueandroid.ui.fragment.BaseFragment;
 import com.fivetrue.gimpo.ac05.R;
-import com.fivetrue.gimpo.ac05.analytics.Event;
-import com.fivetrue.gimpo.ac05.analytics.GoogleAnalytics;
-import com.fivetrue.gimpo.ac05.utils.Log;
 
 /**
  * Created by kwonojin on 16. 6. 10..
@@ -87,7 +85,6 @@ public class WebViewFragment extends BaseFragment {
 
     protected void initData(){
         setUrl(getArguments().getString("url"));
-        GoogleAnalytics.getInstance().sendLogEventProperties(Event.EnterWebviewFragment.addParams("url", mUrl));
     }
 
     private View initView(LayoutInflater inflater){
