@@ -4,7 +4,9 @@ package com.fivetrue.gimpo.ac05.vo.data;
 import android.os.Parcel;
 import android.os.Parcelable;
 
-public class ImageInfo implements Parcelable{
+import com.fivetrue.gimpo.ac05.vo.IBaseItem;
+
+public class ImageInfo implements Parcelable, IBaseItem{
 	
 	private String imageUrl = null;
 	private String imageName = null;
@@ -48,6 +50,37 @@ public class ImageInfo implements Parcelable{
 	public String getImageUrl() {
 		return imageUrl;
 	}
+
+	@Override
+	public String getTitle() {
+		return imageName;
+	}
+
+	@Override
+	public String getContent() {
+		return description;
+	}
+
+	@Override
+	public String getSubContent() {
+		return null;
+	}
+
+	@Override
+	public long getTime() {
+		return createTime;
+	}
+
+	@Override
+	public String getUrl() {
+		return imageUrl;
+	}
+
+	@Override
+	public boolean isShowingNew() {
+		return (System.currentTimeMillis() - (ONE_DAY * 5)) < getTime();
+	}
+
 	public void setImageUrl(String imageUrl) {
 		this.imageUrl = imageUrl;
 	}

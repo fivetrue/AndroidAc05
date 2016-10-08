@@ -2,37 +2,28 @@
 
     <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
         <item name="windowNoTitle">true</item>
-        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimary">@color/colorPrimaryDark</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
         <item name="colorControlActivated">@color/colorPrimaryDark</item>
         <item name="android:colorActivatedHighlight">@color/colorPrimaryDark</item>
     </style>
 
+    <style name="AppTheme.Transparent" >
+        <item name="android:windowContentOverlay">@null</item>
+        <item name="android:windowBackground">@android:color/transparent</item>
+        <item name="android:colorBackgroundCacheHint">@null</item>
+        <item name="android:windowIsTranslucent">true</item>
+    </style>
+
+
+    <style name="AppTheme.TransparentStatusBar">
+        <item name="android:statusBarColor">@android:color/transparent</item>
+    </style>
 
     <style name="TransparentAppTheme" parent="AppTheme">
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="android:windowContentOverlay">@null</item>
-    </style>
-
-    <style name="NoticeActivityTheme" parent="AppTheme">
-        <item name="colorPrimary">@color/colorPrimary</item>
-        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
-    </style>
-
-    <style name="InfomationActivityTheme" parent="AppTheme">
-        <item name="colorPrimary">#97c4ff</item>
-        <item name="colorPrimaryDark">@color/colorPrimary</item>
-    </style>
-
-    <style name="CafeActivityTheme" parent="AppTheme">
-        <item name="colorPrimary">#FF5e5989</item>
-    </style>
-
-    <style name="AppTheme.Cafe">
-        <item name="android:statusBarColor">@android:color/transparent</item>
-        <item name="windowActionBar">false</item>
-        <item name="windowNoTitle">true</item>
     </style>
 </resources>

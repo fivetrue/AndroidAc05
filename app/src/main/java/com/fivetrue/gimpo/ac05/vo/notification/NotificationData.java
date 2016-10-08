@@ -3,7 +3,9 @@ package com.fivetrue.gimpo.ac05.vo.notification;
 import android.content.ContextWrapper;
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.text.TextUtils;
 
+import com.fivetrue.gimpo.ac05.Constants;
 import com.fivetrue.gimpo.ac05.vo.IBaseItem;
 
 /**
@@ -76,6 +78,11 @@ public final class NotificationData implements Parcelable, IBaseItem {
     }
 
     @Override
+    public String getUrl() {
+        return uri;
+    }
+
+    @Override
     public boolean isShowingNew() {
         return System.currentTimeMillis() - ONE_DAY * 3 < createTime;
     }
@@ -109,7 +116,7 @@ public final class NotificationData implements Parcelable, IBaseItem {
     }
 
     public String getImageUrl() {
-        return imageUrl;
+        return TextUtils.isEmpty(imageUrl) ? Constants.DEFAULT_DEFAULT_IMAGE_URL : imageUrl;
     }
 
     public void setImageUrl(String imageUrl) {

@@ -3,8 +3,8 @@ package com.fivetrue.gimpo.ac05.vo.data;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import com.fivetrue.gimpo.ac05.Constants;
 import com.fivetrue.gimpo.ac05.vo.IBaseItem;
-import com.fivetrue.gimpo.ac05.vo.IPageData;
 import com.fivetrue.gimpo.ac05.vo.rss.Feed;
 
 public class PageData implements Parcelable, IBaseItem{
@@ -34,7 +34,7 @@ public class PageData implements Parcelable, IBaseItem{
 
     @Override
     public String getImageUrl() {
-        return null;
+        return Constants.DEFAULT_GIMPO_BI_IMAGE_URL;
     }
 
     @Override
@@ -55,6 +55,11 @@ public class PageData implements Parcelable, IBaseItem{
     @Override
     public long getTime() {
         return 0;
+    }
+
+    @Override
+    public String getUrl() {
+        return pageUrl;
     }
 
     @Override

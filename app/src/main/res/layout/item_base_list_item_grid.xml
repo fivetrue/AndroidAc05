@@ -8,11 +8,13 @@
         android:id="@+id/layout_item_base_content"
         android:layout_width="200dp"
         android:layout_height="wrap_content"
-        android:layout_margin="4dp"
-        android:layout_centerVertical="true"
         app:cardCornerRadius="2dp"
         android:background="@drawable/selector_common_button"
-        android:stateListAnimator="@drawable/selector_common_list_item_animator">
+        android:stateListAnimator="@drawable/selector_common_list_item_animator"
+        android:layout_marginLeft="4dp"
+        android:layout_marginRight="4dp"
+        android:layout_centerVertical="true"
+        android:layout_centerHorizontal="true">
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

@@ -20,12 +20,11 @@
         android:icon="@drawable/ic_launcher"
         android:label="@string/app_name"
         android:supportsRtl="true"
-        android:theme="@style/AppTheme"
+        android:theme="@style/AppTheme.TransparentStatusBar"
         android:name=".ApplicationEX">
         <activity
             android:name=".ui.SplashActivity"
-            android:screenOrientation="portrait"
-            android:theme="@style/AppTheme.NoActionBar">
+            android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
@@ -36,24 +35,25 @@
             android:name=".ui.MainActivity"
             android:screenOrientation="portrait"/>
 
+        <activity android:name=".ui.NotificationDataListActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme.Transparent"/>
+
         <activity
             android:name=".ui.UserInfoInputActivity"
             android:screenOrientation="portrait"/>
 
         <activity
-            android:name=".ui.NoticeListActivity"
-            android:screenOrientation="portrait"
-            android:theme="@style/NoticeActivityTheme"/>
-
-        <activity
             android:name=".ui.ImageInfomationActivity"
+            android:screenOrientation="portrait"/>
+
+        <activity android:name=".ui.WebViewActivity"
             android:screenOrientation="portrait"
-            android:theme="@style/InfomationActivityTheme"/>
+            android:theme="@style/AppTheme.TransparentStatusBar.Transparent"/>
 
         <activity
             android:name=".ui.CafeActivity"
-            android:screenOrientation="portrait"
-            android:theme="@style/AppTheme.NoActionBar"/>
+            android:screenOrientation="portrait"/>
 
         <activity
             android:name=".ui.SettingActivity"
@@ -61,8 +61,7 @@
 
         <activity
             android:name=".ui.ImageDetailActivity"
-            android:screenOrientation="portrait"
-            android:theme="@style/AppTheme.NoActionBar"/>
+            android:screenOrientation="portrait"/>
 
         <service
             android:name=".service.NotificationService"/>

@@ -375,4 +375,10 @@ public class WebViewFragment extends BaseFragment {
     public String getUrl(){
         return mUrl;
     }
+
+    @Override
+    public String getFragmentTitle() {
+        String title = getArguments().getString("title");
+        return title != null ? title : super.getFragmentTitle();
+    }
 }

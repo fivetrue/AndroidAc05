@@ -6,7 +6,9 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
+import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v4.widget.NestedScrollView;
@@ -20,6 +22,7 @@ import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -32,6 +35,7 @@ import com.fivetrue.fivetrueandroid.net.ErrorCode;
 import com.fivetrue.fivetrueandroid.net.NetworkManager;
 import com.fivetrue.fivetrueandroid.ui.BaseActivity;
 import com.fivetrue.fivetrueandroid.ui.adapter.BaseRecyclerAdapter;
+import com.fivetrue.fivetrueandroid.ui.fragment.BaseFragmentImp;
 import com.fivetrue.fivetrueandroid.view.CircleImageView;
 import com.fivetrue.gimpo.ac05.Constants;
 import com.fivetrue.gimpo.ac05.R;
@@ -73,15 +77,6 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
     private View mBackground = null;
     private ProgressBar mProgressBar = null;
 
-//    private RecyclerView mNoticeDataList = null;
-//    private BaseItemListAdapter<NotificationData> mNoticeListAdapter = null;
-//
-//    private RecyclerView mTownDataList = null;
-//    private BaseItemListAdapter<TownData> mTownDataListAdapter = null;
-//
-//    private RecyclerView mNotificationDataList = null;
-//    private BaseItemListAdapter<NotificationData> mNotificationListAdapter = null;
-
     private UserInfo mUserInfo = null;
 
     private MainPageDataRequest mMainDataRequest = null;
@@ -97,16 +92,15 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         initData();
         initView();
         checkUserInfo();
-        if(getIntent() != null && getIntent().getDataString() != null){
+        if (getIntent() != null && getIntent().getDataString() != null) {
             String data = getIntent().getData().toString();
-            if(data != null && (data.startsWith("http") || data.startsWith("https"))){
+            if (data != null && (data.startsWith("http") || data.startsWith("https"))) {
                 NotificationData notificationData = getIntent().getParcelableExtra(NotificationHelper.KEY_NOTIFICATION_PARCELABLE);
-                if(notificationData != null){
+                if (notificationData != null) {
                     data = String.format(Constants.API_CHECK_REDIRECT, notificationData.getUri()
                             , notificationData.getMulticast_id()
                             , mUserInfo.getEmail());
                 }
-                showWebviewFragment(getString(R.string.notice), data);
             }
         }
 
@@ -117,7 +111,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         NetworkManager.getInstance().request(mMainDataRequest);
     }
 
-    private void initData(){
+    private void initData() {
         mUserInfo = getIntent().getParcelableExtra(UserInfo.class.getName());
         mConfigPref = new ConfigPreferenceManager(this);
         mMainDataRequest = new MainPageDataRequest(this, baseMainDataEntryOnResponseListener);
@@ -125,7 +119,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         mMainDataRequest.setCount(6);
     }
 
-    private void initView(){
+    private void initView() {
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -152,26 +146,11 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         mBackground = findViewById(R.id.view_main_background);
         mProgressBar = (ProgressBar) findViewById(R.id.pb_main);
 
-//        mNoticeDataList = (RecyclerView) findViewById(R.id.rv_main_notice);
-//        mNoticeDataList.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
-//        mNoticeDataList.setItemAnimator(new SlideInRightAnimator());
-//
-//        mTownDataList = (RecyclerView) findViewById(R.id.rv_main_town_data);
-//        mTownDataList.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
-//        mTownDataList.setItemAnimator(new SlideInRightAnimator());
-//
-//        mNotificationDataList = (RecyclerView) findViewById(R.id.rv_main_notification_data);
-//        mNotificationDataList.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
-//        mNotificationDataList.setItemAnimator(new SlideInRightAnimator());
-//
-//        new LinearSnapHelper().attachToRecyclerView(mNoticeDataList);
-//        new LinearSnapHelper().attachToRecyclerView(mTownDataList);
-//        new LinearSnapHelper().attachToRecyclerView(mNotificationDataList);
     }
 
-    private void checkUserInfo(){
-        if(mUserInfo != null){
-            if(mUserInfo.getDistrict() <= 0){
+    private void checkUserInfo() {
+        if (mUserInfo != null) {
+            if (mUserInfo.getDistrict() <= 0) {
                 Intent intent = new Intent(this, UserInfoInputActivity.class);
                 startActivity(intent);
                 overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
@@ -179,44 +158,44 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         }
     }
 
-    private void showPageDetailFragment(String title, FeedMessage message, Integer textColor, Integer bgColor){
+    private void showPageDetailFragment(String title, FeedMessage message, Integer textColor, Integer bgColor) {
         int enterAnim = R.anim.enter_translate_up;
         int exitAnim = R.anim.exit_translate_down;
 
-        if(Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP){
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
             enterAnim = R.anim.enter_smooth;
             exitAnim = R.anim.exit_smooth;
         }
 
         Fragment f = addFragment(PageDataDetailFragment.class, PageDataDetailFragment.makeArgument(message, textColor, bgColor)
                 , getFragmentAnchorLayoutID(), enterAnim, exitAnim, true);
-        if(f != null){
+        if (f != null) {
             getSupportActionBar().setTitle(title);
         }
     }
 
-    private void showWebviewFragment(String title, String url){
+//    private void showWebviewFragment(String title, String url) {
+//
+//        int enterAnim = R.anim.enter_translate_up;
+//        int exitAnim = R.anim.exit_translate_down;
+//
+//        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
+//            enterAnim = R.anim.enter_smooth;
+//            exitAnim = R.anim.exit_smooth;
+//        }
+//
+//        Bundle argument = new Bundle();
+//        argument.putString("url", url);
+//        Fragment f = addFragment(WebViewFragment.class, argument
+//                , getFragmentAnchorLayoutID(), enterAnim, exitAnim, true);
+//        if (f != null) {
+//            getSupportActionBar().setTitle(title);
+//        }
+//    }
 
-        int enterAnim = R.anim.enter_translate_up;
-        int exitAnim = R.anim.exit_translate_down;
-
-        if(Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP){
-            enterAnim = R.anim.enter_smooth;
-            exitAnim = R.anim.exit_smooth;
-        }
-
-        Bundle argument = new Bundle();
-        argument.putString("url", url);
-        Fragment f = addFragment(WebViewFragment.class, argument
-                , getFragmentAnchorLayoutID(), enterAnim, exitAnim, true);
-        if(f != null){
-            getSupportActionBar().setTitle(title);
-        }
-    }
-
-    protected boolean closeDrawer(){
+    protected boolean closeDrawer() {
         boolean b = false;
-        if(mDrawerLayout != null && mDrawerLayout.isDrawerOpen(GravityCompat.START)){
+        if (mDrawerLayout != null && mDrawerLayout.isDrawerOpen(GravityCompat.START)) {
             b = true;
             mDrawerLayout.closeDrawer(GravityCompat.START);
         }
@@ -225,17 +204,17 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
 
     @Override
     public void onBackPressed() {
-        if(closeDrawer()){
+        if (closeDrawer()) {
             return;
-        }else if(getCurrentFragmentManager().getBackStackEntryCount() > 0){
+        } else if (getCurrentFragmentManager().getBackStackEntryCount() > 0) {
             Fragment f = getCurrentFragmentManager().findFragmentById(getFragmentAnchorLayoutID());
-            if(f != null && f instanceof WebViewFragment && ((WebViewFragment) f).canGoback()){
+            if (f != null && f instanceof WebViewFragment && ((WebViewFragment) f).canGoback()) {
                 ((WebViewFragment) f).goBack();
-            }else{
+            } else {
                 super.onBackPressed();
             }
-        }else{
-            if(!mDoubleClickBack){
+        } else {
+            if (!mDoubleClickBack) {
                 mDoubleClickBack = true;
                 Toast.makeText(MainActivity.this, R.string.exit_click_back_twice, Toast.LENGTH_SHORT).show();
                 new Handler().postDelayed(new Runnable() {
@@ -244,47 +223,83 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
                         mDoubleClickBack = false;
                     }
                 }, 2000L);
-            }else{
+            } else {
                 super.onBackPressed();
             }
         }
     }
 
-    private void addRecyclerContainer(ArrayList<? extends IBaseItem> list, String title, int leftDrawable, View.OnClickListener onClickCategory){
-        if(list != null && list.size() > 0 && title != null){
+    @Override
+    protected int getFragmentAnchorLayoutID() {
+        return R.id.layout_main_fragment_anchor;
+    }
+
+    private void addRecyclerContainer(ArrayList<? extends IBaseItem> list, String title, int leftDrawable, View.OnClickListener onClickCategory) {
+        if (list != null && list.size() > 0 && title != null) {
             View view = LayoutInflater.from(this).inflate(R.layout.layout_recycler_container, null);
+            View titleContainer = view.findViewById(R.id.layout_recycler_container_title);
             TextView tv = (TextView) view.findViewById(R.id.tv_recycler_container_title);
+            ImageView icon = (ImageView) view.findViewById(R.id.iv_recycler_container_title_icon);
             RecyclerView rv = (RecyclerView) view.findViewById(R.id.rv_recycler_conatainer_list);
             tv.setText(title);
-            if(leftDrawable != 0){
-                tv.setCompoundDrawables(getResources().getDrawable(leftDrawable)
-                        , null, null
-                        , getResources().getDrawable(R.drawable.ic_square_arrow_right_20dp));
-            }
-            tv.setOnClickListener(onClickCategory);
+            icon.setImageResource(leftDrawable);
+            titleContainer.setOnClickListener(onClickCategory);
             rv.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
             rv.setItemAnimator(new SlideInRightAnimator());
-            BaseItemListAdapter adapter = new BaseItemListAdapter<>(list);
-            adapter.setOnItemClickListener(new BaseRecyclerAdapter.OnItemClickListener<IBaseItem>() {
+            BaseItemListAdapter adapter = new BaseItemListAdapter<>(list, R.layout.item_base_list_item_grid);
+
+            adapter.setOnItemClickListener(new BaseRecyclerAdapter.OnItemClickListener<IBaseItem, BaseItemListAdapter.BaseItemViewHolder>() {
                 @Override
-                public void onClick(View view, IBaseItem data) {
-                    if(data != null){
-                        showWebviewFragment(data.getContent(), data.getUrl());
+                public void onClickItem(BaseItemListAdapter.BaseItemViewHolder holder, IBaseItem data) {
+                    if (data != null) {
+                        Intent intent = new Intent(MainActivity.this, WebViewActivity.class);
+                        intent.putExtra("url", data.getUrl());
+                        intent.putExtra("title", data.getTitle());
+                        intent.putExtra("subtitle", data.getContent());
+                        intent.putExtra("image", data.getImageUrl());
+                        startActivity(intent,
+                                ActivityOptionsCompat.makeClipRevealAnimation(holder.image
+                                        , (int) holder.image.getX(), (int) holder.image.getY()
+                                        , holder.layout.getWidth(), holder.layout.getHeight()).toBundle());
                     }
                 }
             });
+
             rv.setAdapter(adapter);
             new LinearSnapHelper().attachToRecyclerView(rv);
             mLayoutMainContainer.addView(view);
         }
     }
 
-    private void setMainData(MainDataEntry entry){
-        if(entry != null){
+    @Override
+    public Fragment addFragment(Class<? extends BaseFragmentImp> cls, Bundle arguments, int anchorLayout, int enterAnim, int exitAnim, boolean addBackstack) {
+        Fragment f = super.addFragment(cls, arguments, anchorLayout, R.anim.enter_smooth, R.anim.exit_smooth, addBackstack);
+        if (f instanceof BaseFragmentImp) {
+            getSupportActionBar().setTitle(((BaseFragmentImp) f).getFragmentTitle());
+        }
+        return f;
+    }
+
+    @Override
+    protected boolean popFragment(FragmentManager fm) {
+        boolean b = super.popFragment(fm);
+        if (fm.getBackStackEntryCount() <= 0) {
+            getSupportActionBar().setTitle(R.string.app_name);
+        }
+        return b;
+    }
+
+    private void setMainData(MainDataEntry entry) {
+        if (entry != null) {
             addRecyclerContainer(entry.getNotices(), getString(R.string.public_notice), R.drawable.ic_public_notification_20dp, new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-
+                    Intent intent = new Intent(MainActivity.this, NotificationDataListActivity.class);
+                    intent.putExtra("title", getString(R.string.public_notice));
+                    intent.putExtra("type", "1");
+                    startActivity(intent, ActivityOptionsCompat.makeClipRevealAnimation(v,
+                            (int) v.getX(), (int) v.getY()
+                            , v.getWidth(), v.getHeight() ).toBundle());
                 }
             });
             addRecyclerContainer(entry.getTown().getList(), entry.getTown().getTitle(), R.drawable.ic_info_20dp, new View.OnClickListener() {
@@ -297,14 +312,19 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
             addRecyclerContainer(entry.getNotification(), getString(R.string.notice), R.drawable.ic_notification_20dp, new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-
+                    Intent intent = new Intent(MainActivity.this, NotificationDataListActivity.class);
+                    intent.putExtra("title", getString(R.string.notice));
+                    intent.putExtra("type", "0");
+                    startActivity(intent, ActivityOptionsCompat.makeClipRevealAnimation(v,
+                            (int) v.getX(), (int) v.getY()
+                            , v.getWidth(), v.getHeight() ).toBundle());
                 }
             });
-            for(final PageData data : entry.getPages()){
+            for (final PageData data : entry.getPages()) {
                 new RSSFeedParser(data.getPageUrl(), new RSSFeedParser.OnLoadFeedListener() {
                     @Override
                     public void onLoad(Feed feed) {
-                        addRecyclerContainer(feed.getMessages(), feed.getCopyright(), R.drawable.ic_document_20dp, new View.OnClickListener() {
+                        addRecyclerContainer(feed.getMessages(), feed.getTitle(), R.drawable.ic_document_20dp, new View.OnClickListener() {
                             @Override
                             public void onClick(View v) {
 
@@ -313,21 +333,28 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
                     }
                 }).readFeed();
             }
+
+            addRecyclerContainer(entry.getImageInfos(), getString(R.string.image_infomation), R.drawable.ic_multi_camera_20dp, new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+
+                }
+            });
         }
     }
 
     private BaseApiResponse.OnResponseListener<MainDataEntry> baseMainDataEntryOnResponseListener = new BaseApiResponse.OnResponseListener<MainDataEntry>() {
         @Override
         public void onResponse(BaseApiResponse<MainDataEntry> response) {
-            if(BuildConfig.DEBUG)
+            if (BuildConfig.DEBUG)
                 Log.d(TAG, "onResponse() called with: response = [" + response + "]");
             mProgressBar.setVisibility(View.GONE);
-            if(response != null){
-                if(response.getErrorCode() == ErrorCode.OK){
-                    if(response.getData() != null){
+            if (response != null) {
+                if (response.getErrorCode() == ErrorCode.OK) {
+                    if (response.getData() != null) {
                         setMainData(response.getData());
                     }
-                }else{
+                } else {
                     Toast.makeText(MainActivity.this, response.getMessage(), Toast.LENGTH_SHORT).show();
                 }
             }
@@ -335,30 +362,35 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
 
         @Override
         public void onError(VolleyError error) {
-            if(BuildConfig.DEBUG) Log.d(TAG, "onError() called with: error = [" + error + "]");
+            if (BuildConfig.DEBUG) Log.d(TAG, "onError() called with: error = [" + error + "]");
             mProgressBar.setVisibility(View.GONE);
         }
     };
 
     @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        return super.onOptionsItemSelected(item);
+    }
+
+    @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
         closeDrawer();
-        if(item != null){
-            switch(item.getItemId()){
-                case R.id.nav_main :
+        if (item != null) {
+            switch (item.getItemId()) {
+                case R.id.nav_main:
 
                     return true;
-                case R.id.nav_info :
+                case R.id.nav_info:
 
                     return true;
-                case R.id.nav_noti :
+                case R.id.nav_noti:
                     return true;
 
-                case R.id.nav_cafe :
+                case R.id.nav_cafe:
 
                     return true;
 
-                case R.id.nav_setting :
+                case R.id.nav_setting:
 
                     return true;
             }
@@ -369,7 +401,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
     private RecyclerView.OnItemTouchListener onItemTouchListener = new RecyclerView.OnItemTouchListener() {
         @Override
         public boolean onInterceptTouchEvent(RecyclerView rv, MotionEvent e) {
-           return false;
+            return false;
         }
 
         @Override

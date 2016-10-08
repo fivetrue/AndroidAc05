@@ -7,6 +7,7 @@ import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.v4.app.ActivityOptionsCompat;
 import android.util.Log;
 import android.view.View;
 import android.view.animation.AlphaAnimation;
@@ -348,7 +349,9 @@ public class SplashActivity extends BaseActivity implements GoogleLoginUtil.OnAc
             intent = new Intent(this, MainActivity.class);
         }
         intent.putExtra(UserInfo.class.getName(), info);
-        startActivity(intent);
+        startActivity(intent, ActivityOptionsCompat.makeClipRevealAnimation(mUserImage
+                , (int) mUserImage.getX(), (int)  mUserImage.getY()
+                , mUserImage.getWidth(), mUserImage.getHeight()).toBundle());
         finish();
     }
 

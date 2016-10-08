@@ -5,6 +5,7 @@ import android.os.Parcel;
 import android.os.Parcelable;
 import android.util.Log;
 
+import com.fivetrue.gimpo.ac05.Constants;
 import com.fivetrue.gimpo.ac05.vo.IBaseItem;
 
 import java.text.ParseException;
@@ -41,7 +42,7 @@ public class TownData implements Parcelable, IBaseItem {
 
 	@Override
 	public String getImageUrl() {
-		return null;
+		return Constants.DEFAULT_TOWN_BI_IMAGE_URL;
 	}
 
 	public String getTitle() {

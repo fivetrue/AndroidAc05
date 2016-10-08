@@ -67,7 +67,7 @@ public class NotificationDataRecyclerAdapter extends BaseRecyclerAdapter<Notific
             holder.container.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    onClickItem(v, data);
+                    onClickItem(holder, data);
                 }
             });
             holder.container.setVisibility(View.VISIBLE);
@@ -77,13 +77,13 @@ public class NotificationDataRecyclerAdapter extends BaseRecyclerAdapter<Notific
 
     public static class PageDataHolder extends RecyclerView.ViewHolder{
 
-        protected View container = null;
-        protected View layoutTop = null;
-        protected TextView title = null;
-        protected TextView date = null;
-        protected NetworkImageView imageView = null;
-        protected ImageView newIcon = null;
-        protected TextView content = null;
+        public View container = null;
+        public View layoutTop = null;
+        public TextView title = null;
+        public TextView date = null;
+        public NetworkImageView imageView = null;
+        public ImageView newIcon = null;
+        public TextView content = null;
 
         public PageDataHolder(View itemView) {
             super(itemView);

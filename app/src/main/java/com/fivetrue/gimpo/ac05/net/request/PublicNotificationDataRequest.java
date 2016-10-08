@@ -14,16 +14,16 @@ import java.util.ArrayList;
 /**
  * Created by kwonojin on 16. 3. 19..
  */
-public class NoticeDataRequest extends BasicRequest<ArrayList<NotificationData>> {
+public class PublicNotificationDataRequest extends BasicRequest<ArrayList<NotificationData>> {
 
-    private static final String API = Constants.API_SERVER_HOST + "/api/data/noti";
+    private static final String API = Constants.API_SERVER_HOST + "/api/data/noti?";
 
     private boolean mCached = true;
     private long mCacheTime = 1000 * 60 * 10;
 
-    public NoticeDataRequest(Context context, BaseApiResponse.OnResponseListener<ArrayList<NotificationData>> response) {
+    public PublicNotificationDataRequest(Context context, BaseApiResponse.OnResponseListener<ArrayList<NotificationData>> response) {
         super(context, API, response);
-        getParams().put("type", "1");
+        putParam("type", "1");
     }
 
     @Override
