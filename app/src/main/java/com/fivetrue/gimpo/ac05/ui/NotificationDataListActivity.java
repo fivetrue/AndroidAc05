@@ -3,7 +3,6 @@ package com.fivetrue.gimpo.ac05.ui;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.v4.app.ActivityOptionsCompat;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -41,7 +40,7 @@ public class NotificationDataListActivity extends BaseListDataActivity<Notificat
 
     private void initData() {
         mType = getIntent().getStringExtra("type");
-        if(mType.equals("1")){
+        if("1".equals(mType)){
             mRequest = new PublicNotificationDataRequest(this, baseApiResponse);
         }else{
             mRequest = new NotificationDataRequest(this, baseApiResponse);
@@ -92,11 +91,7 @@ public class NotificationDataListActivity extends BaseListDataActivity<Notificat
         intent.putExtra("title", data.getTitle());
         intent.putExtra("subtitle", data.getContent());
         intent.putExtra("image", data.getImageUrl());
-
-        startActivity(intent,
-                ActivityOptionsCompat.makeClipRevealAnimation(holder.image
-                        , (int) holder.layout.getX(), (int) holder.layout.getY()
-                        , holder.layout.getWidth(), holder.layout.getHeight()).toBundle());
+        startActivityWithClipRevealAnimation(intent, holder.layout);
     }
 
     @Override

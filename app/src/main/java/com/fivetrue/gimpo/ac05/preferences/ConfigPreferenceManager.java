@@ -19,10 +19,8 @@ public class ConfigPreferenceManager {
 
     private static final String PREF_NAME = "config";
 
-    private static final String VERSION_NUMBER = "_version_number";
     private static final String GCM_DEVICE = "gcm_dvice_id";
 
-    private static final String SETTING_PUSH = "setting_push";
     private static final String USER_INFO = "user_info";
     private static final String USER_TOKEN = "user_token";
 
@@ -40,22 +38,6 @@ public class ConfigPreferenceManager {
         mGson = new Gson();
     }
 
-    /**
-     * 가장 최근 버전을 pref 에 저장
-     * @param versionNumber
-     */
-    public void setVersionNumber(String name, int versionNumber){
-        mHelper.putData(name + VERSION_NUMBER, versionNumber);
-    }
-
-    /**
-     * 가장 최근의 Config의 버전을 가져온다.
-     * @return
-     */
-    public int getVersionNumber(String name){
-        return mHelper.getData(name + VERSION_NUMBER, 0);
-    }
-
     public void setGcmDeviceId(String id){
         if(id != null){
             mHelper.putData(GCM_DEVICE, id);
@@ -64,14 +46,6 @@ public class ConfigPreferenceManager {
 
     public String getGcmDeviceId(){
         return mHelper.getData(GCM_DEVICE, null);
-    }
-
-    public void setSettingPush(boolean b){
-        mHelper.putData(SETTING_PUSH, b);
-    }
-
-    public boolean isSettingPush(){
-        return mHelper.getData(SETTING_PUSH, true);
     }
 
     public void setUserInfo(UserInfo userinfo){

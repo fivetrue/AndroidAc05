@@ -73,8 +73,7 @@ public class ImageDetailActivity extends BaseActivity {
     }
 
     @Override
-    public void finish() {
-        super.finish();
-        overridePendingTransition(0, R.anim.exit_transform);
+    protected boolean transitionModeWhenFinish() {
+        return true;
     }
 }

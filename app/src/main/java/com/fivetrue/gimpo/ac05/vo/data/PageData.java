@@ -10,10 +10,6 @@ import com.fivetrue.gimpo.ac05.vo.rss.Feed;
 public class PageData implements Parcelable, IBaseItem{
 
 
-    public PageData(){
-
-    }
-
     private int pageId = 0;
 
     private String pageTitle = null;
@@ -31,6 +27,31 @@ public class PageData implements Parcelable, IBaseItem{
     private String pageType = "None";
 
     private Feed feed = null;
+
+    protected PageData(Parcel in) {
+        pageId = in.readInt();
+        pageTitle = in.readString();
+        pageUrl = in.readString();
+        titleColor = in.readString();
+        titleBgColor = in.readString();
+        contentColor = in.readString();
+        contentBgColor = in.readString();
+        contentDescription = in.readString();
+        pageType = in.readString();
+        feed = in.readParcelable(Feed.class.getClassLoader());
+    }
+
+    public static final Creator<PageData> CREATOR = new Creator<PageData>() {
+        @Override
+        public PageData createFromParcel(Parcel in) {
+            return new PageData(in);
+        }
+
+        @Override
+        public PageData[] newArray(int size) {
+            return new PageData[size];
+        }
+    };
 
     @Override
     public String getImageUrl() {
@@ -139,6 +160,14 @@ public class PageData implements Parcelable, IBaseItem{
         this.pageType = pageType;
     }
 
+    public Feed getFeed() {
+        return feed;
+    }
+
+    public void setFeed(Feed feed) {
+        this.feed = feed;
+    }
+
     @Override
     public String toString() {
         return "PageData [pageId=" + pageId + ", pageTitle=" + pageTitle + ", pageUrl=" + pageUrl + ", titleColor="
@@ -146,30 +175,6 @@ public class PageData implements Parcelable, IBaseItem{
                 + contentBgColor + ", contentDescription=" + contentDescription + ", pageType=" + pageType
                 + "]";
     }
-
-    protected PageData(Parcel in) {
-        pageId = in.readInt();
-        pageTitle = in.readString();
-        pageUrl = in.readString();
-        titleColor = in.readString();
-        titleBgColor = in.readString();
-        contentColor = in.readString();
-        contentBgColor = in.readString();
-        contentDescription = in.readString();
-        pageType = in.readString();
-    }
-
-    public static final Creator<PageData> CREATOR = new Creator<PageData>() {
-        @Override
-        public PageData createFromParcel(Parcel in) {
-            return new PageData(in);
-        }
-
-        @Override
-        public PageData[] newArray(int size) {
-            return new PageData[size];
-        }
-    };
 
     @Override
     public int describeContents() {
@@ -187,5 +192,6 @@ public class PageData implements Parcelable, IBaseItem{
         dest.writeString(contentBgColor);
         dest.writeString(contentDescription);
         dest.writeString(pageType);
+        dest.writeParcelable(feed, flags);
     }
 }

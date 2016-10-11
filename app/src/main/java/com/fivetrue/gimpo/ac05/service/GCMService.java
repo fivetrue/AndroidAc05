@@ -4,6 +4,7 @@ import android.os.Bundle;
 import android.util.Log;
 
 import com.fivetrue.gimpo.ac05.preferences.ConfigPreferenceManager;
+import com.fivetrue.gimpo.ac05.preferences.DefaultPreferenceManager;
 import com.fivetrue.gimpo.ac05.vo.notification.NotificationData;
 import com.fivetrue.gimpo.ac05.ui.SplashActivity;
 import com.google.android.gms.gcm.GcmListenerService;
@@ -29,7 +30,7 @@ public class GCMService extends GcmListenerService {
         }
 
         String message = data.getString(DATA_KEY);
-        if(message != null && mConfigPref.isSettingPush()){
+        if(message != null && DefaultPreferenceManager.getInstance(this).isPushServiceOn()){
             NotificationData noti = new Gson().fromJson(message, NotificationData.class);
             if(noti.getId() <= 0){
                 noti.setId(DEFAULT_NOTIFICATION_ID);
@@ -46,5 +47,4 @@ public class GCMService extends GcmListenerService {
             // normal downstream message.
         }
     }
-
 }

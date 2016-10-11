@@ -34,6 +34,7 @@
     <string name="infomation">정보</string>
     <string name="image_infomation">사진</string>
     <string name="cafe">카페</string>
+    <string name="talk">TALK</string>
     <string name="setting">설정</string>
 
     <string name="join_email">이메일</string>
@@ -66,8 +67,9 @@
 
     <!-- Setting  -->
     <string name="setting_user_info">사용자 정보</string>
-    <string name="setting_title_push">PUSH</string>
-    <string name="setting_check_push">알림 서비스 ON/OFF 설정</string>
+    <string name="setting_config_push">알림 설정</string>
+    <string name="setting_config_push_on">댓글,정보,기타 알림을 수신함</string>
+    <string name="setting_config_push_off">댓글,정보,기타 알림을 수신하지 않음</string>
     <string name="setting_common_settings">일반 설정</string>
     <string name="setting_version_info">버전 정보</string>
     <string name="setting_district">설정 구역</string>

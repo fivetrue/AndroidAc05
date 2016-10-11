@@ -6,6 +6,9 @@ import android.os.Parcelable;
 
 import com.fivetrue.gimpo.ac05.vo.IBaseItem;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
 public class ImageInfo implements Parcelable, IBaseItem{
 	
 	private String imageUrl = null;
@@ -63,7 +66,7 @@ public class ImageInfo implements Parcelable, IBaseItem{
 
 	@Override
 	public String getSubContent() {
-		return null;
+		return  new SimpleDateFormat("yyyy-MM-dd HH:mm").format(new Date(getTime()));
 	}
 
 	@Override
@@ -78,7 +81,7 @@ public class ImageInfo implements Parcelable, IBaseItem{
 
 	@Override
 	public boolean isShowingNew() {
-		return (System.currentTimeMillis() - (ONE_DAY * 5)) < getTime();
+		return (System.currentTimeMillis() - (ONE_DAY * 3)) < getTime();
 	}
 
 	public void setImageUrl(String imageUrl) {

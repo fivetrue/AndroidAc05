@@ -6,6 +6,7 @@ import com.fivetrue.fivetrueandroid.net.BaseApiResponse;
 import com.fivetrue.fivetrueandroid.net.BasicRequest;
 import com.fivetrue.gimpo.ac05.Constants;
 import com.fivetrue.gimpo.ac05.vo.data.ImageInfo;
+import com.fivetrue.gimpo.ac05.vo.data.ImageInfoEntry;
 import com.google.gson.reflect.TypeToken;
 
 import java.lang.reflect.Type;
@@ -14,17 +15,16 @@ import java.util.ArrayList;
 /**
  * Created by kwonojin on 16. 3. 19..
  */
-public class ImageInfoDataRequest extends BasicRequest<ArrayList<ImageInfo>> {
+public class ImageInfoEntryDataRequest extends BasicRequest<ArrayList<ImageInfoEntry>> {
 
-    private static final String API = Constants.API_SERVER_HOST + "/api/data/image";
+    private static final String API = Constants.API_SERVER_HOST + "/api/data/imageEntry";
 
 
     private boolean mCached = true;
     private long mCacheTime = 1000 * 60 * 60;
 
-    public ImageInfoDataRequest(Context context, String type, BaseApiResponse.OnResponseListener<ArrayList<ImageInfo>> response) {
+    public ImageInfoEntryDataRequest(Context context, BaseApiResponse.OnResponseListener<ArrayList<ImageInfoEntry>> response) {
         super(context, API, response);
-        getParams().put("type", type);
     }
 
     @Override
@@ -37,12 +37,8 @@ public class ImageInfoDataRequest extends BasicRequest<ArrayList<ImageInfo>> {
         return mCached;
     }
 
-    public void setCached(boolean b){
-        mCached = b;
-    }
-
     @Override
     protected Type getClassType() {
-        return new TypeToken<ArrayList<ImageInfo>>(){}.getType();
+        return new TypeToken<ArrayList<ImageInfoEntry>>(){}.getType();
     }
 }

@@ -1,12 +1,10 @@
 package com.fivetrue.gimpo.ac05.ui;
 
 import android.content.Intent;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
-import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.view.GravityCompat;
@@ -20,7 +18,6 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
-import android.view.MotionEvent;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -44,14 +41,14 @@ import com.fivetrue.gimpo.ac05.preferences.ConfigPreferenceManager;
 import com.fivetrue.gimpo.ac05.rss.RSSFeedParser;
 import com.fivetrue.gimpo.ac05.ui.adapter.BaseItemListAdapter;
 import com.fivetrue.gimpo.ac05.vo.IBaseItem;
+import com.fivetrue.gimpo.ac05.vo.data.ImageInfoEntry;
 import com.fivetrue.gimpo.ac05.vo.data.MainDataEntry;
 import com.fivetrue.gimpo.ac05.vo.data.PageData;
+import com.fivetrue.gimpo.ac05.vo.data.TownDataEntry;
 import com.fivetrue.gimpo.ac05.vo.rss.Feed;
-import com.fivetrue.gimpo.ac05.vo.rss.FeedMessage;
 import com.fivetrue.gimpo.ac05.vo.notification.NotificationData;
 import com.fivetrue.gimpo.ac05.service.notification.NotificationHelper;
 import com.fivetrue.gimpo.ac05.ui.fragment.WebViewFragment;
-import com.fivetrue.gimpo.ac05.ui.fragment.detail.PageDataDetailFragment;
 import com.fivetrue.gimpo.ac05.vo.user.UserInfo;
 
 import java.util.ArrayList;
@@ -158,41 +155,6 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         }
     }
 
-    private void showPageDetailFragment(String title, FeedMessage message, Integer textColor, Integer bgColor) {
-        int enterAnim = R.anim.enter_translate_up;
-        int exitAnim = R.anim.exit_translate_down;
-
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
-            enterAnim = R.anim.enter_smooth;
-            exitAnim = R.anim.exit_smooth;
-        }
-
-        Fragment f = addFragment(PageDataDetailFragment.class, PageDataDetailFragment.makeArgument(message, textColor, bgColor)
-                , getFragmentAnchorLayoutID(), enterAnim, exitAnim, true);
-        if (f != null) {
-            getSupportActionBar().setTitle(title);
-        }
-    }
-
-//    private void showWebviewFragment(String title, String url) {
-//
-//        int enterAnim = R.anim.enter_translate_up;
-//        int exitAnim = R.anim.exit_translate_down;
-//
-//        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
-//            enterAnim = R.anim.enter_smooth;
-//            exitAnim = R.anim.exit_smooth;
-//        }
-//
-//        Bundle argument = new Bundle();
-//        argument.putString("url", url);
-//        Fragment f = addFragment(WebViewFragment.class, argument
-//                , getFragmentAnchorLayoutID(), enterAnim, exitAnim, true);
-//        if (f != null) {
-//            getSupportActionBar().setTitle(title);
-//        }
-//    }
-
     protected boolean closeDrawer() {
         boolean b = false;
         if (mDrawerLayout != null && mDrawerLayout.isDrawerOpen(GravityCompat.START)) {
@@ -252,15 +214,26 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
                 @Override
                 public void onClickItem(BaseItemListAdapter.BaseItemViewHolder holder, IBaseItem data) {
                     if (data != null) {
-                        Intent intent = new Intent(MainActivity.this, WebViewActivity.class);
-                        intent.putExtra("url", data.getUrl());
-                        intent.putExtra("title", data.getTitle());
-                        intent.putExtra("subtitle", data.getContent());
-                        intent.putExtra("image", data.getImageUrl());
-                        startActivity(intent,
-                                ActivityOptionsCompat.makeClipRevealAnimation(holder.image
-                                        , (int) holder.image.getX(), (int) holder.image.getY()
-                                        , holder.layout.getWidth(), holder.layout.getHeight()).toBundle());
+                        if(data instanceof ImageInfoEntry){
+                            if(((ImageInfoEntry) data).getImageInfos().size() > 1){
+                                Intent intent = new Intent(MainActivity.this, ImageInfoListActivity.class);
+                                intent.putExtra("title", data.getTitle());
+                                intent.putExtra("subtitle", data.getContent());
+                                intent.putExtra("type", ((ImageInfoEntry) data).getImageInfos().get(0).getImageType());
+                                startActivityWithClipRevealAnimation(intent, holder.layout);
+                            }else{
+                                Intent intent = new Intent(MainActivity.this, ImageDetailActivity.class);
+                                intent.putExtra("url", data.getImageUrl());
+                                startActivityWithClipRevealAnimation(intent, holder.layout);
+                            }
+                        }else{
+                            Intent intent = new Intent(MainActivity.this, WebViewActivity.class);
+                            intent.putExtra("url", data.getUrl());
+                            intent.putExtra("title", data.getTitle());
+                            intent.putExtra("subtitle", data.getContent());
+                            intent.putExtra("image", data.getImageUrl());
+                            startActivityWithClipRevealAnimation(intent, holder.image);
+                        }
                     }
                 }
             });
@@ -289,7 +262,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         return b;
     }
 
-    private void setMainData(MainDataEntry entry) {
+    private void setMainData(final MainDataEntry entry) {
         if (entry != null) {
             addRecyclerContainer(entry.getNotices(), getString(R.string.public_notice), R.drawable.ic_public_notification_20dp, new View.OnClickListener() {
                 @Override
@@ -297,15 +270,17 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
                     Intent intent = new Intent(MainActivity.this, NotificationDataListActivity.class);
                     intent.putExtra("title", getString(R.string.public_notice));
                     intent.putExtra("type", "1");
-                    startActivity(intent, ActivityOptionsCompat.makeClipRevealAnimation(v,
-                            (int) v.getX(), (int) v.getY()
-                            , v.getWidth(), v.getHeight() ).toBundle());
+                    startActivityWithClipRevealAnimation(intent, v);
+
                 }
             });
-            addRecyclerContainer(entry.getTown().getList(), entry.getTown().getTitle(), R.drawable.ic_info_20dp, new View.OnClickListener() {
+
+            addRecyclerContainer(entry.getImageInfos(), getString(R.string.image_infomation), R.drawable.ic_multi_camera_20dp, new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-
+                    Intent intent = new Intent(MainActivity.this, ImageInfoEntryListActivity.class);
+                    intent.putExtra("title", getString(R.string.image_infomation));
+                    startActivityWithClipRevealAnimation(intent, v);
                 }
             });
 
@@ -315,31 +290,37 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
                     Intent intent = new Intent(MainActivity.this, NotificationDataListActivity.class);
                     intent.putExtra("title", getString(R.string.notice));
                     intent.putExtra("type", "0");
-                    startActivity(intent, ActivityOptionsCompat.makeClipRevealAnimation(v,
-                            (int) v.getX(), (int) v.getY()
-                            , v.getWidth(), v.getHeight() ).toBundle());
+                    startActivityWithClipRevealAnimation(intent, v);
                 }
             });
+
+            addRecyclerContainer(entry.getTown().getList(), entry.getTown().getTitle(), R.drawable.ic_info_20dp, new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Intent intent = new Intent(MainActivity.this, TownDataListActivity.class);
+                    intent.putExtra("title", entry.getTown().getTitle());
+                    intent.putExtra(TownDataEntry.class.getName(), entry.getTown());
+                    startActivityWithClipRevealAnimation(intent, v);
+                }
+            });
+
             for (final PageData data : entry.getPages()) {
                 new RSSFeedParser(data.getPageUrl(), new RSSFeedParser.OnLoadFeedListener() {
                     @Override
-                    public void onLoad(Feed feed) {
+                    public void onLoad(final Feed feed) {
+                        data.setFeed(feed);
                         addRecyclerContainer(feed.getMessages(), feed.getTitle(), R.drawable.ic_document_20dp, new View.OnClickListener() {
                             @Override
                             public void onClick(View v) {
-
+                                Intent intent = new Intent(MainActivity.this, PageDataListActivity.class);
+                                intent.putExtra("title", feed.getTitle());
+                                intent.putExtra(PageData.class.getName(), data);
+                                startActivityWithClipRevealAnimation(intent, v);
                             }
                         });
                     }
                 }).readFeed();
             }
-
-            addRecyclerContainer(entry.getImageInfos(), getString(R.string.image_infomation), R.drawable.ic_multi_camera_20dp, new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-
-                }
-            });
         }
     }
 
@@ -377,42 +358,23 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         closeDrawer();
         if (item != null) {
             switch (item.getItemId()) {
-                case R.id.nav_main:
-
-                    return true;
-                case R.id.nav_info:
-
-                    return true;
-                case R.id.nav_noti:
-                    return true;
-
-                case R.id.nav_cafe:
+                case R.id.nav_talk:
 
                     return true;
 
-                case R.id.nav_setting:
+                case R.id.nav_cafe:{
+                    Intent intent = new Intent(this, CafeActivity.class);
+                    startActivity(intent);
+                }
+                    return true;
 
+                case R.id.nav_setting:{
+                    Intent intent = new Intent(this, SettingActivity.class);
+                    startActivity(intent);
+                }
                     return true;
             }
         }
         return false;
     }
-
-    private RecyclerView.OnItemTouchListener onItemTouchListener = new RecyclerView.OnItemTouchListener() {
-        @Override
-        public boolean onInterceptTouchEvent(RecyclerView rv, MotionEvent e) {
-            return false;
-        }
-
-        @Override
-        public void onTouchEvent(RecyclerView rv, MotionEvent e) {
-
-        }
-
-        @Override
-        public void onRequestDisallowInterceptTouchEvent(boolean disallowIntercept) {
-
-        }
-    };
-
 }

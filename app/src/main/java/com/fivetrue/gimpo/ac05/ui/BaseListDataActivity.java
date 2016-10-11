@@ -90,7 +90,7 @@ public class BaseListDataActivity<T extends IBaseItem> extends BaseActivity impl
     public void setData(ArrayList<T> data){
         if(data != null && data.size() > 0){
             if(mAdapter == null){
-                mAdapter = new BaseItemListAdapter<>(data, R.layout.item_base_list_item_vertical);
+                mAdapter = new BaseItemListAdapter<>(data, getAdapterItemLayout());
                 mAdapter.setOnItemClickListener(this);
                 mRecyclerView.setAdapter(mAdapter);
             }else{
@@ -135,6 +135,10 @@ public class BaseListDataActivity<T extends IBaseItem> extends BaseActivity impl
         if(mProgressBar != null){
             mProgressBar.setVisibility(View.GONE);
         }
+    }
+
+    protected int getAdapterItemLayout(){
+        return R.layout.item_base_list_item_vertical;
     }
 
     @Override

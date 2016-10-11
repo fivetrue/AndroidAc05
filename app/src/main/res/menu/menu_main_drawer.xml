@@ -1,19 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <group android:checkableBehavior="single">
+    <group android:checkableBehavior="none">
         <item
-            android:id="@+id/nav_main"
-            android:icon="@drawable/ic_home_20dp"
-            android:title="@string/main" />
-        <item
-            android:id="@+id/nav_noti"
-            android:icon="@drawable/ic_notification_20dp"
-            android:title="@string/notice" />
-        <item
-            android:id="@+id/nav_info"
-            android:icon="@drawable/ic_info_20dp"
-            android:title="@string/infomation" />
+            android:id="@+id/nav_talk"
+            android:icon="@drawable/ic_talk_20dp"
+            android:title="@string/talk" />
         <item
             android:id="@+id/nav_cafe"
             android:icon="@drawable/ic_cafe_20dp"

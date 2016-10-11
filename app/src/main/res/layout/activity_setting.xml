@@ -1,147 +1,172 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent" android:layout_height="match_parent"
+<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:fitsSystemWindows="true"
     android:background="@color/colorAccent">
 
-    <LinearLayout
+    <android.support.design.widget.AppBarLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        style="@style/AppTheme.PopupOverlay">
+
+        <android.support.v7.widget.Toolbar
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            android:theme="@style/AppTheme.Toolbar"
+            app:popupTheme="@style/AppTheme.PopupOverlay"
+            app:layout_scrollFlags="enterAlways"/>
+
+    </android.support.design.widget.AppBarLayout>
+
+    <android.support.v4.widget.NestedScrollView
+        android:id="@+id/sv_main"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="vertical">
-
-        <TextView
+        android:layout_marginTop="?attr/actionBarSize">
+        <LinearLayout
+            android:id="@+id/layout_setting_container"
             android:layout_width="match_parent"
-            android:layout_height="@dimen/category_text_height"
-            android:text="@string/setting_user_info"
-            style="@style/CategoryText"/>
+            android:layout_height="match_parent"
+            android:orientation="vertical">
 
-        <RelativeLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:padding="@dimen/common_horizontal_padding"
-            android:background="@color/colorAccent">
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/category_text_height"
+                android:text="@string/setting_user_info"
+                style="@style/CategoryText"/>
 
-            <com.fivetrue.fivetrueandroid.view.CircleImageView
-                android:id="@+id/iv_setting_user_image"
-                android:layout_width="50dp"
-                android:layout_height="50dp"
-                android:layout_alignParentLeft="true"
-                android:layout_centerVertical="true"/>
-
-            <LinearLayout
-                android:layout_width="wrap_content"
+            <RelativeLayout
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_centerHorizontal="true"
-                android:layout_toRightOf="@id/iv_setting_user_image"
-                android:layout_alignParentRight="true"
-                android:gravity="center"
-                android:layout_centerVertical="true">
+                android:padding="@dimen/common_horizontal_padding"
+                android:background="@color/colorAccent">
 
-                <Button
-                    android:id="@+id/btn_setting_cafe_user_info"
+                <com.fivetrue.fivetrueandroid.view.CircleImageView
+                    android:id="@+id/iv_setting_user_image"
+                    android:layout_width="50dp"
+                    android:layout_height="50dp"
+                    android:layout_alignParentLeft="true"
+                    android:layout_centerVertical="true"/>
+
+                <LinearLayout
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@string/my_cafe_info"
-                    android:textColor="@color/colorAccent"
-                    android:textSize="@dimen/setting_category_text_size"
+                    android:layout_centerHorizontal="true"
+                    android:layout_toRightOf="@id/iv_setting_user_image"
+                    android:layout_alignParentRight="true"
+                    android:gravity="center"
+                    android:layout_centerVertical="true">
+
+                    <Button
+                        android:id="@+id/btn_setting_cafe_user_info"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/my_cafe_info"
+                        android:textColor="@color/colorAccent"
+                        android:textSize="@dimen/setting_category_text_size"
+                        android:layout_marginRight="@dimen/common_horizontal_padding"
+                        android:padding="@dimen/common_horizontal_padding"
+                        android:background="@drawable/selector_common_button"/>
+
+                    <Button
+                        android:id="@+id/btn_setting_user_logout"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_below="@+id/btn_setting_user_info"
+                        android:text="@string/logout"
+                        android:textColor="@color/colorAccent"
+                        android:textSize="@dimen/setting_category_text_size"
+                        android:padding="@dimen/common_horizontal_padding"
+                        android:background="@drawable/selector_common_negative_button"/>
+                </LinearLayout>
+            </RelativeLayout>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/category_text_height"
+                android:text="@string/setting_config_push"
+                style="@style/CategoryText"/>
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/item_text_height"
+                android:background="@color/colorAccent">
+
+                <android.support.v7.widget.SwitchCompat
+                    android:id="@+id/sw_setting_push"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
                     android:layout_marginRight="@dimen/common_horizontal_padding"
-                    android:padding="@dimen/common_horizontal_padding"
-                    android:background="@drawable/selector_common_button"/>
+                    android:layout_alignParentRight="true"/>
 
-                <Button
-                    android:id="@+id/btn_setting_user_logout"
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:text="@string/setting_config_push"
+                    android:layout_toLeftOf="@id/sw_setting_push"
+                    style="@style/SubItemText"/>
+            </RelativeLayout>
+
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/category_text_height"
+                android:text="@string/setting_common_settings"
+                style="@style/CategoryText"/>
+
+            <RelativeLayout
+                android:id="@+id/layout_setting_district"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/item_text_height"
+                android:background="@color/colorAccent">
+                <TextView
+                    android:id="@+id/tv_setting_district_info"
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_below="@+id/btn_setting_user_info"
-                    android:text="@string/logout"
-                    android:textColor="@color/colorAccent"
-                    android:textSize="@dimen/setting_category_text_size"
-                    android:padding="@dimen/common_horizontal_padding"
-                    android:background="@drawable/selector_common_negative_button"/>
-            </LinearLayout>
-        </RelativeLayout>
+                    android:layout_height="match_parent"
+                    android:text="@string/setting_district"
+                    style="@style/SubItemText"/>
 
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="@dimen/category_text_height"
-            android:text="@string/setting_title_push"
-            style="@style/CategoryText"/>
-
-        <RelativeLayout
-            android:layout_width="match_parent"
-            android:layout_height="@dimen/item_text_height"
-            android:background="@color/colorAccent">
-
-            <android.support.v7.widget.SwitchCompat
-                android:id="@+id/sw_setting_push"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_centerVertical="true"
-                android:layout_marginRight="@dimen/common_horizontal_padding"
-                android:layout_alignParentRight="true"/>
-
-            <TextView
+                <TextView
+                    android:id="@+id/tv_setting_district_info_value"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_toRightOf="@id/tv_setting_district_info"
+                    android:gravity="center"
+                    style="@style/SubItemText"/>
+            </RelativeLayout>
+            <View
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:text="@string/setting_check_push"
-                android:layout_toLeftOf="@id/sw_setting_push"
-                style="@style/SubItemText"/>
-        </RelativeLayout>
+                android:layout_height="1dp"
+                android:background="@drawable/rect_black_alpha10_color"/>
 
-
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="@dimen/category_text_height"
-            android:text="@string/setting_common_settings"
-            style="@style/CategoryText"/>
-
-        <RelativeLayout
-            android:id="@+id/layout_setting_district"
-            android:layout_width="match_parent"
-            android:layout_height="@dimen/item_text_height"
-            android:background="@color/colorAccent">
-            <TextView
-                android:id="@+id/tv_setting_district_info"
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:text="@string/setting_district"
-                style="@style/SubItemText"/>
-
-            <TextView
-                android:id="@+id/tv_setting_district_info_value"
+            <RelativeLayout
+                android:id="@+id/layout_setting_version_info"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_toRightOf="@id/tv_setting_district_info"
-                android:gravity="center"
-                style="@style/SubItemText"/>
-        </RelativeLayout>
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:background="@drawable/rect_black_alpha10_color"/>
+                android:layout_height="@dimen/item_text_height"
+                android:background="@color/colorAccent">
+                <TextView
+                    android:id="@+id/tv_setting_version_info"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:text="@string/setting_version_info"
+                    style="@style/SubItemText"/>
 
-        <RelativeLayout
-            android:id="@+id/layout_setting_version_info"
-            android:layout_width="match_parent"
-            android:layout_height="@dimen/item_text_height"
-            android:background="@color/colorAccent">
-            <TextView
-                android:id="@+id/tv_setting_version_info"
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:text="@string/setting_version_info"
-                style="@style/SubItemText"/>
-
-            <TextView
-                android:id="@+id/tv_setting_version_info_value"
+                <TextView
+                    android:id="@+id/tv_setting_version_info_value"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_toRightOf="@id/tv_setting_version_info"
+                    android:gravity="center"
+                    style="@style/SubItemText"/>
+            </RelativeLayout>
+            <View
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_toRightOf="@id/tv_setting_version_info"
-                android:gravity="center"
-                style="@style/SubItemText"/>
-        </RelativeLayout>
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:background="@drawable/rect_black_alpha10_color"/>
-    </LinearLayout>
-</ScrollView>
+                android:layout_height="1dp"
+                android:background="@drawable/rect_black_alpha10_color"/>
+        </LinearLayout>
+    </android.support.v4.widget.NestedScrollView>
+</android.support.design.widget.CoordinatorLayout>

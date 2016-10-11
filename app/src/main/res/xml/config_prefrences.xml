@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <PreferenceCategory
+        android:title="@string/setting_user_info">
+        <Preference android:title="@string/logout"
+            android:layout="@layout/layout_setting_preference"/>
+        <Preference android:title="@string/logout"
+            android:layout="@layout/layout_setting_preference"/>
+    </PreferenceCategory>
+
+    <PreferenceCategory
+        android:title="@string/setting_config_push">
+        <SwitchPreference
+            android:title="@string/setting_config_push"
+            android:summaryOff="@string/setting_config_push_off"
+            android:summaryOn="@string/setting_config_push_on"
+            android:key="@string/pref_key_push"
+            android:layout="@layout/layout_setting_preference"/>
+
+    </PreferenceCategory>
+</PreferenceScreen>

@@ -10,7 +10,7 @@ public class MainDataEntry {
 	private ArrayList<NotificationData> notification = new ArrayList<>();
 	private TownDataEntry town = null;
 	private ArrayList<PageData> pages = new ArrayList<>();
-	private ArrayList<ImageInfo> imageInfos = new ArrayList<>();
+	private ArrayList<ImageInfoEntry> imageInfos = new ArrayList<>();
 
 	public ArrayList<NotificationData> getNotices() {
 		return notices;
@@ -44,11 +44,11 @@ public class MainDataEntry {
 		this.notification = notification;
 	}
 
-	public ArrayList<ImageInfo> getImageInfos() {
+	public ArrayList<ImageInfoEntry> getImageInfos() {
 		return imageInfos;
 	}
 
-	public void setImageInfos(ArrayList<ImageInfo> imageInfos) {
+	public void setImageInfos(ArrayList<ImageInfoEntry> imageInfos) {
 		this.imageInfos = imageInfos;
 	}
 

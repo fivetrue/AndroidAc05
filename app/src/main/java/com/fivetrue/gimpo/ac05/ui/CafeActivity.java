@@ -2,27 +2,14 @@ package com.fivetrue.gimpo.ac05.ui;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
-import android.util.Log;
-import android.view.View;
+import android.support.v4.widget.ContentLoadingProgressBar;
+import android.webkit.WebSettings;
+import android.webkit.WebView;
 
-import com.android.volley.VolleyError;
-import com.fivetrue.fivetrueandroid.net.BaseApiResponse;
-import com.fivetrue.fivetrueandroid.net.NetworkManager;
 import com.fivetrue.fivetrueandroid.ui.BaseActivity;
-import com.fivetrue.gimpo.ac05.ApplicationEX;
-import com.fivetrue.gimpo.ac05.Constants;
+import com.fivetrue.fivetrueandroid.utils.CustomWebViewClient;
 import com.fivetrue.gimpo.ac05.R;
-import com.fivetrue.gimpo.ac05.net.request.TokenRequest;
-import com.fivetrue.gimpo.ac05.net.response.TokenApiResponse;
 import com.fivetrue.gimpo.ac05.preferences.ConfigPreferenceManager;
-import com.fivetrue.gimpo.ac05.ui.fragment.WebViewFragment;
-import com.fivetrue.gimpo.ac05.vo.config.AppConfig;
-import com.fivetrue.gimpo.ac05.vo.config.AuthLoginResult;
-import com.fivetrue.gimpo.ac05.vo.config.Token;
-import com.google.gson.Gson;
-
-import java.util.UUID;
 
 /**
  * Created by kwonojin on 16. 6. 7..
@@ -31,15 +18,13 @@ public class CafeActivity extends BaseActivity{
 
     private static final String TAG = "CafeActivity";
 
-    private static final String API = Constants.API_SERVER_HOST + "/api/naver/login?state=";
+    private ContentLoadingProgressBar mProgress = null;
+    private WebView mWebView = null;
 
 
     private ConfigPreferenceManager mConfigPref = null;
 
-    private UUID mUid = null;
-
-    private TokenRequest mAccessTokenRequest = null;
-    private TokenRequest mRefreshTokenRequest = null;
+    private CustomWebViewClient mCustomWebViewClient = null;
 
 
     @Override
@@ -52,160 +37,34 @@ public class CafeActivity extends BaseActivity{
 
     private void initData(){
         mConfigPref = new ConfigPreferenceManager(this);
-        mUid = UUID.randomUUID();
-        mAccessTokenRequest = new TokenRequest(this, accessTokenApiResponse);
-        mRefreshTokenRequest = new TokenRequest(this, refreshTokenResponse);
     }
 
     private void initView(){
-        Bundle b = new Bundle();
-        b.putString("url", mConfigPref.getAppConfig().getClubUrl());
-        addFragment(WebViewFragment.class, b, false);
+        mProgress = (ContentLoadingProgressBar) findViewById(R.id.pb_cafe);
+        mWebView = (WebView) findViewById(R.id.webview_cafe);
+        mWebView.getSettings().setJavaScriptEnabled(true);
+        mWebView.getSettings().setPluginState(WebSettings.PluginState.ON);
+        mWebView.getSettings().setMediaPlaybackRequiresUserGesture(false);
+        mProgress.setMax(100);
+
+        mCustomWebViewClient = new CustomWebViewClient(this, mWebView, mProgress);
+
+        mWebView.loadUrl(mConfigPref.getAppConfig().getClubUrl());
     }
 
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        mCustomWebViewClient.onActivityResult(requestCode, resultCode, data);
+    }
 
     @Override
     public void onBackPressed() {
-        Fragment f = getCurrentFragmentManager().findFragmentById(getFragmentAnchorLayoutID());
-        if(f != null && f instanceof WebViewFragment){
-            if(((WebViewFragment) f).canGoback()){
-                ((WebViewFragment) f).goBack();
-                return;
-            }
+        if(mWebView.canGoBack()){
+            mWebView.goBack();
+            return;
         }
         super.onBackPressed();
     }
 
-    private void checkCachedTokenForLogin(){
-        Token token = mConfigPref.getToken();
-        if(token == null){
-            Log.i(TAG, "checkCachedTokenForLogin: showLoginWebView");
-            showLoginWebView();
-        }else{
-            boolean isExpried = token.isExpired();
-            AppConfig config = mConfigPref.getAppConfig();
-            Log.i(TAG, "checkCachedTokenForLogin: isExpried = " + isExpried);
-            if(isExpried){
-                if(token.getRefresh_token() != null){
-                    mRefreshTokenRequest.requestRefreshToken(config, token);
-                    NetworkManager.getInstance().request(mRefreshTokenRequest);
-                }else{
-                    showLoginWebView();
-                }
-            }else{
-                successLogin(token);
-            }
-        }
-    }
-
-    private void showLoginWebView(){
-        Bundle b = new Bundle();
-        b.putString("url", API + mUid.toString());
-        b.putBoolean("hide", true);
-        addFragment(WebViewFragment.class, b, false);
-    }
-
-    @Override
-    protected int getFragmentAnchorLayoutID() {
-        return R.id.layout_cafe;
-    }
-
-    //    @Override
-//    public void onCallback(String response) {
-//        Log.i(TAG, "onCallback: " + response);
-//        if(response != null){
-//            AuthLoginResult result = new Gson().fromJson(response, AuthLoginResult.class);
-//            if(result != null){
-//                AppConfig config = mConfigPref.getAppConfig();
-//                if(config != null){
-//                    mAccessTokenRequest.requestAccessToken(config, result);
-//                    NetworkManager.getInstance().request(mAccessTokenRequest);
-//                }
-//            }
-//        }
-//    }
-
-    private TokenApiResponse accessTokenApiResponse = new TokenApiResponse(new BaseApiResponse.OnResponseListener<Token>() {
-        private int mRetry = 0;
-        @Override
-        public void onResponse(BaseApiResponse<Token> response) {
-            Log.i(TAG, "onResponse: " + response);
-            if(response != null && response.getData() != null){
-                Token token = response.getData();
-                token.setUpdateTime(System.currentTimeMillis());
-                mConfigPref.setToken(token);
-                successLogin(response.getData());
-            }else{
-                if(mRetry < BaseApiResponse.RETRY_COUNT){
-                    NetworkManager.getInstance().request(mAccessTokenRequest);
-                    mRetry ++;
-                }else{
-                    failedLogin();
-                }
-            }
-
-        }
-
-        @Override
-        public void onError(VolleyError error) {
-            Log.e(TAG, error.toString());
-            if(mRetry < BaseApiResponse.RETRY_COUNT){
-                NetworkManager.getInstance().request(mAccessTokenRequest);
-                mRetry ++;
-            }else{
-                failedLogin();
-            }
-        }
-    });
-
-    private TokenApiResponse refreshTokenResponse = new TokenApiResponse(new BaseApiResponse.OnResponseListener<Token>() {
-        private int mRetry = 0;
-        @Override
-        public void onResponse(BaseApiResponse<Token> response) {
-            Log.i(TAG, "onResponse: " + response);
-            if(response != null && response.getData() != null){
-                Token token = response.getData();
-                token.setUpdateTime(System.currentTimeMillis());
-                mConfigPref.setToken(token);
-                successLogin(response.getData());
-            }else{
-                if(mRetry < BaseApiResponse.RETRY_COUNT){
-                    NetworkManager.getInstance().request(mRefreshTokenRequest);
-                    mRetry ++;
-                }else{
-                    failedLogin();
-                }
-            }
-
-        }
-
-        @Override
-        public void onError(VolleyError error) {
-            Log.e(TAG, error.toString());
-            if(mRetry < BaseApiResponse.RETRY_COUNT){
-                NetworkManager.getInstance().request(mRefreshTokenRequest);
-                mRetry ++;
-            }else{
-                failedLogin();
-            }
-        }
-    });
-
-    private void successLogin(Token token){
-        if(token != null){
-            Log.i(TAG, "successLogin: " + token.toString());
-            Intent intent = new Intent();
-            intent.putExtra(Token.class.getName(), token);
-            setResult(RESULT_OK, intent);
-        }else{
-            setResult(-1);
-        }
-        finish();
-    }
-
-    private void failedLogin(){
-        Log.i(TAG, "failedLogin: ");
-        setResult(-1);
-        finish();
-    }
 }

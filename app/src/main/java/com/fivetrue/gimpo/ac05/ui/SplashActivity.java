@@ -3,11 +3,11 @@ package com.fivetrue.gimpo.ac05.ui;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Typeface;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
-import android.support.v4.app.ActivityOptionsCompat;
 import android.util.Log;
 import android.view.View;
 import android.view.animation.AlphaAnimation;
@@ -24,6 +24,7 @@ import com.fivetrue.fivetrueandroid.net.BaseApiResponse;
 import com.fivetrue.fivetrueandroid.net.NetworkManager;
 import com.fivetrue.fivetrueandroid.ui.BaseActivity;
 import com.fivetrue.fivetrueandroid.utils.AppUtils;
+import com.fivetrue.fivetrueandroid.utils.SimpleViewUtils;
 import com.fivetrue.fivetrueandroid.view.CircleImageView;
 import com.fivetrue.gimpo.ac05.R;
 import com.fivetrue.gimpo.ac05.manager.NaverApiManager;
@@ -39,7 +40,6 @@ import com.fivetrue.gimpo.ac05.vo.user.District;
 import com.fivetrue.gimpo.ac05.vo.user.UserInfo;
 import com.google.android.gms.gcm.GoogleCloudMessaging;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.gson.reflect.TypeToken;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -60,6 +60,7 @@ public class SplashActivity extends BaseActivity implements GoogleLoginUtil.OnAc
 
     private static final int RETRY_COUNT = 3;
 
+    private TextView mMainMessage = null;
     private TextView mLoadingMessage = null;
 
     private ProgressBar mProgress = null;
@@ -76,6 +77,8 @@ public class SplashActivity extends BaseActivity implements GoogleLoginUtil.OnAc
     private DistrictDataReqeust mDistrictDataRequest = null;
 
     private GoogleLoginUtil mGoogleLoginUtil = null;
+
+    private Typeface mTyeFace = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -100,6 +103,8 @@ public class SplashActivity extends BaseActivity implements GoogleLoginUtil.OnAc
     }
 
     private void initView(){
+
+        mMainMessage = (TextView) findViewById(R.id.tv_splash_main);
         mLoadingMessage = (TextView) findViewById(R.id.tv_splash_loading);
 
         mUserLayout = (LinearLayout) findViewById(R.id.layout_splash_user_info);
@@ -116,8 +121,11 @@ public class SplashActivity extends BaseActivity implements GoogleLoginUtil.OnAc
             @Override
             public void onClick(View v) {
                 mGoogleLoginUtil.loginGoogleAccount();
+                showProgress();
             }
         });
+
+        mMainMessage.setTypeface(mTyeFace);
     }
 
     private void initData(){
@@ -127,6 +135,7 @@ public class SplashActivity extends BaseActivity implements GoogleLoginUtil.OnAc
         mDistrictDataRequest = new DistrictDataReqeust(this, districtApiResponse);
 
         mGoogleLoginUtil = new GoogleLoginUtil(this, getString(R.string.firebase_auth_client_id));
+        mTyeFace = Typeface.createFromAsset(getAssets(), "Typo_PapyrusM.ttf");
     }
 
     /**
@@ -184,8 +193,7 @@ public class SplashActivity extends BaseActivity implements GoogleLoginUtil.OnAc
     private void checkLoginStatus(FirebaseUser user){
         if(user != null){
             mLoadingMessage.setVisibility(View.VISIBLE);
-            mProgress.setVisibility(View.VISIBLE);
-            mLoginGoogle.setVisibility(View.GONE);
+            showProgress();
             mLoadingMessage.setText(R.string.config_user_info_register);
             UserInfo userInfo = new UserInfo();
             userInfo.setName(user.getDisplayName());
@@ -198,9 +206,7 @@ public class SplashActivity extends BaseActivity implements GoogleLoginUtil.OnAc
             NetworkManager.getInstance().request(mRegisterUserRequest);
         }else{
             mLoadingMessage.setVisibility(View.GONE);
-            mProgress.setVisibility(View.GONE);
-            mLoginGoogle.setVisibility(View.VISIBLE);
-
+            showLoginButton();
         }
     }
 
@@ -297,8 +303,8 @@ public class SplashActivity extends BaseActivity implements GoogleLoginUtil.OnAc
 
     private void startApplication(final UserInfo naverUserInfo){
         Log.i(TAG, "startApplication: start");
-        mLoadingMessage.setVisibility(View.GONE);
-        mProgress.setVisibility(View.GONE);
+        SimpleViewUtils.hideView(mLoadingMessage, View.GONE);
+        SimpleViewUtils.hideView(mProgress, View.GONE);
         if(naverUserInfo != null){
             Log.i(TAG, "startApplication: naverUserInfo = " + naverUserInfo.toString());
             mUserNickname.setText(naverUserInfo.getName());
@@ -335,6 +341,34 @@ public class SplashActivity extends BaseActivity implements GoogleLoginUtil.OnAc
         }
     }
 
+    private void showProgress() {
+        SimpleViewUtils.hideView(mLoginGoogle, View.GONE, new SimpleViewUtils.SimpleAnimationStatusListener() {
+            @Override
+            public void onStart() {
+
+            }
+
+            @Override
+            public void onEnd() {
+                SimpleViewUtils.showView(mProgress, View.VISIBLE);
+            }
+        });
+    }
+
+    private void showLoginButton(){
+        SimpleViewUtils.hideView(mProgress, View.GONE, new SimpleViewUtils.SimpleAnimationStatusListener() {
+            @Override
+            public void onStart() {
+
+            }
+
+            @Override
+            public void onEnd() {
+                SimpleViewUtils.showView(mLoginGoogle, View.VISIBLE);
+            }
+        });
+    }
+
     private void startMainActivity(UserInfo info){
         Log.i(TAG, "startMainActivity: start");
         Intent intent = null;
@@ -349,9 +383,7 @@ public class SplashActivity extends BaseActivity implements GoogleLoginUtil.OnAc
             intent = new Intent(this, MainActivity.class);
         }
         intent.putExtra(UserInfo.class.getName(), info);
-        startActivity(intent, ActivityOptionsCompat.makeClipRevealAnimation(mUserImage
-                , (int) mUserImage.getX(), (int)  mUserImage.getY()
-                , mUserImage.getWidth(), mUserImage.getHeight()).toBundle());
+        startActivityWithClipRevealAnimation(intent, mMainMessage);
         finish();
     }
 
@@ -450,7 +482,7 @@ public class SplashActivity extends BaseActivity implements GoogleLoginUtil.OnAc
 
     @Override
     public void onUserAddError(Exception message) {
-
+        showLoginButton();
     }
 
     @Override

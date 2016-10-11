@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content">
+
+    <android.support.v7.widget.CardView
+        android:id="@+id/layout_item_base_content"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:cardCornerRadius="3dp"
+        android:background="@drawable/selector_common_button"
+        android:stateListAnimator="@drawable/selector_common_list_item_animator"
+        android:layout_margin="5dp"
+        android:layout_centerVertical="true"
+        android:layout_centerHorizontal="true">
+            <FrameLayout
+                android:layout_width="match_parent"
+                android:layout_height="320dp">
+                <com.android.volley.toolbox.NetworkImageView
+                    android:id="@+id/iv_item_base_image"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:scaleType="centerCrop"/>
+
+                <ImageView
+                    android:id="@+id/iv_item_base_new"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="10dp"
+                    android:layout_gravity="top|right"
+                    android:src="@drawable/new_noti_icon"/>
+
+                <LinearLayout
+                    android:id="@+id/layout_item_base_text"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:layout_gravity="bottom"
+                    android:padding="15dp">
+
+                    <TextView
+                        android:id="@+id/tv_item_base_item_title"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_centerVertical="true"
+                        android:gravity="center_vertical"
+                        android:text="City"
+                        style="@style/TextDropdownType.Small"
+                        android:textColor="@color/colorAccent"
+                        android:textStyle="bold"/>
+
+
+                    <TextView
+                        android:id="@+id/tv_item_base_item_content"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Name"
+                        style="@style/TextDropdownType.Medium"
+                        android:textColor="@color/colorAccent"
+                        android:textStyle="bold"/>
+
+                    <TextView
+                        android:id="@+id/tv_item_base_item_subcontent"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Author"
+                        style="@style/TextDropdownType.Small"
+                        android:textColor="@color/colorAccent"
+                        android:textStyle="bold"/>
+                </LinearLayout>
+
+            </FrameLayout>
+    </android.support.v7.widget.CardView>
+</RelativeLayout>
