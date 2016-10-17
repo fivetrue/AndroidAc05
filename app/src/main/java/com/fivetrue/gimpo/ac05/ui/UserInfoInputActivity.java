@@ -20,8 +20,7 @@ import com.fivetrue.gimpo.ac05.net.request.UpdateUserDistrictRequest;
 import com.fivetrue.gimpo.ac05.preferences.ConfigPreferenceManager;
 import com.fivetrue.gimpo.ac05.ui.adapter.DistrictSpinnerAdapter;
 import com.fivetrue.gimpo.ac05.vo.user.District;
-import com.fivetrue.gimpo.ac05.vo.user.UserInfo;
-import com.google.gson.reflect.TypeToken;
+import com.fivetrue.gimpo.ac05.vo.user.FirebaseUserInfo;
 
 import java.util.ArrayList;
 
@@ -37,7 +36,7 @@ public class UserInfoInputActivity extends BaseActivity {
     private LinearLayout mLayoutUserSelected = null;
     private TextView mSelectedText = null;
 
-    private UserInfo mUserInfo = null;
+    private FirebaseUserInfo mUserInfo = null;
     private ArrayList<District> mDistricts = new ArrayList<>();
     private ConfigPreferenceManager mConfigPref = null;
 
@@ -55,10 +54,10 @@ public class UserInfoInputActivity extends BaseActivity {
 
     private void initData(){
         mConfigPref = new ConfigPreferenceManager(this);
-        mUserInfo = mConfigPref.getUserInfo();
         mDistricts.add(null);
         mDistricts.addAll(mConfigPref.getDistricts() );
         mUpdateUserDistrict = new UpdateUserDistrictRequest(this, updateUserDistrictResponse);
+        mUserInfo = mConfigPref.getUserInfo();
     }
 
     private void initView(){
@@ -67,7 +66,7 @@ public class UserInfoInputActivity extends BaseActivity {
         mLayoutUserSelected = (LinearLayout) findViewById(R.id.layout_userinfo_input_selected);
         mSelectedText = (TextView) findViewById(R.id.tv_userinfo_input_selected);
         mButton = (Button) findViewById(R.id.btn_usernfo_input);
-        mWellcomeText.setText(String.format(getString(R.string.userinfo_input_wellcome), mUserInfo.getName()));
+        mWellcomeText.setText(String.format(getString(R.string.userinfo_input_wellcome), mUserInfo.getDisplayName()));
 
         mSpinner.setAdapter(mAdapter);
         mSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
@@ -133,9 +132,9 @@ public class UserInfoInputActivity extends BaseActivity {
         }
     }
 
-    private BaseApiResponse.OnResponseListener<UserInfo> updateUserDistrictResponse = new BaseApiResponse.OnResponseListener<UserInfo>() {
+    private BaseApiResponse.OnResponseListener<FirebaseUserInfo> updateUserDistrictResponse = new BaseApiResponse.OnResponseListener<FirebaseUserInfo>() {
         @Override
-        public void onResponse(BaseApiResponse<UserInfo> response) {
+        public void onResponse(BaseApiResponse<FirebaseUserInfo> response) {
             if(response != null &&  response.getData() != null){
                 mConfigPref.setUserInfo(response.getData());
             }

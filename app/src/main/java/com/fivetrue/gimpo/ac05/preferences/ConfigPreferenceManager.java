@@ -4,9 +4,8 @@ import android.content.Context;
 
 import com.fivetrue.fivetrueandroid.preferences.SharedPreferenceHelper;
 import com.fivetrue.gimpo.ac05.vo.config.AppConfig;
-import com.fivetrue.gimpo.ac05.vo.config.Token;
 import com.fivetrue.gimpo.ac05.vo.user.District;
-import com.fivetrue.gimpo.ac05.vo.user.UserInfo;
+import com.fivetrue.gimpo.ac05.vo.user.FirebaseUserInfo;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
@@ -20,9 +19,6 @@ public class ConfigPreferenceManager {
     private static final String PREF_NAME = "config";
 
     private static final String GCM_DEVICE = "gcm_dvice_id";
-
-    private static final String USER_INFO = "user_info";
-    private static final String USER_TOKEN = "user_token";
 
     private static final String APP_CONFIG = "app_config";
     private static final String DISTRICTS_INFO = "districts_info";
@@ -48,19 +44,19 @@ public class ConfigPreferenceManager {
         return mHelper.getData(GCM_DEVICE, null);
     }
 
-    public void setUserInfo(UserInfo userinfo){
+    public void setUserInfo(FirebaseUserInfo userinfo){
         if(userinfo != null){
-            mHelper.putData(USER_INFO, mGson.toJson(userinfo));
+            mHelper.putData(FirebaseUserInfo.class.getName(), mGson.toJson(userinfo));
         }else{
-            mHelper.putData(USER_INFO, null);
+            mHelper.putData(FirebaseUserInfo.class.getName(), null);
         }
     }
 
-    public UserInfo getUserInfo(){
-        UserInfo userinfo = null;
-        String info = mHelper.getData(USER_INFO, null);
+    public FirebaseUserInfo getUserInfo(){
+        FirebaseUserInfo userinfo = null;
+        String info = mHelper.getData(FirebaseUserInfo.class.getName(), null);
         if(info != null){
-            userinfo = mGson.fromJson(info, UserInfo.class);
+            userinfo = mGson.fromJson(info, FirebaseUserInfo.class);
         }
         return userinfo;
     }
@@ -97,23 +93,6 @@ public class ConfigPreferenceManager {
             config = mGson.fromJson(data, AppConfig.class);
         }
         return config;
-    }
-
-    public void setToken(Token token){
-        if(token != null){
-            mHelper.putData(USER_TOKEN, mGson.toJson(token));
-        }else{
-            mHelper.putData(USER_TOKEN, null);
-        }
-    }
-
-    public Token getToken(){
-        Token token = null;
-        String info = mHelper.getData(USER_TOKEN, null);
-        if(info != null){
-            token = mGson.fromJson(info, Token.class);
-        }
-        return token;
     }
 
     public void setFirstOpen(boolean b){

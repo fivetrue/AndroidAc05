@@ -15,8 +15,7 @@
         android:id="@+id/iv_nav_header"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:paddingTop="10dp"
-        android:src="@android:drawable/sym_def_app_icon" />
+        android:paddingTop="10dp"/>
 
     <TextView
         android:id="@+id/tv_nav_header_name"
@@ -27,6 +26,11 @@
 
     <TextView
         android:id="@+id/tv_nav_header_name_account"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"/>
+
+    <TextView
+        android:id="@+id/tv_nav_header_district"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"/>
 

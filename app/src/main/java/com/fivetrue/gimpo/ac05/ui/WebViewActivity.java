@@ -3,7 +3,6 @@ package com.fivetrue.gimpo.ac05.ui;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
-import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.v4.widget.ContentLoadingProgressBar;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -28,7 +27,6 @@ public class WebViewActivity extends BaseActivity {
 
     private static final String TAG = "WebViewActivity";
 
-    private CollapsingToolbarLayout mCollapsingToolbar;
     private ImageView mMainImage = null;
 
     private ContentLoadingProgressBar mProgress = null;
@@ -36,7 +34,6 @@ public class WebViewActivity extends BaseActivity {
 
     private String mUrl = null;
     private String mTitle = null;
-    private String mSubTitle = null;
     private String mImageUrl = null;
 
     private CustomWebViewClient mCustomWebViewClient = null;
@@ -52,7 +49,6 @@ public class WebViewActivity extends BaseActivity {
     protected void initData(){
         mUrl = getIntent().getStringExtra("url");
         mTitle = getIntent().getStringExtra("title");
-        mSubTitle = getIntent().getStringExtra("subtitle");
         mImageUrl = getIntent().getStringExtra("image");
     }
 
@@ -61,7 +57,6 @@ public class WebViewActivity extends BaseActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        mCollapsingToolbar = (CollapsingToolbarLayout) findViewById(R.id.collapse_toolbar);
         mMainImage = (ImageView) findViewById(R.id.iv_webview_image);
 
         mProgress = (ContentLoadingProgressBar) findViewById(R.id.pb_webview);
@@ -78,7 +73,7 @@ public class WebViewActivity extends BaseActivity {
         }
 
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        getSupportActionBar().setTitle(mSubTitle);
+        getSupportActionBar().setTitle(mTitle);
 
         if(mImageUrl != null){
             ImageLoadManager.getInstance().loadImageUrl(mImageUrl, new ImageLoader.ImageListener() {

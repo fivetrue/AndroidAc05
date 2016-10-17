@@ -70,7 +70,7 @@ public class ImageInfoEntryListActivity extends BaseListDataActivity<ImageInfoEn
         }else{
             Intent intent = new Intent(this, ImageDetailActivity.class);
             intent.putExtra("url", data.getImageUrl());
-            startActivityWithClipRevealAnimation(intent, holder.layout);
+            startActivity(intent);
         }
     }
 

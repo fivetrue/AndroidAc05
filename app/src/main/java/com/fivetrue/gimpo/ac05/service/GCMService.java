@@ -5,6 +5,7 @@ import android.util.Log;
 
 import com.fivetrue.gimpo.ac05.preferences.ConfigPreferenceManager;
 import com.fivetrue.gimpo.ac05.preferences.DefaultPreferenceManager;
+import com.fivetrue.gimpo.ac05.service.notification.NotificationHelper;
 import com.fivetrue.gimpo.ac05.vo.notification.NotificationData;
 import com.fivetrue.gimpo.ac05.ui.SplashActivity;
 import com.google.android.gms.gcm.GcmListenerService;
@@ -21,6 +22,7 @@ public class GCMService extends GcmListenerService {
     private static final int DEFAULT_NOTIFICATION_ID = 0x88;
 
     private ConfigPreferenceManager mConfigPref = null;
+    private NotificationHelper mNotificationHelper = null;
 
     @Override
     public void onMessageReceived(String from, Bundle data) {
@@ -28,15 +30,17 @@ public class GCMService extends GcmListenerService {
         if(mConfigPref == null){
             mConfigPref = new ConfigPreferenceManager(this);
         }
+        mNotificationHelper = new NotificationHelper(this);
 
         String message = data.getString(DATA_KEY);
-        if(message != null && DefaultPreferenceManager.getInstance(this).isPushServiceOn()){
+        if(message != null && DefaultPreferenceManager.getInstance(this).isPushService()){
             NotificationData noti = new Gson().fromJson(message, NotificationData.class);
             if(noti.getId() <= 0){
                 noti.setId(DEFAULT_NOTIFICATION_ID);
             }
             noti.setTargetClass(SplashActivity.class.getName());
-            NotificationService.createNotifcation(this, noti);
+
+            mNotificationHelper.createNotification(noti);
         }
         Log.d(TAG, "From: " + from);
         Log.d(TAG, "Message: " + message);

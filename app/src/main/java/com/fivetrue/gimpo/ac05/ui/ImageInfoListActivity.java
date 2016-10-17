@@ -81,7 +81,7 @@ public class ImageInfoListActivity extends BaseListDataActivity<ImageInfo>{
         if(data != null) {
             Intent intent = new Intent(this, ImageDetailActivity.class);
             intent.putExtra("url", data.getImageUrl());
-            startActivityWithClipRevealAnimation(intent, holder.layout);
+            startActivity(intent);
         }
     }
 

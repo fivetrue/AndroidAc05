@@ -1,6 +1,7 @@
 package com.fivetrue.gimpo.ac05.ui;
 
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.NonNull;
@@ -48,8 +49,7 @@ import com.fivetrue.gimpo.ac05.vo.data.TownDataEntry;
 import com.fivetrue.gimpo.ac05.vo.rss.Feed;
 import com.fivetrue.gimpo.ac05.vo.notification.NotificationData;
 import com.fivetrue.gimpo.ac05.service.notification.NotificationHelper;
-import com.fivetrue.gimpo.ac05.ui.fragment.WebViewFragment;
-import com.fivetrue.gimpo.ac05.vo.user.UserInfo;
+import com.fivetrue.gimpo.ac05.vo.user.FirebaseUserInfo;
 
 import java.util.ArrayList;
 
@@ -70,11 +70,9 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
     private CircleImageView mNavImage = null;
     private TextView mNavAccount = null;
     private TextView mNavName = null;
+    private TextView mNavDistrict = null;
 
-    private View mBackground = null;
     private ProgressBar mProgressBar = null;
-
-    private UserInfo mUserInfo = null;
 
     private MainPageDataRequest mMainDataRequest = null;
 
@@ -88,19 +86,9 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         setContentView(R.layout.activity_main);
         initData();
         initView();
-        checkUserInfo();
-        if (getIntent() != null && getIntent().getDataString() != null) {
-            String data = getIntent().getData().toString();
-            if (data != null && (data.startsWith("http") || data.startsWith("https"))) {
-                NotificationData notificationData = getIntent().getParcelableExtra(NotificationHelper.KEY_NOTIFICATION_PARCELABLE);
-                if (notificationData != null) {
-                    data = String.format(Constants.API_CHECK_REDIRECT, notificationData.getUri()
-                            , notificationData.getMulticast_id()
-                            , mUserInfo.getEmail());
-                }
-            }
+        if (getIntent() != null && getIntent().getData() != null) {
+            DeepLinkManager.goLink(this, getIntent());
         }
-
         /**
          * request main datas.
          */
@@ -108,8 +96,13 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         NetworkManager.getInstance().request(mMainDataRequest);
     }
 
+    @Override
+    protected void onStart() {
+        super.onStart();
+        updateUserInfo();
+    }
+
     private void initData() {
-        mUserInfo = getIntent().getParcelableExtra(UserInfo.class.getName());
         mConfigPref = new ConfigPreferenceManager(this);
         mMainDataRequest = new MainPageDataRequest(this, baseMainDataEntryOnResponseListener);
         mMainDataRequest.setPage(0);
@@ -133,24 +126,22 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         mNavImage = (CircleImageView) headerView.findViewById(R.id.iv_nav_header);
         mNavAccount = (TextView) headerView.findViewById(R.id.tv_nav_header_name_account);
         mNavName = (TextView) headerView.findViewById(R.id.tv_nav_header_name);
-
-        mNavImage.setImageUrl(mUserInfo.getProfileImage());
-        mNavAccount.setText(mUserInfo.getEmail());
-        mNavName.setText(mUserInfo.getName());
+        mNavDistrict = (TextView) headerView.findViewById(R.id.tv_nav_header_district);
 
         mScrollView = (NestedScrollView) findViewById(R.id.sv_main);
         mLayoutMainContainer = (LinearLayout) findViewById(R.id.layout_main_container);
-        mBackground = findViewById(R.id.view_main_background);
         mProgressBar = (ProgressBar) findViewById(R.id.pb_main);
-
     }
 
-    private void checkUserInfo() {
-        if (mUserInfo != null) {
-            if (mUserInfo.getDistrict() <= 0) {
-                Intent intent = new Intent(this, UserInfoInputActivity.class);
-                startActivity(intent);
-                overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
+    private void updateUserInfo(){
+        if(mNavImage != null && mNavAccount != null && mNavName != null && mNavDistrict != null){
+            if(mConfigPref.getUserInfo() != null){
+                mNavImage.setImageUrl(mConfigPref.getUserInfo().getPhotoUrl());
+                mNavAccount.setText(mConfigPref.getUserInfo().getEmail());
+                mNavName.setText(mConfigPref.getUserInfo().getDisplayName());
+                mNavDistrict.setText(mConfigPref.getUserInfo().getDistrict() + " 동");
+            }else{
+                Log.d(TAG, "updateUserInfo() called" + "UserData null");
             }
         }
     }
@@ -168,13 +159,6 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
     public void onBackPressed() {
         if (closeDrawer()) {
             return;
-        } else if (getCurrentFragmentManager().getBackStackEntryCount() > 0) {
-            Fragment f = getCurrentFragmentManager().findFragmentById(getFragmentAnchorLayoutID());
-            if (f != null && f instanceof WebViewFragment && ((WebViewFragment) f).canGoback()) {
-                ((WebViewFragment) f).goBack();
-            } else {
-                super.onBackPressed();
-            }
         } else {
             if (!mDoubleClickBack) {
                 mDoubleClickBack = true;
@@ -218,19 +202,17 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
                             if(((ImageInfoEntry) data).getImageInfos().size() > 1){
                                 Intent intent = new Intent(MainActivity.this, ImageInfoListActivity.class);
                                 intent.putExtra("title", data.getTitle());
-                                intent.putExtra("subtitle", data.getContent());
                                 intent.putExtra("type", ((ImageInfoEntry) data).getImageInfos().get(0).getImageType());
                                 startActivityWithClipRevealAnimation(intent, holder.layout);
                             }else{
                                 Intent intent = new Intent(MainActivity.this, ImageDetailActivity.class);
                                 intent.putExtra("url", data.getImageUrl());
-                                startActivityWithClipRevealAnimation(intent, holder.layout);
+                                startActivity(intent);
                             }
                         }else{
                             Intent intent = new Intent(MainActivity.this, WebViewActivity.class);
                             intent.putExtra("url", data.getUrl());
-                            intent.putExtra("title", data.getTitle());
-                            intent.putExtra("subtitle", data.getContent());
+                            intent.putExtra("title", data.getContent());
                             intent.putExtra("image", data.getImageUrl());
                             startActivityWithClipRevealAnimation(intent, holder.image);
                         }
@@ -358,7 +340,30 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         closeDrawer();
         if (item != null) {
             switch (item.getItemId()) {
-                case R.id.nav_talk:
+                case R.id.nav_gram:
+                {
+                    Intent intent = new Intent(this, GalleryActivity.class);
+                    startActivity(intent);
+                }
+                    return true;
+
+                case R.id.nav_talk:{
+                    Intent intent = new Intent(this, ChattingActivity.class);
+                    intent.putExtra("type", ChattingActivity.TYPE_CHATTING_PUBLIC);
+                    startActivity(intent);
+                }
+                    return true;
+
+                case R.id.nav_district_talk :{
+                    if(mConfigPref.getUserInfo() != null && mConfigPref.getUserInfo().getDistrict() > 0){
+                        Intent intent = new Intent(this, ChattingActivity.class);
+                        intent.putExtra("type", ChattingActivity.TYPE_CHATTING_DISTRICT);
+                        startActivity(intent);
+                    }else{
+                        Intent intent = new Intent(this, UserInfoInputActivity.class);
+                        startActivity(intent);
+                    }
+                }
 
                     return true;
 

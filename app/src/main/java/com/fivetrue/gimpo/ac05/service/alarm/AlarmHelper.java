@@ -8,7 +8,6 @@ import android.preference.PreferenceManager;
 import android.util.Base64;
 
 import com.fivetrue.gimpo.ac05.service.BaseServiceHelper;
-import com.fivetrue.gimpo.ac05.service.NotificationService;
 import com.fivetrue.gimpo.ac05.service.notification.NotificationHelper;
 import com.google.gson.Gson;
 
@@ -49,13 +48,13 @@ public class AlarmHelper extends BaseServiceHelper {
 
     public void createAlarm(AlarmData data){
         if(data != null){
-            Intent sendIntent = NotificationService.createNotificationIntent(getContext(), data.notificationData);
-            PendingIntent pendingIntent = PendingIntent.getService(getContext(), data.id, sendIntent, PendingIntent.FLAG_NO_CREATE);
-            if(pendingIntent == null){
-                pendingIntent = PendingIntent.getService(getContext(), data.id, sendIntent, PendingIntent.FLAG_UPDATE_CURRENT);
-            }
-            mAlarmManager.set(AlarmManager.RTC_WAKEUP, data.dTime, pendingIntent);
-            putData(ALARM_NAME_PREFIX + data.name , data);
+//            Intent sendIntent = NotificationService.createNotificationIntent(getContext(), data.notificationData);
+//            PendingIntent pendingIntent = PendingIntent.getService(getContext(), data.id, sendIntent, PendingIntent.FLAG_NO_CREATE);
+//            if(pendingIntent == null){
+//                pendingIntent = PendingIntent.getService(getContext(), data.id, sendIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+//            }
+//            mAlarmManager.set(AlarmManager.RTC_WAKEUP, data.dTime, pendingIntent);
+//            putData(ALARM_NAME_PREFIX + data.name , data);
         }
     }
 
@@ -68,13 +67,13 @@ public class AlarmHelper extends BaseServiceHelper {
 
     public void cancelAlarm(AlarmData data){
         if(data != null){
-            Intent sendIntent = NotificationService.createNotificationIntent(getContext(), data.notificationData);
-            sendIntent.putExtra(NotificationHelper.KEY_NOTIFICATION_PARCELABLE, data.notificationData);
-            PendingIntent pendingIntent = PendingIntent.getService(getContext(), data.id, sendIntent, PendingIntent.FLAG_NO_CREATE);
-            if(pendingIntent == null){
-                pendingIntent = PendingIntent.getService(getContext(), data.id, sendIntent, PendingIntent.FLAG_UPDATE_CURRENT);
-            }
-            mAlarmManager.cancel(pendingIntent);
+//            Intent sendIntent = NotificationService.createNotificationIntent(getContext(), data.notificationData);
+//            sendIntent.putExtra(NotificationHelper.KEY_NOTIFICATION_PARCELABLE, data.notificationData);
+//            PendingIntent pendingIntent = PendingIntent.getService(getContext(), data.id, sendIntent, PendingIntent.FLAG_NO_CREATE);
+//            if(pendingIntent == null){
+//                pendingIntent = PendingIntent.getService(getContext(), data.id, sendIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+//            }
+//            mAlarmManager.cancel(pendingIntent);
         }
     }
 

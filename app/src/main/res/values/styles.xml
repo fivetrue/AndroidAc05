@@ -23,12 +23,6 @@
         <item name="android:windowIsTranslucent">true</item>
     </style>
 
-
-    <style name="AppTheme.SettingsTheme">
-        <item name="preferenceTheme">@style/PreferenceThemeOverlay</item>
-    </style>
-
-
     <style name="AppTheme.Toolbar">
         <item name="android:textColorSecondary">@android:color/white</item>
         <item name="android:textColorPrimary">@android:color/white</item>

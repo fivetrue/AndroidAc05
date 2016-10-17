@@ -5,37 +5,24 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
-import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.SwitchCompat;
 import android.support.v7.widget.Toolbar;
-import android.text.TextUtils;
-import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
-import android.widget.CompoundButton;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import com.android.volley.VolleyError;
 import com.fivetrue.fivetrueandroid.google.GoogleLoginUtil;
-import com.fivetrue.fivetrueandroid.net.BaseApiResponse;
-import com.fivetrue.fivetrueandroid.net.NetworkManager;
 import com.fivetrue.fivetrueandroid.ui.BaseActivity;
 import com.fivetrue.fivetrueandroid.utils.AppUtils;
 import com.fivetrue.fivetrueandroid.view.CircleImageView;
-import com.fivetrue.gimpo.ac05.ApplicationEX;
 import com.fivetrue.gimpo.ac05.R;
-import com.fivetrue.gimpo.ac05.net.request.TokenRequest;
-import com.fivetrue.gimpo.ac05.net.response.TokenApiResponse;
 import com.fivetrue.gimpo.ac05.preferences.ConfigPreferenceManager;
-import com.fivetrue.gimpo.ac05.ui.fragment.SettingFragment;
-import com.fivetrue.gimpo.ac05.ui.fragment.WebViewFragment;
+import com.fivetrue.gimpo.ac05.preferences.DefaultPreferenceManager;
 import com.fivetrue.gimpo.ac05.vo.config.AppConfig;
-import com.fivetrue.gimpo.ac05.vo.config.Token;
 import com.fivetrue.gimpo.ac05.vo.user.District;
-import com.fivetrue.gimpo.ac05.vo.user.UserInfo;
+import com.fivetrue.gimpo.ac05.vo.user.FirebaseUserInfo;
 
 import java.util.ArrayList;
 
@@ -48,6 +35,7 @@ public class SettingActivity extends BaseActivity{
 
     private static final int MESSGE_INIT_CLICK_TIME = 0x44;
 
+    private TextView mUserId = null;
     private CircleImageView mUserImage = null;
     private Button mUserCafeMyInfo = null;
     private Button mUserLogout = null;
@@ -57,7 +45,7 @@ public class SettingActivity extends BaseActivity{
 
     private SwitchCompat mSwitchPush = null;
 
-    private UserInfo mUserInfo = null;
+    private FirebaseUserInfo mUserInfo = null;
     private ArrayList<District> mDistricts = null;
 
     private ConfigPreferenceManager mConfigPref = null;
@@ -103,7 +91,7 @@ public class SettingActivity extends BaseActivity{
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         mUserImage = (CircleImageView) findViewById(R.id.iv_setting_user_image);
-//        mUserMyInfo = (Button) findViewById(R.id.btn_setting_user_info);
+        mUserId = (TextView) findViewById(R.id.tv_setting_user_info);
         mUserCafeMyInfo = (Button) findViewById(R.id.btn_setting_cafe_user_info);
         mUserLogout = (Button) findViewById(R.id.btn_setting_user_logout);
 
@@ -112,9 +100,12 @@ public class SettingActivity extends BaseActivity{
         mVersionInfo = (TextView) findViewById(R.id.tv_setting_version_info_value);
         mDistrictInfo = (TextView) findViewById(R.id.tv_setting_district_info_value);
 
-        mUserImage.setImageUrl(mUserInfo.getProfileImage());
+        mUserId.setText(mUserInfo.getEmail() + "\n" + mUserInfo.getDisplayName());
+        mUserImage.setImageUrl(mUserInfo.getPhotoUrl());
 
         mVersionInfo.setText(AppUtils.getApplicationVersionName(this));
+        mSwitchPush.setChecked(DefaultPreferenceManager.getInstance(this).isPushService());
+
 
         District d = new District();
         d.setDistrictNumber(mUserInfo.getDistrict());
@@ -125,21 +116,13 @@ public class SettingActivity extends BaseActivity{
             mDistrictInfo.setText("-");
         }
 
-        mUserImage.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Bundle b = new Bundle();
-                b.putString("url", mAppConfig.getMyInfoUrl());
-                addFragment(WebViewFragment.class, b, true);
-            }
-        });
-
         mUserCafeMyInfo.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Bundle b = new Bundle();
-                b.putString("url", mAppConfig.getClubMyInfo() + mUserInfo.getEmail());
-                addFragment(WebViewFragment.class, b, true);
+                Intent intent = new Intent(SettingActivity.this, WebViewActivity.class);
+                intent.putExtra("url", mAppConfig.getClubMyInfo());
+                intent.putExtra("title", getString(R.string.my_cafe_info));
+                startActivityWithClipRevealAnimation(intent, mUserCafeMyInfo);
             }
         });
 
@@ -174,9 +157,8 @@ public class SettingActivity extends BaseActivity{
             public void onClick(View v) {
                 if(mHiddenCount > 12){
                     String url = mConfigPref.getAppConfig().getAdminUrl();
-                    Bundle b = new Bundle();
-                    b.putString("url", String.format("%s?email=%s&id=%s", url, mUserInfo.getEmail(), mUserInfo.getId()));
-                    addFragment(WebViewFragment.class, b, true);
+                    Intent intent = new Intent(SettingActivity.this, AdminActivity.class);
+                    startActivityWithClipRevealAnimation(intent, findViewById(R.id.layout_setting_version_info));
                     mHiddenCount = 0;
                 }
                 mHiddenCount ++;
@@ -185,14 +167,21 @@ public class SettingActivity extends BaseActivity{
             }
         });
 
+        mSwitchPush.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mSwitchPush.setChecked(mSwitchPush.isChecked());
+                DefaultPreferenceManager.getInstance(SettingActivity.this).setPushService(mSwitchPush.isChecked());
+            }
+        });
+
         findViewById(R.id.layout_setting_district).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(SettingActivity.this, UserInfoInputActivity.class);
-                startActivity(intent);
+                startActivityWithClipRevealAnimation(intent, findViewById(R.id.layout_setting_district));
             }
         });
-
     }
 
     @Override
@@ -204,19 +193,6 @@ public class SettingActivity extends BaseActivity{
         }
         return super.onOptionsItemSelected(item);
     }
-
-    @Override
-    public void onBackPressed() {
-        Fragment f = getSupportFragmentManager().findFragmentById(getFragmentAnchorLayoutID());
-        if(f != null && f instanceof WebViewFragment){
-            if(((WebViewFragment) f).canGoback()){
-                ((WebViewFragment) f).goBack();
-                return;
-            }
-        }
-        super.onBackPressed();
-    }
-
 
     private Handler mHandler = new Handler(){
         @Override

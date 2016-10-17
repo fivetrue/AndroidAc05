@@ -38,54 +38,67 @@ public class NotificationHelper extends BaseServiceHelper {
         mManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
     }
 
-    public void createNotification(Context context, Intent intent){
-        if(intent != null){
-            createNotification(context, (NotificationData) intent.getParcelableExtra(KEY_NOTIFICATION_PARCELABLE));
-        }
-    }
-
-    public void createNotification(final Context context, final NotificationData data){
+    public void createNotification(final NotificationData data){
         if(data != null && data.getId() > INVALID_VALUE){
             if(data.getImageUrl() != null){
-                new Handler(context.getMainLooper()).post(new Runnable() {
+                new Handler(getContext().getMainLooper()).post(new Runnable() {
                     @Override
                     public void run() {
                         ImageLoadManager.getInstance().loadImageUrl(data.getImageUrl(), new ImageLoader.ImageListener() {
                             @Override
                             public void onResponse(ImageLoader.ImageContainer response, boolean isImmediate) {
                                 if (response != null && response.getBitmap() != null && !response.getBitmap().isRecycled()) {
-                                    makeNotification(context, data, response.getBitmap());
+                                    makeNotification(getContext(), data, response.getBitmap());
                                 }
                             }
 
                             @Override
                             public void onErrorResponse(VolleyError error) {
-                                makeNotification(context, data, null);
+                                makeNotification(getContext(), data, null);
                             }
                         });
                     }
                 });
             }else{
-                makeNotification(context, data, null);
+                makeNotification(getContext(), data, null);
             }
         }
     }
 
     private void makeNotification(Context context, NotificationData data, Bitmap image){
         if(data != null){
+            String title =TextUtils.isEmpty(data.getTitle()) ? context.getString(R.string.app_name) : data.getTitle();
             NotificationCompat.Builder builder = new NotificationCompat.Builder(getContext());
             builder.setSmallIcon(R.drawable.push_icon)
-                    .setContentTitle(TextUtils.isEmpty(data.getTitle()) ? context.getString(R.string.app_name) : data.getTitle())
+                    .setContentTitle(title)
                     .setContentText(data.getMessage())
                     .setDefaults(Notification.DEFAULT_ALL)
                     .setWhen(System.currentTimeMillis())
+                    .setLargeIcon(BitmapFactory.decodeResource(context.getResources(), R.drawable.ic_launcher))
                     .setColor(context.getResources().getColor(R.color.colorPrimaryDark))
                     .setAutoCancel(true);
 
             if(image != null && !image.isRecycled()){
-                builder.setLargeIcon(image);
+                NotificationCompat.BigPictureStyle bigPictureStyle = new NotificationCompat.BigPictureStyle();
+                bigPictureStyle.bigPicture(image)
+                        .setSummaryText(data.getMessage())
+                        .setBigContentTitle(title);
+                builder.setStyle(bigPictureStyle);
             }else{
-                builder.setLargeIcon(BitmapFactory.decodeResource(context.getResources(), R.drawable.ic_launcher));
+                if(data.getMessage().contains("\n")){
+                    NotificationCompat.InboxStyle inboxStyle = new NotificationCompat.InboxStyle();
+                    String[] message = data.getMessage().split("\n");
+                    inboxStyle.setBigContentTitle(data.getTitle());
+                    for(String m : message){
+                        inboxStyle.addLine(m);
+                    }
+                    builder.setStyle(inboxStyle);
+                }else{
+                    NotificationCompat.BigTextStyle bigTextStyle = new NotificationCompat.BigTextStyle();
+                    bigTextStyle.setBigContentTitle(title)
+                            .setSummaryText(data.getMessage());
+                    builder.setStyle(bigTextStyle);
+                }
             }
 
             if(data.getTargetClass() != null){

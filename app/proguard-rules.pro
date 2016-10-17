@@ -37,6 +37,5 @@
 
 
 -keep class com.fivetrue.gimpo.ac05.vo.** { *; }
--keep class com.fivetrue.gimpo.ac05.net.BaseApiResponse { <fields>; }
--keep class com.fivetrue.gimpo.ac05.net.BaseApiRequest { <fields>; }
--keep class com.fivetrue.gimpo.ac05.ui.fragment.WebViewFragment { *; }
+-keep class com.fivetrue.gimpo.ac05.chatting.** { <fields>; }
+

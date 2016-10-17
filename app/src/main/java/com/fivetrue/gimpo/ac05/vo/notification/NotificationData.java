@@ -115,8 +115,11 @@ public final class NotificationData implements Parcelable, IBaseItem {
         this.uri = uri;
     }
 
+//    public String getImageUrl() {
+//        return TextUtils.isEmpty(imageUrl) ? Constants.DEFAULT_DEFAULT_IMAGE_URL : imageUrl;
+//    }
     public String getImageUrl() {
-        return TextUtils.isEmpty(imageUrl) ? Constants.DEFAULT_DEFAULT_IMAGE_URL : imageUrl;
+        return imageUrl;
     }
 
     public void setImageUrl(String imageUrl) {

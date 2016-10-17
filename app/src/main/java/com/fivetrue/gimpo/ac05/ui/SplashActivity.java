@@ -10,8 +10,6 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
 import android.view.View;
-import android.view.animation.AlphaAnimation;
-import android.view.animation.Animation;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
@@ -27,17 +25,14 @@ import com.fivetrue.fivetrueandroid.utils.AppUtils;
 import com.fivetrue.fivetrueandroid.utils.SimpleViewUtils;
 import com.fivetrue.fivetrueandroid.view.CircleImageView;
 import com.fivetrue.gimpo.ac05.R;
-import com.fivetrue.gimpo.ac05.manager.NaverApiManager;
 import com.fivetrue.gimpo.ac05.net.request.ConfigRequest;
 import com.fivetrue.gimpo.ac05.net.request.DistrictDataReqeust;
 import com.fivetrue.gimpo.ac05.net.request.RegisterUserRequest;
-import com.fivetrue.gimpo.ac05.parser.NaverUserInfoParser;
 import com.fivetrue.gimpo.ac05.preferences.ConfigPreferenceManager;
 import com.fivetrue.gimpo.ac05.service.notification.NotificationHelper;
 import com.fivetrue.gimpo.ac05.vo.config.AppConfig;
-import com.fivetrue.gimpo.ac05.vo.config.Token;
 import com.fivetrue.gimpo.ac05.vo.user.District;
-import com.fivetrue.gimpo.ac05.vo.user.UserInfo;
+import com.fivetrue.gimpo.ac05.vo.user.FirebaseUserInfo;
 import com.google.android.gms.gcm.GoogleCloudMessaging;
 import com.google.firebase.auth.FirebaseUser;
 
@@ -156,8 +151,6 @@ public class SplashActivity extends BaseActivity implements GoogleLoginUtil.OnAc
         if (appConfig != null) {
             Log.i(TAG, "appConfig = " + appConfig.toString());
             Log.i(TAG, "registerDevice: init NaverApiManager start");
-            NaverApiManager.init(SplashActivity.this, appConfig.getNaverClientId(), appConfig.getNaverClientSecret(),
-                    getString(R.string.app_name));
 
             new AsyncTask<String, Void, String>() {
                 @Override
@@ -195,13 +188,11 @@ public class SplashActivity extends BaseActivity implements GoogleLoginUtil.OnAc
             mLoadingMessage.setVisibility(View.VISIBLE);
             showProgress();
             mLoadingMessage.setText(R.string.config_user_info_register);
-            UserInfo userInfo = new UserInfo();
-            userInfo.setName(user.getDisplayName());
-            userInfo.setEncId(user.getUid());
-            userInfo.setEmail(user.getEmail());
-            userInfo.setProfileImage(user.getPhotoUrl().toString());
-            userInfo.setGcmId(mConfigPref.getGcmDeviceId());
-            userInfo.setDevice(Build.MODEL);
+            FirebaseUserInfo oldUserInfo = mConfigPref.getUserInfo();
+            FirebaseUserInfo userInfo = new FirebaseUserInfo(user
+                    , mConfigPref.getGcmDeviceId()
+                    ,Build.MODEL, oldUserInfo != null ? oldUserInfo.getDistrict() : 0);
+            mConfigPref.setUserInfo(userInfo);
             mRegisterUserRequest.setObject(userInfo);
             NetworkManager.getInstance().request(mRegisterUserRequest);
         }else{
@@ -284,60 +275,32 @@ public class SplashActivity extends BaseActivity implements GoogleLoginUtil.OnAc
         }, 500L);
     }
 
-    private void getUserProfile(Token token){
-        Log.i(TAG, "getUserProfile: token = " + token.toString());
-        /**
-         * 유저 정보 등록
-         */
-        mLoadingMessage.setText(R.string.config_user_info_register);
-        NaverApiManager.getInstance().reqeustUserProfile(new NaverApiManager.OnRequestResponseListener() {
-            @Override
-            public void onResponse(String response) {
-                Log.i(TAG, "Userinfo  onRequest response = " + response);
-                UserInfo naverUserInfo = NaverUserInfoParser.parse(response);
-                Log.i(TAG, "Userinfo  onRequest userInfo = " + naverUserInfo.toString());
-            }
-        });
-    }
-
-
-    private void startApplication(final UserInfo naverUserInfo){
+    private void startApplication(final FirebaseUserInfo userInfo){
         Log.i(TAG, "startApplication: start");
         SimpleViewUtils.hideView(mLoadingMessage, View.GONE);
         SimpleViewUtils.hideView(mProgress, View.GONE);
-        if(naverUserInfo != null){
-            Log.i(TAG, "startApplication: naverUserInfo = " + naverUserInfo.toString());
-            mUserNickname.setText(naverUserInfo.getName());
-            mUserImage.setImageUrl(naverUserInfo.getProfileImage());
+        if(userInfo != null){
+            Log.i(TAG, "startApplication: naverUserInfo = " + userInfo.toString());
+            mUserNickname.setText(userInfo.getDisplayName());
+            mUserImage.setImageUrl(userInfo.getPhotoUrl());
 
-            AlphaAnimation anim = new AlphaAnimation(0f, 1f);
-            anim.setDuration(1000L);
-
-            mUserLayout.setAnimation(anim);
-            mUserLayout.setVisibility(View.VISIBLE);
-
-            anim.setAnimationListener(new Animation.AnimationListener() {
+            SimpleViewUtils.showView(mUserLayout, View.VISIBLE, new SimpleViewUtils.SimpleAnimationStatusListener() {
                 @Override
-                public void onAnimationStart(Animation animation) {
-                    Log.i(TAG, "startApplication: animation start");
+                public void onStart() {
+
                 }
 
                 @Override
-                public void onAnimationEnd(Animation animation) {
-                    Log.i(TAG, "startApplication: animation end");
+                public void onEnd() {
                     mUserLayout.postDelayed(new Runnable() {
                         @Override
                         public void run() {
-                            startMainActivity(naverUserInfo);
+                            startMainActivity(userInfo);
                         }
                     }, 1500L);
                 }
-
-                @Override
-                public void onAnimationRepeat(Animation animation) {
-
-                }
             });
+            mUserLayout.setVisibility(View.VISIBLE);
         }
     }
 
@@ -369,7 +332,7 @@ public class SplashActivity extends BaseActivity implements GoogleLoginUtil.OnAc
         });
     }
 
-    private void startMainActivity(UserInfo info){
+    private void startMainActivity(FirebaseUserInfo info){
         Log.i(TAG, "startMainActivity: start");
         Intent intent = null;
         if(getIntent() != null
@@ -382,7 +345,6 @@ public class SplashActivity extends BaseActivity implements GoogleLoginUtil.OnAc
         }else{
             intent = new Intent(this, MainActivity.class);
         }
-        intent.putExtra(UserInfo.class.getName(), info);
         startActivityWithClipRevealAnimation(intent, mMainMessage);
         finish();
     }
@@ -408,27 +370,17 @@ public class SplashActivity extends BaseActivity implements GoogleLoginUtil.OnAc
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         mGoogleLoginUtil.onActivityResult(requestCode, resultCode, data);
-        if(resultCode == RESULT_OK){
-            if(requestCode == REQUEST_LOGIN_CODE){
-                if(data != null){
-                    Token token = data.getParcelableExtra(Token.class.getName());
-                    getUserProfile(token);
-                }
-            }
-        }else{
-//            failedLogin();
-        }
     }
 
-    private BaseApiResponse.OnResponseListener<UserInfo> onRegisterUserInfoResponse = new BaseApiResponse.OnResponseListener<UserInfo>() {
+    private BaseApiResponse.OnResponseListener<FirebaseUserInfo> onRegisterUserInfoResponse = new BaseApiResponse.OnResponseListener<FirebaseUserInfo>() {
 
         private int mRetryCount = 0;
 
         @Override
-        public void onResponse(BaseApiResponse<UserInfo> response) {
+        public void onResponse(BaseApiResponse<FirebaseUserInfo> response) {
             Log.i(TAG, "onRegisterUserInfoResponse onResponse: " + response.toString());
             if(response != null && response.getData() != null){
-                final UserInfo userInfo = response.getData();
+                final FirebaseUserInfo userInfo = response.getData();
                 mConfigPref.setUserInfo(userInfo);
                 startApplication(userInfo);
             }else{
@@ -468,10 +420,7 @@ public class SplashActivity extends BaseActivity implements GoogleLoginUtil.OnAc
 
         @Override
         public void onError(VolleyError error) {
-            if(BaseApiResponse.RETRY_COUNT > mRetry){
-                NetworkManager.getInstance().request(mDistrictDataRequest);
-                mRetry++;
-            }
+            Log.w(TAG, "onError: ", error);
         }
     };
 

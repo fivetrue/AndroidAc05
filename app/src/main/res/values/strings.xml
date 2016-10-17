@@ -34,8 +34,17 @@
     <string name="infomation">정보</string>
     <string name="image_infomation">사진</string>
     <string name="cafe">카페</string>
-    <string name="talk">TALK</string>
+    <string name="talk">AC05 토크</string>
+    <string name="talk_local">AC05 지역토크</string>
+    <string name="district_talk">%s동 토크</string>
+    <string name="camera_photo">AC05 사진</string>
+    <string name="crop_image">이미지 자르기</string>
+    <string name="upload_image">이미지 업로드</string>
     <string name="setting">설정</string>
+    <string name="admin">관리자</string>
+    <string name="send">보내기</string>
+    <string name="chat_alarm_on">알람 켜기</string>
+    <string name="chat_alarm_off">알람 끄기</string>
 
     <string name="join_email">이메일</string>
     <string name="join_password">비밀번호</string>
@@ -54,7 +63,7 @@
     <string name="login_welcome"> 님 로그인!</string>
     <string name="logout">로그아웃</string>
     <string name="my_info">내정보</string>
-    <string name="my_cafe_info">카페정보변경</string>
+    <string name="my_cafe_info">NAVER 카페정보</string>
     <string name="login_need">로그인이 필요합니다. 로그인 하시겠습니까?</string>
 
     <string name="input_user_dong">어느 동에 계신가요 ?</string>
@@ -85,5 +94,11 @@
     <!-- Page data-->
     <string name="page_data_empty">정보가 없습니다.</string>
 
+    <!-- Chatting -->
+    <string name="received_messages_over_three">3+ 메세지</string>
+    <string name="error_image_upload_failed">사진 업로드가 실패하였 습니다.</string>
+
+    <string name="hint_input_message">내용 입력</string>
+    <string name="error_input_message">내용이 입력되지 않았습니다.</string>
 
 </resources>

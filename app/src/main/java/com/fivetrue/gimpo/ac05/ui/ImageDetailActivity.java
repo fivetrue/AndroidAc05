@@ -72,8 +72,4 @@ public class ImageDetailActivity extends BaseActivity {
         }
     }
 
-    @Override
-    protected boolean transitionModeWhenFinish() {
-        return true;
-    }
 }

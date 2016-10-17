@@ -21,10 +21,12 @@
         android:label="@string/app_name"
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
-        android:name=".ApplicationEX">
+        android:name=".ApplicationEX"
+        android:largeHeap="true">
         <activity
             android:name=".ui.SplashActivity"
-            android:screenOrientation="portrait">
+            android:screenOrientation="portrait"
+            android:launchMode="singleTop">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
@@ -51,6 +53,10 @@
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.Transparent"/>
 
+        <activity android:name=".ui.AdminActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme.Transparent"/>
+
         <activity
             android:name=".ui.ImageInfoEntryListActivity"
             android:screenOrientation="portrait"
@@ -65,22 +71,34 @@
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.TransparentStatusBar.Transparent"/>
 
+        <activity android:name=".ui.ChattingActivity"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="adjustPan"/>
+
+        <activity android:name=".ui.GalleryActivity"
+            android:screenOrientation="portrait"/>
+
+        <activity android:name=".ui.ImageUploadActivity"
+            android:screenOrientation="portrait"/>
+
         <activity
             android:name=".ui.CafeActivity"
             android:screenOrientation="portrait"/>
 
         <activity
             android:name=".ui.SettingActivity"
-            android:screenOrientation="portrait" />
-            <!--android:theme="@style/AppTheme.SettingsTheme"/>-->
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme.TransparentStatusBar.Transparent"/>
 
         <activity
             android:name=".ui.ImageDetailActivity"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.Transparent"/>
 
-        <service
-            android:name=".service.NotificationService"/>
+        <activity android:name="com.theartofdev.edmodo.cropper.CropImageActivity"
+            android:screenOrientation="portrait"
+            android:label="@string/crop_image"
+            android:theme="@style/CropTheme"/>
 
         <service
             android:name=".service.GCMService"
@@ -90,6 +108,8 @@
             </intent-filter>
         </service>
 
+        <service android:name=".chatting.FirebaseChattingService" />
+
         <receiver
             android:name="com.google.android.gms.gcm.GcmReceiver"
             android:exported="true"
@@ -98,6 +118,13 @@
                 <action android:name="com.google.android.c2dm.intent.RECEIVE" />
                 <category android:name="com.fivetrue.gimpo.ac05" />
             </intent-filter>
+        </receiver>
+
+        <receiver android:name=".receiver.ApplicationChecker">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+            </intent-filter>
+
         </receiver>
 
         <meta-data

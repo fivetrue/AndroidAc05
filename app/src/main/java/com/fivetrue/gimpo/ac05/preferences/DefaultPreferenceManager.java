@@ -32,7 +32,19 @@ public class DefaultPreferenceManager {
         mSharedPreferences = PreferenceManager.getDefaultSharedPreferences(context.getApplicationContext());
     }
 
-    public boolean isPushServiceOn(){
+    public boolean isPushService(){
         return mSharedPreferences.getBoolean(mContext.getString(R.string.pref_key_push), true);
+    }
+
+    public void setPushService(boolean b){
+        mSharedPreferences.edit().putBoolean(mContext.getString(R.string.pref_key_push), b).commit();
+    }
+
+    public boolean isPushChatting(int type){
+        return mSharedPreferences.getBoolean(mContext.getString(R.string.pref_key_push) + "." + type, true);
+    }
+
+    public void setPushChatting(int type, boolean b){
+        mSharedPreferences.edit().putBoolean(mContext.getString(R.string.pref_key_push) + "." + type, b).commit();
     }
 }

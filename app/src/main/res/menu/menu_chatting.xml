@@ -1,0 +1,11 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    tools:context=".ui.ImageUploadActivity">
+    <item
+        android:id="@+id/action_chat"
+        android:icon="@drawable/ic_chat_20dp"
+        android:title="@string/chat_alarm_on"
+        android:checkable="true"
+        app:showAsAction="ifRoom" />
+</menu>

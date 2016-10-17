@@ -69,8 +69,7 @@ public class PageDataListActivity extends BaseListDataActivity<FeedMessage> {
         super.onClickItem(holder, data);
         Intent intent = new Intent(this, WebViewActivity.class);
         intent.putExtra("url", data.getUrl());
-        intent.putExtra("title", data.getTitle());
-        intent.putExtra("subtitle", data.getContent());
+        intent.putExtra("title", data.getContent());
         intent.putExtra("image", data.getImageUrl());
         startActivityWithClipRevealAnimation(intent, holder.layout);
     }

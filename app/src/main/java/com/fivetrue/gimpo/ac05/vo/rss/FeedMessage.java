@@ -52,7 +52,7 @@ public class FeedMessage implements Parcelable, IBaseItem{
 		long milliseconds = 0;
 		Date date = null;
 		try {
-			date = new SimpleDateFormat("yyyy-MM-dd  HH:mm:ss", Locale.KOREA).parse(getPubDate());
+			date = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.KOREA).parse(getPubDate());
 			milliseconds= date.getTime();
 		} catch (ParseException e) {
 			Log.w(TAG, "getTime: ", e);
