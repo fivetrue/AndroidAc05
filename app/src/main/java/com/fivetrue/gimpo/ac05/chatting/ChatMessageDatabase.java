@@ -74,6 +74,7 @@ public class ChatMessageDatabase {
                     String userImage = c.getString(c.getColumnIndex(FIELD_USER_IMAGE));
                     long createTime = c.getLong(c.getColumnIndex(FIELD_CREATE_TIME));
                     ChatMessage msg = new ChatMessage(message, imageMessage, sender, userImage, createTime);
+                    msg.createTime = createTime;
                     chatMessages.add(msg);
                 }while (c.moveToNext());
             }catch (Exception e){

@@ -9,6 +9,7 @@
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.WAKE_LOCK" />
+    <uses-permission android:name="android.permission.GET_TASKS" />
 
     <!--GCM PERMISSIONS -->
     <permission android:name="com.fivetrue.gimpo.ac05.permission.C2D_MESSAGE"
@@ -73,13 +74,19 @@
 
         <activity android:name=".ui.ChattingActivity"
             android:screenOrientation="portrait"
-            android:windowSoftInputMode="adjustPan"/>
+            android:windowSoftInputMode="adjustPan"
+            android:theme="@style/AppTheme.Chatting"/>
 
         <activity android:name=".ui.GalleryActivity"
             android:screenOrientation="portrait"/>
 
         <activity android:name=".ui.ImageUploadActivity"
             android:screenOrientation="portrait"/>
+
+        <activity android:name=".ui.ByPassAcitivty"
+            android:screenOrientation="portrait"
+            android:launchMode="singleTop"
+            android:excludeFromRecents="true"/>
 
         <activity
             android:name=".ui.CafeActivity"

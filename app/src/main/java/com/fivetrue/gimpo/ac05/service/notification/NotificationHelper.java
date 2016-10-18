@@ -10,7 +10,6 @@ import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Handler;
 import android.support.v4.app.NotificationCompat;
-import android.support.v4.app.TaskStackBuilder;
 import android.text.TextUtils;
 
 import com.android.volley.VolleyError;
@@ -18,7 +17,6 @@ import com.android.volley.toolbox.ImageLoader;
 import com.fivetrue.fivetrueandroid.image.ImageLoadManager;
 import com.fivetrue.gimpo.ac05.R;
 import com.fivetrue.gimpo.ac05.service.BaseServiceHelper;
-import com.fivetrue.gimpo.ac05.ui.SplashActivity;
 import com.fivetrue.gimpo.ac05.vo.notification.NotificationData;
 
 
@@ -115,10 +113,7 @@ public class NotificationHelper extends BaseServiceHelper {
                     targetIntent.setData(Uri.parse(data.getUri()));
                 }
                 targetIntent.putExtra(KEY_NOTIFICATION_PARCELABLE, data);
-                TaskStackBuilder stackBuilder = TaskStackBuilder.create(getContext());
-                stackBuilder.addParentStack(SplashActivity.class);
-                stackBuilder.addNextIntent(targetIntent);
-                PendingIntent resultPendingIntent = stackBuilder.getPendingIntent(0, PendingIntent.FLAG_UPDATE_CURRENT);
+                PendingIntent resultPendingIntent = PendingIntent.getActivity(context, 0, targetIntent, PendingIntent.FLAG_UPDATE_CURRENT);
                 builder.setContentIntent(resultPendingIntent);
             }
             mManager.notify(data.getId(), builder.build());

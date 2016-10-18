@@ -22,7 +22,7 @@ public class DistrictSpinnerAdapter extends BaseListAdapter<District, DistrictSp
     }
 
     @Override
-    protected Holder makeHolder(View view) {
+    protected Holder makeHolder(View view, int postion) {
         Holder holder = new Holder();
         holder.text = (TextView) view.findViewById(R.id.tv_item_simple_spinner);
         return holder;

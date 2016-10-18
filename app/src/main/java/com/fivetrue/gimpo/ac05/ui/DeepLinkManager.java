@@ -99,9 +99,21 @@ public class DeepLinkManager {
                                 }catch(NumberFormatException e){
                                     Log.w(TAG, "goLink: ", e);
                                 }finally {
-                                    Intent i = new Intent(activity, ChattingActivity.class);
-                                    i.putExtra("type", t);
-                                    activity.startActivity(i);
+                                    switch (t){
+                                        case FirebaseChattingService.PUBLIC_CHATTING_NOTIFICATION_ID :
+                                        case FirebaseChattingService.DISTRICT_CHATTING_NOTIFICATION_ID :{
+                                            Intent i = new Intent(activity, ChattingActivity.class);
+                                            i.putExtra("type", t);
+                                            activity.startActivity(i);
+                                        }
+                                            break;
+
+                                        case FirebaseChattingService.GALLERY_NOTIFICATION_ID:{
+                                            Intent i = new Intent(activity, GalleryActivity.class);
+                                            i.putExtra("type", t);
+                                            activity.startActivity(i);
+                                        }
+                                    }
                                 }
                             }
                         }

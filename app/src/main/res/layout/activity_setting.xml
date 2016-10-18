@@ -113,7 +113,7 @@
                         android:textColor="@color/colorAccent"
                         android:textSize="@dimen/setting_category_text_size"
                         android:padding="@dimen/common_horizontal_padding"
-                        android:background="@drawable/selector_common_negative_button"/>
+                        android:background="@drawable/selector_common_button"/>
                 </LinearLayout>
 
                 <TextView

@@ -185,16 +185,20 @@ public class SplashActivity extends BaseActivity implements GoogleLoginUtil.OnAc
 
     private void checkLoginStatus(FirebaseUser user){
         if(user != null){
-            mLoadingMessage.setVisibility(View.VISIBLE);
-            showProgress();
-            mLoadingMessage.setText(R.string.config_user_info_register);
             FirebaseUserInfo oldUserInfo = mConfigPref.getUserInfo();
-            FirebaseUserInfo userInfo = new FirebaseUserInfo(user
-                    , mConfigPref.getGcmDeviceId()
-                    ,Build.MODEL, oldUserInfo != null ? oldUserInfo.getDistrict() : 0);
-            mConfigPref.setUserInfo(userInfo);
-            mRegisterUserRequest.setObject(userInfo);
-            NetworkManager.getInstance().request(mRegisterUserRequest);
+            if(getIntent().getAction().equals(NotificationHelper.ACTION_NOTIFICATION)){
+                startMainActivity(oldUserInfo);
+            }else{
+                mLoadingMessage.setVisibility(View.VISIBLE);
+                showProgress();
+                mLoadingMessage.setText(R.string.config_user_info_register);
+                FirebaseUserInfo userInfo = new FirebaseUserInfo(user
+                        , mConfigPref.getGcmDeviceId()
+                        ,Build.MODEL, oldUserInfo != null ? oldUserInfo.getDistrict() : 0);
+                mConfigPref.setUserInfo(userInfo);
+                mRegisterUserRequest.setObject(userInfo);
+                NetworkManager.getInstance().request(mRegisterUserRequest);
+            }
         }else{
             mLoadingMessage.setVisibility(View.GONE);
             showLoginButton();
@@ -297,7 +301,7 @@ public class SplashActivity extends BaseActivity implements GoogleLoginUtil.OnAc
                         public void run() {
                             startMainActivity(userInfo);
                         }
-                    }, 1500L);
+                    }, 700L);
                 }
             });
             mUserLayout.setVisibility(View.VISIBLE);

@@ -47,9 +47,10 @@ import com.fivetrue.gimpo.ac05.vo.data.MainDataEntry;
 import com.fivetrue.gimpo.ac05.vo.data.PageData;
 import com.fivetrue.gimpo.ac05.vo.data.TownDataEntry;
 import com.fivetrue.gimpo.ac05.vo.rss.Feed;
-import com.fivetrue.gimpo.ac05.vo.notification.NotificationData;
-import com.fivetrue.gimpo.ac05.service.notification.NotificationHelper;
-import com.fivetrue.gimpo.ac05.vo.user.FirebaseUserInfo;
+import com.google.android.gms.ads.AdListener;
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.InterstitialAd;
+import com.google.android.gms.ads.MobileAds;
 
 import java.util.ArrayList;
 
@@ -80,12 +81,16 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
 
     private ConfigPreferenceManager mConfigPref = null;
 
+    private InterstitialAd mInterstitialAd;
+    private AdRequest mAdRequest;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         initData();
         initView();
+        initAds();
         if (getIntent() != null && getIntent().getData() != null) {
             DeepLinkManager.goLink(this, getIntent());
         }
@@ -133,13 +138,54 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         mProgressBar = (ProgressBar) findViewById(R.id.pb_main);
     }
 
+    private void initAds(){
+
+        MobileAds.initialize(this, getString(R.string.admob_app_id));
+        mInterstitialAd = new InterstitialAd(this);
+        mInterstitialAd.setAdListener(new AdListener() {
+            @Override
+            public void onAdClosed() {
+                super.onAdClosed();
+            }
+
+            @Override
+            public void onAdFailedToLoad(int i) {
+                super.onAdFailedToLoad(i);
+            }
+
+            @Override
+            public void onAdLeftApplication() {
+                super.onAdLeftApplication();
+            }
+
+            @Override
+            public void onAdOpened() {
+                super.onAdOpened();
+            }
+
+            @Override
+            public void onAdLoaded() {
+                super.onAdLoaded();
+                mInterstitialAd.show();
+            }
+        });
+        mInterstitialAd.setAdUnitId(getString(R.string.ad_id));
+        mAdRequest = new AdRequest.Builder()
+                .addTestDevice(AdRequest.DEVICE_ID_EMULATOR)
+                .build();
+
+        mInterstitialAd.loadAd(mAdRequest);
+    }
+
     private void updateUserInfo(){
         if(mNavImage != null && mNavAccount != null && mNavName != null && mNavDistrict != null){
             if(mConfigPref.getUserInfo() != null){
                 mNavImage.setImageUrl(mConfigPref.getUserInfo().getPhotoUrl());
                 mNavAccount.setText(mConfigPref.getUserInfo().getEmail());
                 mNavName.setText(mConfigPref.getUserInfo().getDisplayName());
-                mNavDistrict.setText(mConfigPref.getUserInfo().getDistrict() + " 동");
+                if(mConfigPref.getUserInfo().getDistrict() > 0){
+                    mNavDistrict.setText(mConfigPref.getUserInfo().getDistrict() + " 동");
+                }
             }else{
                 Log.d(TAG, "updateUserInfo() called" + "UserData null");
             }

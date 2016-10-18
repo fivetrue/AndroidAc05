@@ -3,6 +3,10 @@ package com.fivetrue.gimpo.ac05.chatting;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import com.google.firebase.database.ServerValue;
+
+import java.util.HashMap;
+
 /**
  * Created by kwonojin on 2016. 10. 15..
  */
@@ -79,6 +83,17 @@ public class GalleryMessage implements Parcelable, MessageData{
     @Override
     public String getUser() {
         return author;
+    }
+
+    @Override
+    public HashMap<String, Object> getValues() {
+        HashMap<String, Object> v = new HashMap<>();
+        v.put("image", image);
+        v.put("message", message);
+        v.put("author", author);
+        v.put("userImage", userImage);
+        v.put("createTime", ServerValue.TIMESTAMP);
+        return v;
     }
 
 }

@@ -39,12 +39,13 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="15dp"
             android:layout_marginLeft="10dp"
-            android:layout_marginRight="10dp">
+            android:layout_marginRight="10dp"
+            android:padding="10dp">
             <android.support.design.widget.TextInputEditText
                 android:id="@+id/et_image_upload_message"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:padding="5dp"
+                android:padding="10dp"
                 android:hint="@string/hint_input_message"/>
         </android.support.design.widget.TextInputLayout>
     </LinearLayout>

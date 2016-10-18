@@ -136,9 +136,8 @@ public class ImageUploadActivity extends BaseActivity {
                             GalleryMessage msg = new GalleryMessage(url.toString()
                                     , mInputMessage.getText().toString()
                                     , mConfigPref.getUserInfo().getEmail()
-                                    , mConfigPref.getUserInfo().getPhotoUrl()
-                                    , System.currentTimeMillis());
-                            mDatabaseReference.push().setValue(msg);
+                                    , mConfigPref.getUserInfo().getPhotoUrl(), 0);
+                            mDatabaseReference.push().setValue(msg.getValues());
                             mLoadingDialog.dismiss();
                             Intent intent = new Intent();
                             intent.putExtra(GalleryMessage.class.getName(), msg);

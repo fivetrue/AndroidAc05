@@ -3,6 +3,10 @@ package com.fivetrue.gimpo.ac05.chatting;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import com.google.firebase.database.ServerValue;
+
+import java.util.HashMap;
+
 /**
  * Created by kwonojin on 2016. 10. 13..
  */
@@ -79,4 +83,16 @@ public class ChatMessage implements Parcelable, MessageData{
     public String getUser() {
         return sender;
     }
+
+    @Override
+    public HashMap<String, Object> getValues(){
+        HashMap<String, Object> v = new HashMap<>();
+        v.put("message", message);
+        v.put("imageMessage", imageMessage);
+        v.put("sender", sender);
+        v.put("userImage", userImage);
+        v.put("createTime", ServerValue.TIMESTAMP);
+        return v;
+    }
+
 }

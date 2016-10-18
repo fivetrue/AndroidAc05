@@ -41,7 +41,7 @@ public class DefaultPreferenceManager {
     }
 
     public boolean isPushChatting(int type){
-        return mSharedPreferences.getBoolean(mContext.getString(R.string.pref_key_push) + "." + type, true);
+        return mSharedPreferences.getBoolean(mContext.getString(R.string.pref_key_push) + "." + type, false);
     }
 
     public void setPushChatting(int type, boolean b){

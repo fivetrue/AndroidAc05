@@ -6,6 +6,7 @@ import android.util.Log;
 import com.fivetrue.gimpo.ac05.preferences.ConfigPreferenceManager;
 import com.fivetrue.gimpo.ac05.preferences.DefaultPreferenceManager;
 import com.fivetrue.gimpo.ac05.service.notification.NotificationHelper;
+import com.fivetrue.gimpo.ac05.ui.ByPassAcitivty;
 import com.fivetrue.gimpo.ac05.vo.notification.NotificationData;
 import com.fivetrue.gimpo.ac05.ui.SplashActivity;
 import com.google.android.gms.gcm.GcmListenerService;
@@ -38,7 +39,7 @@ public class GCMService extends GcmListenerService {
             if(noti.getId() <= 0){
                 noti.setId(DEFAULT_NOTIFICATION_ID);
             }
-            noti.setTargetClass(SplashActivity.class.getName());
+            noti.setTargetClass(ByPassAcitivty.class.getName());
 
             mNotificationHelper.createNotification(noti);
         }

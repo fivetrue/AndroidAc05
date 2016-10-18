@@ -21,6 +21,8 @@ public class FirebaseUserInfo implements Parcelable{
 
     private int district;
 
+    public FirebaseUserInfo(){}
+
     public FirebaseUserInfo(FirebaseUser user, String gcm, String device, int district){
         uid = user.getUid();
         email = user.getEmail();

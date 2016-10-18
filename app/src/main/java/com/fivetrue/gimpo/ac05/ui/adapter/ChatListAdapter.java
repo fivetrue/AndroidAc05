@@ -1,7 +1,11 @@
 package com.fivetrue.gimpo.ac05.ui.adapter;
 
+import android.content.Context;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.RecyclerView.ViewHolder;
 import android.text.TextUtils;
+import android.text.method.LinkMovementMethod;
+import android.text.method.MovementMethod;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -10,6 +14,7 @@ import android.widget.TextView;
 
 import com.android.volley.toolbox.NetworkImageView;
 import com.fivetrue.fivetrueandroid.image.ImageLoadManager;
+import com.fivetrue.fivetrueandroid.ui.adapter.BaseListAdapter;
 import com.fivetrue.fivetrueandroid.ui.adapter.BaseRecyclerAdapter;
 import com.fivetrue.fivetrueandroid.view.CircleImageView;
 import com.fivetrue.gimpo.ac05.R;
@@ -75,12 +80,14 @@ public class ChatListAdapter extends BaseRecyclerAdapter<ChatMessage, ChatListAd
                 name = item.sender;
             }
             holder.name.setText(name);
+            holder.message.requestLayout();
         }
 
     }
 
     public static final class ChatItemViewHolder extends RecyclerView.ViewHolder{
 
+        public final View chatLayout;
         public final View userInfoLayout;
         public final CircleImageView userImage;
         public final NetworkImageView messageImage;
@@ -90,6 +97,7 @@ public class ChatListAdapter extends BaseRecyclerAdapter<ChatMessage, ChatListAd
 
         public ChatItemViewHolder(View itemView) {
             super(itemView);
+            chatLayout = itemView.findViewById(R.id.layout_item_chat_container);
             userInfoLayout = itemView.findViewById(R.id.layout_item_chat_user_info);
             userImage = (CircleImageView) itemView.findViewById(R.id.iv_item_chat_user);
             messageImage = (NetworkImageView) itemView.findViewById(R.id.iv_item_chat_image);

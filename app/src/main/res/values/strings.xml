@@ -100,5 +100,6 @@
 
     <string name="hint_input_message">내용 입력</string>
     <string name="error_input_message">내용이 입력되지 않았습니다.</string>
+    <string name="chat_user_list">현재 참여인원</string>
 
 </resources>

@@ -1,8 +1,12 @@
 package com.fivetrue.gimpo.ac05.chatting;
 
+import android.app.ActivityManager;
+import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
+import android.content.ComponentName;
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -20,9 +24,9 @@ import com.fivetrue.fivetrueandroid.image.ImageLoadManager;
 import com.fivetrue.gimpo.ac05.R;
 import com.fivetrue.gimpo.ac05.preferences.ConfigPreferenceManager;
 import com.fivetrue.gimpo.ac05.preferences.DefaultPreferenceManager;
-import com.fivetrue.gimpo.ac05.service.notification.NotificationHelper;
+import com.fivetrue.gimpo.ac05.ui.ByPassAcitivty;
+import com.fivetrue.gimpo.ac05.ui.ChattingActivity;
 import com.fivetrue.gimpo.ac05.ui.DeepLinkManager;
-import com.fivetrue.gimpo.ac05.ui.SplashActivity;
 import com.fivetrue.gimpo.ac05.vo.user.FirebaseUserInfo;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
@@ -30,7 +34,10 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
+import java.lang.reflect.Field;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Created by kwonojin on 2016. 10. 13..
@@ -42,6 +49,7 @@ public class FirebaseChattingService extends Service{
 
     public static final String ACTION_BIND_SERVICE = "com.fivetrue.gimpo.ac05.bind.chatting";
     public static final String ACTION_DELETE_NOTIFICATION_MESSAGE = "com.fivetrue.gimpo.ac05.delete.message";
+    public static final String ACTION_FIREBASE_MESSAGE = "com.fivetrue.gimpo.ac05.firebase.message";
 
     public static final int PUBLIC_CHATTING_NOTIFICATION_ID = 0x123;
     public static final int DISTRICT_CHATTING_NOTIFICATION_ID = 0x312;
@@ -208,14 +216,14 @@ public class FirebaseChattingService extends Service{
 
     public void sendMessage(int type, ChatMessage msg){
         if(type == PUBLIC_CHATTING_NOTIFICATION_ID){
-            mPublicDBReference.push().setValue(msg, new DatabaseReference.CompletionListener() {
+            mPublicDBReference.push().setValue(msg.getValues(), new DatabaseReference.CompletionListener() {
                 @Override
                 public void onComplete(DatabaseError databaseError, DatabaseReference databaseReference) {
                     Log.d(TAG, "onComplete() called with: databaseError = [" + databaseError + "], databaseReference = [" + databaseReference + "]");
                 }
             });
         }else{
-            mDistrictDBReference.push().setValue(msg, new DatabaseReference.CompletionListener() {
+            mDistrictDBReference.push().setValue(msg.getValues(), new DatabaseReference.CompletionListener() {
                 @Override
                 public void onComplete(DatabaseError databaseError, DatabaseReference databaseReference) {
                     Log.d(TAG, "onComplete() called with: databaseError = [" + databaseError + "], databaseReference = [" + databaseReference + "]");
@@ -250,6 +258,18 @@ public class FirebaseChattingService extends Service{
     }
 
     private void showNotification(final int type, String key, final MessageData message){
+
+        /**
+         * 채팅방에서는 Notification 울리지 않음
+         */
+        if(type == PUBLIC_CHATTING_NOTIFICATION_ID || type == DISTRICT_CHATTING_NOTIFICATION_ID){
+            ActivityManager am = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
+            ComponentName cn = am.getRunningTasks(1).get(0).topActivity;
+            if(cn.getClassName().equals(ChattingActivity.class.getName())){
+                return;
+            }
+        }
+
         boolean b = DefaultPreferenceManager.getInstance(FirebaseChattingService.this).isPushChatting(type);
         if(message != null && !message.getUser().equals(mConfigPref.getUserInfo().getEmail()) && b){
             ImageLoadManager.getInstance().loadImageUrl(message.getUserImage(), new ImageLoader.ImageListener() {
@@ -293,6 +313,7 @@ public class FirebaseChattingService extends Service{
                             .setSmallIcon(R.drawable.push_icon)
                             .setLargeIcon(bm)
                             .setContentText(message.getMessage())
+                            .setDefaults(Notification.DEFAULT_ALL)
                             .setPriority(NotificationCompat.PRIORITY_HIGH)
                             .setStyle(bigTextStyle);
 
@@ -300,8 +321,8 @@ public class FirebaseChattingService extends Service{
                         builder.setVibrate(new long[0]);
                     }
 
-                    Intent intent = new Intent(FirebaseChattingService.this, SplashActivity.class);
-                    intent.setAction(NotificationHelper.ACTION_NOTIFICATION);
+                    Intent intent = new Intent(FirebaseChattingService.this, ByPassAcitivty.class);
+                    intent.setAction(ACTION_FIREBASE_MESSAGE);
                     intent.setData(DeepLinkManager.makeChattingLink(type));
                     PendingIntent pendingIntent = PendingIntent.getActivity(FirebaseChattingService.this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
                     builder.setContentIntent(pendingIntent);
