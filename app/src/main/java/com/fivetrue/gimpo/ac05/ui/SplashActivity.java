@@ -1,6 +1,8 @@
 package com.fivetrue.gimpo.ac05.ui;
 
+import android.app.ActivityManager;
 import android.app.AlertDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Typeface;
@@ -25,6 +27,7 @@ import com.fivetrue.fivetrueandroid.utils.AppUtils;
 import com.fivetrue.fivetrueandroid.utils.SimpleViewUtils;
 import com.fivetrue.fivetrueandroid.view.CircleImageView;
 import com.fivetrue.gimpo.ac05.R;
+import com.fivetrue.gimpo.ac05.chatting.FirebaseChattingService;
 import com.fivetrue.gimpo.ac05.net.request.ConfigRequest;
 import com.fivetrue.gimpo.ac05.net.request.DistrictDataReqeust;
 import com.fivetrue.gimpo.ac05.net.request.RegisterUserRequest;
@@ -338,6 +341,11 @@ public class SplashActivity extends BaseActivity implements GoogleLoginUtil.OnAc
 
     private void startMainActivity(FirebaseUserInfo info){
         Log.i(TAG, "startMainActivity: start");
+
+        if(!AppUtils.isServiceRunning(this, FirebaseChattingService.class)){
+            startService(new Intent(getApplicationContext(), FirebaseChattingService.class));
+        }
+
         Intent intent = null;
         if(getIntent() != null
                 && getIntent().getAction() != null

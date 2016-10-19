@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content" android:layout_height="wrap_content">
+    
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+        
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="80dp"
+            android:orientation="horizontal">
+            <com.android.volley.toolbox.NetworkImageView
+                android:id="@+id/iv_fragment_user_info_image"
+                android:layout_width="80dp"
+                android:layout_height="match_parent" />
+
+            <TextView
+                android:id="@+id/tv_fragment_user_info_name"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:gravity="center"
+                style="@style/CommonText.Small"/>
+        </LinearLayout>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="@color/colorPrimary"/>
+
+        <LinearLayout
+            android:id="@+id/layout_fragment_user_info_buttons"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:orientation="horizontal">
+            <Button
+                android:id="@+id/btn_fragment_user_info_message"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:text="@string/sending_message"
+                android:textColor="@color/colorPrimaryDark"
+                android:background="@drawable/selector_common_negative_button"/>
+
+            <Button
+                android:id="@+id/btn_fragment_user_info_bad_user_report"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:text="@string/report_bad_user"
+                android:textColor="@color/colorPrimaryDark"
+                android:background="@drawable/selector_common_negative_button"/>
+        </LinearLayout>
+    </LinearLayout>
+
+</RelativeLayout>

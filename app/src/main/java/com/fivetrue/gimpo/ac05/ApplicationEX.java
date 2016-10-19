@@ -23,18 +23,5 @@ public class ApplicationEX extends Application {
         Fabric.with(this, new Crashlytics());
         NetworkManager.init(this);
         ImageLoadManager.init(NetworkManager.getInstance().getRequestQueue());
-        if(!isServiceRunning(FirebaseChattingService.class)){
-            startService(new Intent(this, FirebaseChattingService.class));
-        }
-    }
-
-    public boolean isServiceRunning(Class<?> serviceClass) {
-        ActivityManager manager = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
-        for (ActivityManager.RunningServiceInfo service : manager.getRunningServices(Integer.MAX_VALUE)) {
-            if (serviceClass.getName().equals(service.service.getClassName())) {
-                return true;
-            }
-        }
-        return false;
     }
 }

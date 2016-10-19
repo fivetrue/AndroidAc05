@@ -9,6 +9,7 @@ import com.fivetrue.fivetrueandroid.net.BaseApiResponse;
 import com.fivetrue.fivetrueandroid.net.ErrorCode;
 import com.fivetrue.fivetrueandroid.net.NetworkManager;
 import com.fivetrue.fivetrueandroid.ui.BaseActivity;
+import com.fivetrue.gimpo.ac05.Constants;
 import com.fivetrue.gimpo.ac05.chatting.FirebaseChattingService;
 import com.fivetrue.gimpo.ac05.net.request.MainPageDataRequest;
 import com.fivetrue.gimpo.ac05.service.notification.NotificationHelper;
@@ -31,7 +32,7 @@ public class DeepLinkManager {
     public static final String[] AVALIABLE_SCHEME = {APP_SCHEME, HTTP_SCHEME, HTTPS_SCHEME};
 
     public static final String NOTIFICATION_HOST = "notification";
-    public static final String CHATTING_HOST = "chatting";
+    public static final String FIREBASE_HOST = "firebase";
 
     public static final String PARAM_URL = "url";
     public static final String PARAM_TITLE = "title";
@@ -90,26 +91,31 @@ public class DeepLinkManager {
                                 request.setCache(false);
                                 NetworkManager.getInstance().request(request);
                             }
-                        }else if(host.equals(CHATTING_HOST)){
+                        }else if(host.equals(FIREBASE_HOST)){
                             String type = uri.getQueryParameter("type");
                             if(type != null){
-                                int t = FirebaseChattingService.PUBLIC_CHATTING_NOTIFICATION_ID;
+                                int t = Constants.PUBLIC_CHATTING_NOTIFICATION_ID;
                                 try{
                                    t = Integer.parseInt(type.trim());
                                 }catch(NumberFormatException e){
                                     Log.w(TAG, "goLink: ", e);
                                 }finally {
                                     switch (t){
-                                        case FirebaseChattingService.PUBLIC_CHATTING_NOTIFICATION_ID :
-                                        case FirebaseChattingService.DISTRICT_CHATTING_NOTIFICATION_ID :{
+                                        case Constants.PUBLIC_CHATTING_NOTIFICATION_ID :
+                                        case Constants.DISTRICT_CHATTING_NOTIFICATION_ID :{
                                             Intent i = new Intent(activity, ChattingActivity.class);
                                             i.putExtra("type", t);
                                             activity.startActivity(i);
                                         }
                                             break;
 
-                                        case FirebaseChattingService.GALLERY_NOTIFICATION_ID:{
+                                        case Constants.GALLERY_NOTIFICATION_ID:{
                                             Intent i = new Intent(activity, GalleryActivity.class);
+                                            i.putExtra("type", t);
+                                            activity.startActivity(i);
+                                        }
+                                        case Constants.PERSON_MESSAGE_NOTIFICATION_ID:{
+                                            Intent i = new Intent(activity, PersonalActivity.class);
                                             i.putExtra("type", t);
                                             activity.startActivity(i);
                                         }
@@ -146,8 +152,8 @@ public class DeepLinkManager {
         return false;
     }
 
-    public static Uri makeChattingLink(int type){
-        String uri = APP_SCHEME + "://" + CHATTING_HOST + "?type=" + type;
+    public static Uri makeFirebaseNotification(int type){
+        String uri = APP_SCHEME + "://" + FIREBASE_HOST + "?type=" + type;
         return Uri.parse(uri);
     }
 }

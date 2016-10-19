@@ -24,6 +24,7 @@ public class GalleryMessageDatabase {
     private static final String FIELD_IMAGE = "image";
     private static final String FIELD_MESSAGE = "message";
     private static final String FIELD_AUTHOR = "author";
+    private static final String FIELD_AUTHOR_ID = "authorId";
     private static final String FIELD_USER_IMAGE = "userImage";
     private static final String FIELD_CREATE_TIME = "createTime";
     private static final String FIELD_TYPE = "type";
@@ -53,10 +54,20 @@ public class GalleryMessageDatabase {
         values.put(FIELD_USER_IMAGE, msg.userImage);
         values.put(FIELD_IMAGE, msg.image);
         values.put(FIELD_AUTHOR, msg.author);
+        values.put(FIELD_AUTHOR_ID, msg.authorId);
         values.put(FIELD_CREATE_TIME, msg.createTime);
         values.put(FIELD_TYPE, type);
         SQLiteDatabase db = mDatabaseHelper.getWritableDatabase();
         db.insert(TABLE_NAME, null, values);
+    }
+
+    public int removeGalleryMessage(int type, GalleryMessage msg){
+        return removeGalleryMessage(type, msg.key);
+    }
+
+    public int removeGalleryMessage(int type, String key){
+        SQLiteDatabase db = mDatabaseHelper.getWritableDatabase();
+        return db.delete(TABLE_NAME, "type=? and key=?", new String[]{type + "", key});
     }
 
     public List<GalleryMessage> getGalleryMessage(){
@@ -68,12 +79,15 @@ public class GalleryMessageDatabase {
             try{
                 c.moveToFirst();
                 do{
+                    String key = c.getString(c.getColumnIndex(FIELD_KEY));
                     String message = c.getString(c.getColumnIndex(FIELD_MESSAGE));
                     String image = c.getString(c.getColumnIndex(FIELD_IMAGE));
                     String author = c.getString(c.getColumnIndex(FIELD_AUTHOR));
+                    String authorId = c.getString(c.getColumnIndex(FIELD_AUTHOR_ID));
                     String userImage = c.getString(c.getColumnIndex(FIELD_USER_IMAGE));
                     long createTime = c.getLong(c.getColumnIndex(FIELD_CREATE_TIME));
-                    GalleryMessage msg = new GalleryMessage(image, message, author, userImage, createTime);
+                    GalleryMessage msg = new GalleryMessage(key, image, message, author
+                            , authorId, userImage, createTime);
                     galleryMessages.add(msg);
                 }while (c.moveToNext());
             }catch (Exception e){
@@ -94,8 +108,11 @@ public class GalleryMessageDatabase {
             + FIELD_MESSAGE +" TEXT NOT NULL,"
             + FIELD_IMAGE + " TEXT,"
             + FIELD_AUTHOR + " TEXT NOT NULL,"
+            + FIELD_AUTHOR_ID + " TEXT NOT NULL,"
             + FIELD_USER_IMAGE + " TEXT NOT NULL,"
             + FIELD_CREATE_TIME + " INTEGER NOT NULL,"
             + FIELD_TYPE + " INTEGER NOT NULL"
             +");";
+
+    public static final String MESSAGE_DB_DROP_QUERY = "DROP TABLE " + TABLE_NAME + ";";
 }

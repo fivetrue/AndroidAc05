@@ -16,7 +16,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     private static final String TAG = "DatabaseHelper";
 
     private static final String DB_NAME = "ac05";
-    private static final int VERSION = 1;
+    private static final int VERSION = 2;
 
 
     public DatabaseHelper(Context context) {
@@ -31,7 +31,11 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-
+        if(oldVersion < newVersion){
+            db.execSQL(ChatMessageDatabase.MESSAGE_DB_DROP_QUERY);
+            db.execSQL(GalleryMessageDatabase.MESSAGE_DB_DROP_QUERY);
+        }
+        onCreate(db);
     }
 
 }

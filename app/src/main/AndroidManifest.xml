@@ -77,6 +77,11 @@
             android:windowSoftInputMode="adjustPan"
             android:theme="@style/AppTheme.Chatting"/>
 
+        <activity android:name=".ui.PersonalActivity"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="adjustPan"
+            android:theme="@style/AppTheme.Chatting"/>
+
         <activity android:name=".ui.GalleryActivity"
             android:screenOrientation="portrait"/>
 

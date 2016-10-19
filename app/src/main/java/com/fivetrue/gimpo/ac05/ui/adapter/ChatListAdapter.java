@@ -1,20 +1,13 @@
 package com.fivetrue.gimpo.ac05.ui.adapter;
 
-import android.content.Context;
 import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.RecyclerView.ViewHolder;
-import android.text.TextUtils;
-import android.text.method.LinkMovementMethod;
-import android.text.method.MovementMethod;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.android.volley.toolbox.NetworkImageView;
 import com.fivetrue.fivetrueandroid.image.ImageLoadManager;
-import com.fivetrue.fivetrueandroid.ui.adapter.BaseListAdapter;
 import com.fivetrue.fivetrueandroid.ui.adapter.BaseRecyclerAdapter;
 import com.fivetrue.fivetrueandroid.view.CircleImageView;
 import com.fivetrue.gimpo.ac05.R;
@@ -73,14 +66,15 @@ public class ChatListAdapter extends BaseRecyclerAdapter<ChatMessage, ChatListAd
             if(item.imageMessage != null){
                 holder.messageImage.setImageUrl(item.imageMessage, ImageLoadManager.getImageLoader());
             }
-            String name = item.sender;
-            try{
-                name = item.sender.substring(0, item.sender.indexOf("@"));
-            }catch (Exception e){
-                name = item.sender;
-            }
-            holder.name.setText(name);
+            holder.name.setText(item.getName());
             holder.message.requestLayout();
+
+            holder.userImage.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    onClickItem(holder, item);
+                }
+            });
         }
 
     }

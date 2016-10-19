@@ -22,7 +22,9 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.fivetrue.fivetrueandroid.ui.BaseActivity;
+import com.fivetrue.fivetrueandroid.ui.adapter.BaseRecyclerAdapter;
 import com.fivetrue.fivetrueandroid.ui.fragment.BaseDialogFragment;
+import com.fivetrue.gimpo.ac05.Constants;
 import com.fivetrue.gimpo.ac05.R;
 import com.fivetrue.gimpo.ac05.chatting.ChatMessage;
 import com.fivetrue.gimpo.ac05.chatting.ChatMessageDatabase;
@@ -32,6 +34,7 @@ import com.fivetrue.gimpo.ac05.chatting.IChattingService;
 import com.fivetrue.gimpo.ac05.preferences.ConfigPreferenceManager;
 import com.fivetrue.gimpo.ac05.preferences.DefaultPreferenceManager;
 import com.fivetrue.gimpo.ac05.ui.adapter.ChatListAdapter;
+import com.fivetrue.gimpo.ac05.ui.fragment.UserInfoDialogFragment;
 import com.fivetrue.gimpo.ac05.ui.fragment.UserListDialogFragment;
 import com.fivetrue.gimpo.ac05.vo.user.FirebaseUserInfo;
 import com.google.firebase.database.ChildEventListener;
@@ -53,11 +56,8 @@ public class ChattingActivity extends BaseActivity implements ChildEventListener
 
     private static final String TAG = "ChattingActivity";
 
-    public static final int TYPE_CHATTING_PUBLIC = FirebaseChattingService.PUBLIC_CHATTING_NOTIFICATION_ID;
-    public static final int TYPE_CHATTING_DISTRICT = FirebaseChattingService.DISTRICT_CHATTING_NOTIFICATION_ID;
-
-    public static final String DB_ACTIVE = "active";
-    public static final String DB_CHATTING = "chatting";
+    public static final int TYPE_CHATTING_PUBLIC = Constants.PUBLIC_CHATTING_NOTIFICATION_ID;
+    public static final int TYPE_CHATTING_DISTRICT = Constants.DISTRICT_CHATTING_NOTIFICATION_ID;
 
     private RecyclerView mDialogueList;
     private ImageButton mSendMessage;
@@ -140,13 +140,33 @@ public class ChattingActivity extends BaseActivity implements ChildEventListener
         mUserInfo = mConfigPref.getUserInfo();
         mChatMessageDb = new ChatMessageDatabase(this);
         mAdapter = new ChatListAdapter(mChatMessageDb.getChatMessages(mType), mConfigPref.getUserInfo().getEmail());
+        mAdapter.setOnItemClickListener(new BaseRecyclerAdapter.OnItemClickListener<ChatMessage, ChatListAdapter.ChatItemViewHolder>() {
+            @Override
+            public void onClickItem(ChatListAdapter.ChatItemViewHolder holder, ChatMessage data) {
+                Bundle b = new Bundle();
+                b.putParcelable(ChatMessage.class.getName(), data);
+                UserInfoDialogFragment dialog = new UserInfoDialogFragment();
+                dialog.show(getCurrentFragmentManager(), null
+                        , getString(android.R.string.ok), null, b, new BaseDialogFragment.OnClickDialogFragmentListener() {
+                            @Override
+                            public void onClickOKButton(BaseDialogFragment f, Object data) {
+                                f.dismiss();
+                            }
 
-        FirebaseDatabase database = FirebaseDatabase.getInstance();
+                            @Override
+                            public void onClickCancelButton(BaseDialogFragment f, Object data) {
+                                f.dismiss();
+                            }
+                        });
+            }
+        });
+
+        DatabaseReference reference = FirebaseDatabase.getInstance().getReference(Constants.FIREBASE_DB_ROOT_ACTIVE).child(Constants.FIREBASE_DB_ROOT_CHATTING);
 
         if(mType == TYPE_CHATTING_PUBLIC){
-            mActiveUserDBReference = database.getReference(DB_ACTIVE).child(DB_CHATTING).child("public");
+            mActiveUserDBReference = reference.child(Constants.FIREBASE_DB_CHATTING_PUBLIC);
         }else{
-            mActiveUserDBReference = database.getReference(DB_ACTIVE).child(DB_CHATTING).child(mConfigPref.getUserInfo().getDistrict() + "");
+            mActiveUserDBReference = reference.child(Constants.FIREBASE_DB_CHATTING_DISTRICT).child(mConfigPref.getUserInfo().getDistrict() + "");
         }
     }
 
@@ -191,8 +211,8 @@ public class ChattingActivity extends BaseActivity implements ChildEventListener
 
     private void sendMessage(String message){
         if(message != null){
-            ChatMessage msg = new ChatMessage(message
-                    , null, mUserInfo.getEmail(), mUserInfo.getPhotoUrl(), 0);
+            ChatMessage msg = new ChatMessage(null, message
+                    , null, mUserInfo.getEmail(), mUserInfo.getUid(), mUserInfo.getPhotoUrl(), 0);
             try {
                 iChattingService.sendMessage(mType, msg);
             } catch (RemoteException e) {
@@ -202,7 +222,7 @@ public class ChattingActivity extends BaseActivity implements ChildEventListener
     }
 
     private void onReceiveMessage(int type, String key, ChatMessage message){
-        if(message != null){
+        if(message != null ){
             Log.d(TAG, "onReceiveMessage() called with: message = [" + message + "]");
             mAdapter.getData().add(message);
             mAdapter.notifyDataSetChanged();

@@ -34,17 +34,18 @@
     <string name="infomation">정보</string>
     <string name="image_infomation">사진</string>
     <string name="cafe">카페</string>
-    <string name="talk">AC05 토크</string>
-    <string name="talk_local">AC05 지역토크</string>
-    <string name="district_talk">%s동 토크</string>
+    <string name="talk">AC05 톡</string>
+    <string name="talk_local">AC05 지역 톡</string>
+    <string name="district_talk">%s동 톡</string>
     <string name="camera_photo">AC05 사진</string>
+    <string name="person_alarm">개인 알람</string>
     <string name="crop_image">이미지 자르기</string>
     <string name="upload_image">이미지 업로드</string>
     <string name="setting">설정</string>
     <string name="admin">관리자</string>
     <string name="send">보내기</string>
-    <string name="chat_alarm_on">알람 켜기</string>
-    <string name="chat_alarm_off">알람 끄기</string>
+    <string name="chat_alarm_on">알람 켬</string>
+    <string name="chat_alarm_off">알람 끔</string>
 
     <string name="join_email">이메일</string>
     <string name="join_password">비밀번호</string>
@@ -82,6 +83,8 @@
     <string name="setting_common_settings">일반 설정</string>
     <string name="setting_version_info">버전 정보</string>
     <string name="setting_district">설정 구역</string>
+    <string name="setting_qna">문의하기</string>
+    <string name="setting_qna_value">문의사항 혹은 필요한 기능이 있으 실 경우 Google PlayStore 댓글 부탁드립니다 ~</string>
 
     <string name="setting_logout_message">로그아웃 시 앱이 종료됩니다.</string>
 
@@ -96,10 +99,20 @@
 
     <!-- Chatting -->
     <string name="received_messages_over_three">3+ 메세지</string>
+    <string name="received_messages_from_user">개인 메세지가 도착하였습니다.</string>
+    <string name="upload_new_photo_from_user">새로운 사진이 등록 되었습니다.</string>
+
     <string name="error_image_upload_failed">사진 업로드가 실패하였 습니다.</string>
 
     <string name="hint_input_message">내용 입력</string>
     <string name="error_input_message">내용이 입력되지 않았습니다.</string>
     <string name="chat_user_list">현재 참여인원</string>
+
+    <string name="sending_message">메세지 보내기</string>
+    <string name="report_bad_user">불량사용자 신고</string>
+    <string name="report_bad_user_completed">불량사용자 신고가 완료 되었습니다.</string>
+
+    <string name="delete_chat_message">메세지가 삭제 됩니다.</string>
+    <string name="can_not_delete_chat_message">본인의 작성한 메세지만 삭제 할 수 있습니다.</string>
 
 </resources>

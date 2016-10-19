@@ -2,6 +2,7 @@ package com.fivetrue.gimpo.ac05.ui;
 
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -164,6 +165,17 @@ public class SettingActivity extends BaseActivity{
                 mHiddenCount ++;
                 mHandler.removeMessages(MESSGE_INIT_CLICK_TIME);
                 mHandler.sendEmptyMessageDelayed(MESSGE_INIT_CLICK_TIME, 1000L);
+            }
+        });
+
+        findViewById(R.id.layout_setting_dev_qna).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(mConfigPref != null && mConfigPref.getAppConfig() != null){
+                    Intent intent = new Intent(Intent.ACTION_VIEW);
+                    intent.setData(Uri.parse(mConfigPref.getAppConfig().appMarketUrl));
+                    startActivity(intent);
+                }
             }
         });
 

@@ -70,6 +70,14 @@ public class FirebaseUserInfo implements Parcelable{
         return district;
     }
 
+    public String getName(){
+        String name = "";
+        if(email != null){
+            name = email.substring(0, email.indexOf("@"));
+        }
+        return name;
+    }
+
     protected FirebaseUserInfo(Parcel in) {
         uid = in.readString();
         email = in.readString();

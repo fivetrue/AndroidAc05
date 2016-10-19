@@ -1,7 +1,6 @@
 package com.fivetrue.gimpo.ac05.ui;
 
 import android.content.Intent;
-import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.NonNull;
@@ -37,6 +36,7 @@ import com.fivetrue.fivetrueandroid.ui.fragment.BaseFragmentImp;
 import com.fivetrue.fivetrueandroid.view.CircleImageView;
 import com.fivetrue.gimpo.ac05.Constants;
 import com.fivetrue.gimpo.ac05.R;
+import com.fivetrue.gimpo.ac05.chatting.ChatMessageDatabase;
 import com.fivetrue.gimpo.ac05.net.request.MainPageDataRequest;
 import com.fivetrue.gimpo.ac05.preferences.ConfigPreferenceManager;
 import com.fivetrue.gimpo.ac05.rss.RSSFeedParser;
@@ -68,6 +68,8 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
     private NestedScrollView mScrollView = null;
     private LinearLayout mLayoutMainContainer = null;
 
+    private View mNavUserNoti;
+    private View mNavNewIcon;
     private CircleImageView mNavImage = null;
     private TextView mNavAccount = null;
     private TextView mNavName = null;
@@ -83,6 +85,8 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
 
     private InterstitialAd mInterstitialAd;
     private AdRequest mAdRequest;
+
+    private ChatMessageDatabase mChatMessageDatabase;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -112,6 +116,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         mMainDataRequest = new MainPageDataRequest(this, baseMainDataEntryOnResponseListener);
         mMainDataRequest.setPage(0);
         mMainDataRequest.setCount(6);
+        mChatMessageDatabase = new ChatMessageDatabase(this);
     }
 
     private void initView() {
@@ -128,14 +133,27 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         navigationView.setNavigationItemSelectedListener(this);
         View headerView = navigationView.getHeaderView(0);
 
+        mNavUserNoti = headerView.findViewById(R.id.layout_nav_noti);
+        mNavNewIcon = headerView.findViewById(R.id.iv_nav_noti_new);
         mNavImage = (CircleImageView) headerView.findViewById(R.id.iv_nav_header);
         mNavAccount = (TextView) headerView.findViewById(R.id.tv_nav_header_name_account);
         mNavName = (TextView) headerView.findViewById(R.id.tv_nav_header_name);
         mNavDistrict = (TextView) headerView.findViewById(R.id.tv_nav_header_district);
 
+        mNavNewIcon.setVisibility(mChatMessageDatabase.hasNewChatMessage(Constants.PERSON_MESSAGE_NOTIFICATION_ID)
+                ? View.VISIBLE : View.GONE);
+
         mScrollView = (NestedScrollView) findViewById(R.id.sv_main);
         mLayoutMainContainer = (LinearLayout) findViewById(R.id.layout_main_container);
         mProgressBar = (ProgressBar) findViewById(R.id.pb_main);
+
+        mNavUserNoti.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(MainActivity.this, PersonalActivity.class);
+                startActivity(intent);
+            }
+        });
     }
 
     private void initAds(){
@@ -378,7 +396,18 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()){
+            case R.id.action_person :
+                Intent intent = new Intent(this, PersonalActivity.class);
+                startActivity(intent);
+                return true;
+        }
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    protected int getOptionsMenuResource() {
+        return R.menu.menu_main;
     }
 
     @Override

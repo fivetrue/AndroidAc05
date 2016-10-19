@@ -133,9 +133,9 @@ public class ImageUploadActivity extends BaseActivity {
                     mGoogleStorageManager.uploadBitmapImage(IMAGE_UPLOAD_PATH, name, mPendingBitmap, new GoogleStorageManager.OnUploadResultListener() {
                         @Override
                         public void onUploadSuccess(Uri url) {
-                            GalleryMessage msg = new GalleryMessage(url.toString()
+                            GalleryMessage msg = new GalleryMessage(null, url.toString()
                                     , mInputMessage.getText().toString()
-                                    , mConfigPref.getUserInfo().getEmail()
+                                    , mConfigPref.getUserInfo().getEmail(), mConfigPref.getUserInfo().getUid()
                                     , mConfigPref.getUserInfo().getPhotoUrl(), 0);
                             mDatabaseReference.push().setValue(msg.getValues());
                             mLoadingDialog.dismiss();

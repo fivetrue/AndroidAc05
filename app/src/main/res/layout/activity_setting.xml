@@ -199,6 +199,32 @@
                     android:layout_width="match_parent"
                     android:layout_height="1dp"
                     android:background="@drawable/rect_black_alpha10_color"/>
+
+                <RelativeLayout
+                    android:id="@+id/layout_setting_dev_qna"
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/item_text_height"
+                    android:background="@color/colorAccent">
+                    <TextView
+                        android:id="@+id/tv_setting_dev_qna"
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:text="@string/setting_version_info"
+                        style="@style/SubItemText"/>
+
+                    <TextView
+                        android:id="@+id/tv_setting_dev_qna_value"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_toRightOf="@id/tv_setting_dev_qna"
+                        android:text="@string/setting_qna_value"
+                        android:gravity="left"
+                        style="@style/SubItemText"/>
+                </RelativeLayout>
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:background="@drawable/rect_black_alpha10_color"/>
             </LinearLayout>
         </RelativeLayout>
     </android.support.v4.widget.NestedScrollView>

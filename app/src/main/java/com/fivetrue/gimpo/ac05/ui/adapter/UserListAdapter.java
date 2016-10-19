@@ -42,7 +42,7 @@ public class UserListAdapter extends BaseRecyclerAdapter<FirebaseUserInfo, UserL
             final FirebaseUserInfo item = getItem(position);
 
             holder.image.setImageUrl(item.getPhotoUrl(), ImageLoadManager.getImageLoader());
-            holder.userName.setText(item.getEmail());
+            holder.userName.setText(item.getName());
             holder.layout.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {

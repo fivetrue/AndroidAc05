@@ -16,6 +16,10 @@ public interface MessageData {
 
     String getUser();
 
+    String getName();
+
+    String getUserId();
+
     HashMap<String, Object> getValues();
 
 }
