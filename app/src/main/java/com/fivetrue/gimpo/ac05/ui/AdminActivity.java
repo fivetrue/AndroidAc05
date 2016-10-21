@@ -47,7 +47,7 @@ public class AdminActivity extends BaseActivity {
         requestArrayList = new ArrayList<>();
         AdminUpdateDataRequest updateDataRequest = new AdminUpdateDataRequest(this, onResponseListener);
         updateDataRequest.setTimeoutMills(1000 * 1000 * 5);
-        updateDataRequest.putParam("email", mConfig.getUserInfo().getEmail());
+        updateDataRequest.putParam("email", mConfig.getUserInfo().email);
         requestArrayList.add(updateDataRequest);
     }
 

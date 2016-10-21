@@ -1,7 +1,9 @@
 package com.fivetrue.gimpo.ac05.ui.adapter;
 
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.v4.app.FragmentManager;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
 import android.util.Log;
@@ -15,11 +17,12 @@ import com.fivetrue.fivetrueandroid.ui.fragment.BaseDialogFragment;
 import com.fivetrue.gimpo.ac05.Constants;
 import com.fivetrue.gimpo.ac05.R;
 import com.fivetrue.gimpo.ac05.chatting.ChatMessage;
+import com.fivetrue.gimpo.ac05.database.ChatMessageDatabase;
+import com.fivetrue.gimpo.ac05.firebase.database.UserMessageBoxDatabase;
 import com.fivetrue.gimpo.ac05.ui.fragment.InputDialogFragment;
 import com.fivetrue.gimpo.ac05.ui.fragment.UserInfoDialogFragment;
-import com.fivetrue.gimpo.ac05.vo.user.FirebaseUserInfo;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
+import com.fivetrue.gimpo.ac05.firebase.model.User;
+import com.google.android.gms.tasks.OnSuccessListener;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -35,10 +38,10 @@ public class PersonalListAdapter extends BaseRecyclerAdapter<ChatMessage, Person
 
     private SimpleDateFormat mSdf = new SimpleDateFormat("yyyy년 MM월 dd일 HH시 mm분");
 
-    private FirebaseUserInfo mUserInfo;
+    private User mUserInfo;
     private FragmentManager mFm;
 
-    public PersonalListAdapter(List<ChatMessage> data, FirebaseUserInfo userInfo, FragmentManager fm) {
+    public PersonalListAdapter(List<ChatMessage> data, User userInfo, FragmentManager fm) {
         super(data, R.layout.item_personal_message_list);
         this.mUserInfo = userInfo;
         this.mFm = fm;
@@ -51,20 +54,20 @@ public class PersonalListAdapter extends BaseRecyclerAdapter<ChatMessage, Person
     }
 
     @Override
-    public void onBindViewHolder(final PersonalItemViewHolder holder, int position) {
+    public void onBindViewHolder(final PersonalItemViewHolder holder, final int position) {
         if(holder != null){
             final ChatMessage item = getItem(position);
 
-            holder.userImage.setImageUrl(item.getUserImage(), ImageLoadManager.getImageLoader());
-            holder.date.setText(mSdf.format(new Date(item.createTime)));
+            holder.userImage.setImageUrl(item.getUser().profileImage, ImageLoadManager.getImageLoader());
+            holder.date.setText(mSdf.format(new Date(item.updateTime)));
             holder.message.setText(item.message);
-            holder.name.setText(item.getName());
+            holder.name.setText(item.getUser().getDisplayName());
 
             holder.userImage.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     Bundle b = new Bundle();
-                    b.putParcelable(ChatMessage.class.getName(), item);
+                    b.putParcelable(User.class.getName(), item.getUser());
                     UserInfoDialogFragment dialog = new UserInfoDialogFragment();
                     dialog.show(mFm, null
                             , v.getContext().getString(android.R.string.ok), null, b, new BaseDialogFragment.OnClickDialogFragmentListener() {
@@ -93,12 +96,9 @@ public class PersonalListAdapter extends BaseRecyclerAdapter<ChatMessage, Person
                                 public void onClickOKButton(BaseDialogFragment f, String data) {
                                     Log.d(TAG, "onClickOKButton() called with: f = [" + f + "], data = [" + data + "]");
                                     if(!TextUtils.isEmpty(data)){
-                                        DatabaseReference ref = FirebaseDatabase.getInstance().getReference(Constants.FIREBASE_DB_ROOT_PERSON).child(item.getUserId());
                                         ChatMessage message = new ChatMessage(null, data, null
-                                                , mUserInfo.getEmail()
-                                                , mUserInfo.getUid()
-                                                , mUserInfo.getPhotoUrl(), 0);
-                                        ref.child(Constants.FIREBASE_DB_MESSAGE).push().setValue(message.getValues());
+                                                , mUserInfo);
+                                        new UserMessageBoxDatabase(mUserInfo.uid).pushData(message);
                                     }
                                     f.dismiss();
                                 }
@@ -110,8 +110,38 @@ public class PersonalListAdapter extends BaseRecyclerAdapter<ChatMessage, Person
                             });
                 }
             });
-        }
 
+            holder.delete.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(final View v) {
+
+                    new AlertDialog.Builder(v.getContext(), R.style.Base_Theme_AppCompat_Light_Dialog_Alert)
+                            .setTitle(R.string.delete)
+                            .setMessage(R.string.delete_chat_message)
+                            .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    new UserMessageBoxDatabase(mUserInfo.uid).getReference().child(item.key).setValue(null).addOnSuccessListener(new OnSuccessListener<Void>() {
+                                        @Override
+                                        public void onSuccess(Void aVoid) {
+                                            Log.d(TAG, "onSuccess() called with: aVoid = [" + aVoid + "]");
+                                            int count = new ChatMessageDatabase(v.getContext()).removeChatMessage(Constants.PERSON_MESSAGE_NOTIFICATION_ID, item);
+                                            getData().remove(item);
+                                            notifyItemRemoved(position);
+                                            Log.d(TAG, "onSuccess() called with: remove = [" + count + "]");
+
+                                        }
+                                    });
+                                }
+                            }).setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            dialog.dismiss();
+                        }
+                    }).show();
+                }
+            });
+        }
     }
 
 
@@ -120,6 +150,7 @@ public class PersonalListAdapter extends BaseRecyclerAdapter<ChatMessage, Person
 
         public final View layout;
         public final View reply;
+        public final View delete;
         public final NetworkImageView userImage;
         public final TextView message;
         public final TextView name;
@@ -133,6 +164,7 @@ public class PersonalListAdapter extends BaseRecyclerAdapter<ChatMessage, Person
             name = (TextView) itemView.findViewById(R.id.tv_item_personal_sender);
             date = (TextView) itemView.findViewById(R.id.tv_item_personal_date);
             reply = itemView.findViewById(R.id.iv_item_personal_reply);
+            delete = itemView.findViewById(R.id.iv_item_personal_delete);
         }
     }
 }

@@ -1,5 +1,7 @@
 package com.fivetrue.gimpo.ac05.chatting;
 
+import com.fivetrue.gimpo.ac05.firebase.model.User;
+
 import java.util.HashMap;
 
 /**
@@ -12,14 +14,5 @@ public interface MessageData {
 
     String getImageUrl();
 
-    String getUserImage();
-
-    String getUser();
-
-    String getName();
-
-    String getUserId();
-
-    HashMap<String, Object> getValues();
-
+    User getUser();
 }

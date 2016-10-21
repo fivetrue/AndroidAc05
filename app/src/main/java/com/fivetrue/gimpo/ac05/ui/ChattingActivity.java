@@ -27,8 +27,9 @@ import com.fivetrue.fivetrueandroid.ui.fragment.BaseDialogFragment;
 import com.fivetrue.gimpo.ac05.Constants;
 import com.fivetrue.gimpo.ac05.R;
 import com.fivetrue.gimpo.ac05.chatting.ChatMessage;
-import com.fivetrue.gimpo.ac05.chatting.ChatMessageDatabase;
-import com.fivetrue.gimpo.ac05.chatting.FirebaseChattingService;
+import com.fivetrue.gimpo.ac05.firebase.database.ActiveChatUserDatabase;
+import com.fivetrue.gimpo.ac05.service.FirebaseService;
+import com.fivetrue.gimpo.ac05.database.ChatMessageDatabase;
 import com.fivetrue.gimpo.ac05.chatting.IChattingCallback;
 import com.fivetrue.gimpo.ac05.chatting.IChattingService;
 import com.fivetrue.gimpo.ac05.preferences.ConfigPreferenceManager;
@@ -36,7 +37,7 @@ import com.fivetrue.gimpo.ac05.preferences.DefaultPreferenceManager;
 import com.fivetrue.gimpo.ac05.ui.adapter.ChatListAdapter;
 import com.fivetrue.gimpo.ac05.ui.fragment.UserInfoDialogFragment;
 import com.fivetrue.gimpo.ac05.ui.fragment.UserListDialogFragment;
-import com.fivetrue.gimpo.ac05.vo.user.FirebaseUserInfo;
+import com.fivetrue.gimpo.ac05.firebase.model.User;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -65,7 +66,7 @@ public class ChattingActivity extends BaseActivity implements ChildEventListener
 
     private ConfigPreferenceManager mConfigPref;
     private int mType = TYPE_CHATTING_PUBLIC;
-    private FirebaseUserInfo mUserInfo;
+    private User mUserInfo;
 
     private IChattingService iChattingService;
 
@@ -73,11 +74,9 @@ public class ChattingActivity extends BaseActivity implements ChildEventListener
 
     private ChatListAdapter mAdapter;
 
-    private Map<String, FirebaseUserInfo> mActiveUsers = new HashMap<>();
+    private Map<String, User> mActiveUsers = new HashMap<>();
 
-    private String mRefKey;
-
-    private DatabaseReference mActiveUserDBReference;
+    private ActiveChatUserDatabase mActiveUserDBReference;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -93,25 +92,8 @@ public class ChattingActivity extends BaseActivity implements ChildEventListener
         super.onStart();
         bindChatting();
         if(mActiveUserDBReference != null){
-            mActiveUserDBReference.orderByChild("uid").equalTo(mConfigPref.getUserInfo().getUid()).addListenerForSingleValueEvent(new ValueEventListener() {
-                @Override
-                public void onDataChange(DataSnapshot dataSnapshot) {
-                    if(dataSnapshot.getValue() != null){
-                        Log.d(TAG, "onDataChange() called with: dataSnapshot = [" + dataSnapshot + "]");
-                        if(dataSnapshot.getChildren().iterator().hasNext()){
-                            String key = dataSnapshot.getChildren().iterator().next().getKey();
-                            mRefKey = key;
-                        }
-                    }else{
-                        mActiveUserDBReference.push().setValue(mConfigPref.getUserInfo());
-                    }
-                }
-
-                @Override
-                public void onCancelled(DatabaseError databaseError) {
-                }
-            });
-            mActiveUserDBReference.addChildEventListener(this);
+            mActiveUserDBReference.getReference().child(mConfigPref.getUserInfo().uid).setValue(mConfigPref.getUserInfo().getValues());
+            mActiveUserDBReference.getReference().addChildEventListener(this);
         }
     }
 
@@ -121,16 +103,12 @@ public class ChattingActivity extends BaseActivity implements ChildEventListener
         if(iChattingService != null){
             unbindService(serviceConnection);
         }
-
-        if(mActiveUserDBReference != null && mRefKey != null){
-            mActiveUserDBReference.child(mRefKey).setValue(null);
-            mActiveUserDBReference.removeEventListener(this);
-        }
+        mActiveUserDBReference.getReference().child(mConfigPref.getUserInfo().uid).setValue(null);
     }
 
     private void bindChatting(){
-        Intent intent = new Intent(this, FirebaseChattingService.class);
-        intent.setAction(FirebaseChattingService.ACTION_BIND_SERVICE);
+        Intent intent = new Intent(this, FirebaseService.class);
+        intent.setAction(FirebaseService.ACTION_BIND_SERVICE);
         bindService(intent, serviceConnection, BIND_AUTO_CREATE);
     }
 
@@ -139,12 +117,12 @@ public class ChattingActivity extends BaseActivity implements ChildEventListener
         mType = getIntent().getIntExtra("type", TYPE_CHATTING_PUBLIC);
         mUserInfo = mConfigPref.getUserInfo();
         mChatMessageDb = new ChatMessageDatabase(this);
-        mAdapter = new ChatListAdapter(mChatMessageDb.getChatMessages(mType), mConfigPref.getUserInfo().getEmail());
+        mAdapter = new ChatListAdapter(mChatMessageDb.getChatMessages(mType), mConfigPref.getUserInfo().uid);
         mAdapter.setOnItemClickListener(new BaseRecyclerAdapter.OnItemClickListener<ChatMessage, ChatListAdapter.ChatItemViewHolder>() {
             @Override
             public void onClickItem(ChatListAdapter.ChatItemViewHolder holder, ChatMessage data) {
                 Bundle b = new Bundle();
-                b.putParcelable(ChatMessage.class.getName(), data);
+                b.putParcelable(User.class.getName(), data.getUser());
                 UserInfoDialogFragment dialog = new UserInfoDialogFragment();
                 dialog.show(getCurrentFragmentManager(), null
                         , getString(android.R.string.ok), null, b, new BaseDialogFragment.OnClickDialogFragmentListener() {
@@ -161,12 +139,10 @@ public class ChattingActivity extends BaseActivity implements ChildEventListener
             }
         });
 
-        DatabaseReference reference = FirebaseDatabase.getInstance().getReference(Constants.FIREBASE_DB_ROOT_ACTIVE).child(Constants.FIREBASE_DB_ROOT_CHATTING);
-
         if(mType == TYPE_CHATTING_PUBLIC){
-            mActiveUserDBReference = reference.child(Constants.FIREBASE_DB_CHATTING_PUBLIC);
+            mActiveUserDBReference = new ActiveChatUserDatabase(Constants.FIREBASE_DB_CHATTING_PUBLIC);
         }else{
-            mActiveUserDBReference = reference.child(Constants.FIREBASE_DB_CHATTING_DISTRICT).child(mConfigPref.getUserInfo().getDistrict() + "");
+            mActiveUserDBReference = new ActiveChatUserDatabase(Constants.FIREBASE_DB_CHATTING_DISTRICT + "/" + mConfigPref.getUserInfo().district);
         }
     }
 
@@ -175,7 +151,7 @@ public class ChattingActivity extends BaseActivity implements ChildEventListener
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        String title = mType == TYPE_CHATTING_PUBLIC ? getString(R.string.talk) : getString(R.string.district_talk, mConfigPref.getUserInfo().getDistrict() + "");
+        String title = mType == TYPE_CHATTING_PUBLIC ? getString(R.string.talk) : getString(R.string.district_talk, mConfigPref.getUserInfo().district + "");
         getSupportActionBar().setTitle(title);
 
         mDialogueList = (RecyclerView) findViewById(R.id.rv_chatting_dialogue_list);
@@ -211,8 +187,8 @@ public class ChattingActivity extends BaseActivity implements ChildEventListener
 
     private void sendMessage(String message){
         if(message != null){
-            ChatMessage msg = new ChatMessage(null, message
-                    , null, mUserInfo.getEmail(), mUserInfo.getUid(), mUserInfo.getPhotoUrl(), 0);
+            ChatMessage msg = new ChatMessage(null, message.trim()
+                    , null, mUserInfo);
             try {
                 iChattingService.sendMessage(mType, msg);
             } catch (RemoteException e) {
@@ -274,12 +250,12 @@ public class ChattingActivity extends BaseActivity implements ChildEventListener
                 return true;
 
             case R.id.action_chat_user :
-                ArrayList<FirebaseUserInfo> userInfoArrayList = new ArrayList<FirebaseUserInfo>();
-                for(FirebaseUserInfo info : mActiveUsers.values()){
+                ArrayList<User> userInfoArrayList = new ArrayList<User>();
+                for(User info : mActiveUsers.values()){
                     userInfoArrayList.add(info);
                 }
                 Bundle b = new Bundle();
-                b.putParcelableArrayList(FirebaseUserInfo.class.getName(), userInfoArrayList);
+                b.putParcelableArrayList(User.class.getName(), userInfoArrayList);
                 UserListDialogFragment dialog = new UserListDialogFragment();
                 dialog.show(getCurrentFragmentManager(), getString(R.string.chat_user_list), getString(android.R.string.ok)
                         , null, b
@@ -330,7 +306,7 @@ public class ChattingActivity extends BaseActivity implements ChildEventListener
     public void onChildAdded(DataSnapshot dataSnapshot, String s) {
         Log.d(TAG, "onChildAdded() called with: dataSnapshot = [" + dataSnapshot + "], s = [" + s + "]");
         String key = dataSnapshot.getKey();
-        FirebaseUserInfo userInfo = dataSnapshot.getValue(FirebaseUserInfo.class);
+        User userInfo = dataSnapshot.getValue(User.class);
         mActiveUsers.put(key, userInfo);
     }
 

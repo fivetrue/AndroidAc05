@@ -7,7 +7,7 @@ import android.widget.TextView;
 
 import com.fivetrue.fivetrueandroid.ui.adapter.BaseListAdapter;
 import com.fivetrue.gimpo.ac05.R;
-import com.fivetrue.gimpo.ac05.vo.user.District;
+import com.fivetrue.gimpo.ac05.firebase.model.District;
 
 import java.util.List;
 
@@ -33,7 +33,7 @@ public class DistrictSpinnerAdapter extends BaseListAdapter<District, DistrictSp
         District data = getItem(position);
         if(holder != null){
             if(data != null){
-                holder.text.setText(data.getDistrictName());
+                holder.text.setText(data.districtName);
             }else{
                 holder.text.setText(R.string.input_user_dong);
             }

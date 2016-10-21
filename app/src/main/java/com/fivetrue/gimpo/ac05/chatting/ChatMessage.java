@@ -2,7 +2,10 @@ package com.fivetrue.gimpo.ac05.chatting;
 
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.text.TextUtils;
 
+import com.fivetrue.gimpo.ac05.firebase.FirebaseData;
+import com.fivetrue.gimpo.ac05.firebase.model.User;
 import com.google.firebase.database.ServerValue;
 
 import java.util.HashMap;
@@ -11,26 +14,20 @@ import java.util.HashMap;
  * Created by kwonojin on 2016. 10. 13..
  */
 
-public class ChatMessage implements Parcelable, MessageData{
+public class ChatMessage extends FirebaseData implements Parcelable, MessageData{
 
     public String key;
     public String message;
     public String imageMessage;
-    public String sender;
-    public String senderId;
-    public String userImage;
-    public long createTime;
+    public User user;
 
     public ChatMessage(){}
 
-    public ChatMessage(String key, String message, String imageMessage, String sender, String senderId, String userImage, long createTime){
+    public ChatMessage(String key, String message, String imageMessage, User user){
         this.key = key;
         this.message = message;
         this.imageMessage = imageMessage;
-        this.sender = sender;
-        this.senderId = senderId;
-        this.userImage = userImage;
-        this.createTime = createTime;
+        this.user = user;
     }
 
 
@@ -38,10 +35,8 @@ public class ChatMessage implements Parcelable, MessageData{
         key = in.readString();
         message = in.readString();
         imageMessage = in.readString();
-        sender = in.readString();
-        senderId = in.readString();
-        userImage = in.readString();
-        createTime = in.readLong();
+        updateTime = in.readLong();
+        user = in.readParcelable(User.class.getClassLoader());
     }
 
     public static final Creator<ChatMessage> CREATOR = new Creator<ChatMessage>() {
@@ -67,39 +62,8 @@ public class ChatMessage implements Parcelable, MessageData{
     }
 
     @Override
-    public String getUserImage() {
-        return userImage;
-    }
-
-    @Override
-    public String getUser() {
-        return sender;
-    }
-
-    @Override
-    public String getName() {
-        String name = "";
-        if(sender != null){
-            name = sender.substring(0, sender.indexOf("@"));
-        }
-        return name;
-    }
-
-    @Override
-    public String getUserId() {
-        return senderId;
-    }
-
-    @Override
-    public HashMap<String, Object> getValues(){
-        HashMap<String, Object> v = new HashMap<>();
-        v.put("message", message);
-        v.put("imageMessage", imageMessage);
-        v.put("sender", sender);
-        v.put("senderId", senderId);
-        v.put("userImage", userImage);
-        v.put("createTime", ServerValue.TIMESTAMP);
-        return v;
+    public User getUser() {
+        return user;
     }
 
     @Override
@@ -112,9 +76,7 @@ public class ChatMessage implements Parcelable, MessageData{
         dest.writeString(key);
         dest.writeString(message);
         dest.writeString(imageMessage);
-        dest.writeString(sender);
-        dest.writeString(senderId);
-        dest.writeString(userImage);
-        dest.writeLong(createTime);
+        dest.writeLong(updateTime);
+        dest.writeParcelable(user, flags);
     }
 }

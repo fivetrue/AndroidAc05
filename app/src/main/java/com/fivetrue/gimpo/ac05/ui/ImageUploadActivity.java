@@ -10,14 +10,16 @@ import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.MenuItem;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.ImageView;
 import android.widget.Toast;
 
-import com.fivetrue.fivetrueandroid.google.GoogleStorageManager;
+import com.fivetrue.fivetrueandroid.google.FirebaseStorageManager;
 import com.fivetrue.fivetrueandroid.ui.BaseActivity;
 import com.fivetrue.fivetrueandroid.ui.diaglog.LoadingDialog;
 import com.fivetrue.gimpo.ac05.R;
 import com.fivetrue.gimpo.ac05.chatting.GalleryMessage;
+import com.fivetrue.gimpo.ac05.firebase.database.GalleryDatabase;
 import com.fivetrue.gimpo.ac05.preferences.ConfigPreferenceManager;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
@@ -41,10 +43,11 @@ public class ImageUploadActivity extends BaseActivity {
     private Bitmap mPendingBitmap;
 
     private ConfigPreferenceManager mConfigPref;
-    private GoogleStorageManager mGoogleStorageManager;
-    private DatabaseReference mDatabaseReference;
+    private FirebaseStorageManager mFirebaseStorageManager;
 
     private LoadingDialog mLoadingDialog;
+
+    private InputMethodManager mImm;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -62,36 +65,9 @@ public class ImageUploadActivity extends BaseActivity {
             Log.w(TAG, "initData: ", e);
             finish();
         }
-        mDatabaseReference = FirebaseDatabase.getInstance().getReference("gallery");
-        mDatabaseReference.addChildEventListener(new ChildEventListener() {
-            @Override
-            public void onChildAdded(DataSnapshot dataSnapshot, String s) {
-
-            }
-
-            @Override
-            public void onChildChanged(DataSnapshot dataSnapshot, String s) {
-
-            }
-
-            @Override
-            public void onChildRemoved(DataSnapshot dataSnapshot) {
-
-            }
-
-            @Override
-            public void onChildMoved(DataSnapshot dataSnapshot, String s) {
-
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-
-            }
-        });
-
         mConfigPref = new ConfigPreferenceManager(this);
-        mGoogleStorageManager = new GoogleStorageManager(this, mConfigPref.getAppConfig().getfStorageUrl());
+        mFirebaseStorageManager = new FirebaseStorageManager();
+        mImm = (InputMethodManager) getSystemService(INPUT_METHOD_SERVICE);
     }
 
     private void initView(){
@@ -121,6 +97,7 @@ public class ImageUploadActivity extends BaseActivity {
                 return true;
 
             case R.id.action_upload :
+                mImm.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(), 0);
                 if(mPendingBitmap != null && !mPendingBitmap.isRecycled()){
                     String message = mInputMessage.getText().toString();
                     if(TextUtils.isEmpty(message)){
@@ -130,14 +107,13 @@ public class ImageUploadActivity extends BaseActivity {
                     }
                     mLoadingDialog.show();
                     String name = mConfigPref.getUserInfo().getDisplayName() + System.currentTimeMillis();
-                    mGoogleStorageManager.uploadBitmapImage(IMAGE_UPLOAD_PATH, name, mPendingBitmap, new GoogleStorageManager.OnUploadResultListener() {
+                    mFirebaseStorageManager.uploadBitmapImage(IMAGE_UPLOAD_PATH, name, mPendingBitmap, new FirebaseStorageManager.OnUploadResultListener() {
                         @Override
-                        public void onUploadSuccess(Uri url) {
+                        public void onUploadSuccess(Uri url, String path) {
                             GalleryMessage msg = new GalleryMessage(null, url.toString()
-                                    , mInputMessage.getText().toString()
-                                    , mConfigPref.getUserInfo().getEmail(), mConfigPref.getUserInfo().getUid()
-                                    , mConfigPref.getUserInfo().getPhotoUrl(), 0);
-                            mDatabaseReference.push().setValue(msg.getValues());
+                                    , mInputMessage.getText().toString().trim(), path
+                                    , mConfigPref.getUserInfo());
+                            new GalleryDatabase().pushData(msg);
                             mLoadingDialog.dismiss();
                             Intent intent = new Intent();
                             intent.putExtra(GalleryMessage.class.getName(), msg);

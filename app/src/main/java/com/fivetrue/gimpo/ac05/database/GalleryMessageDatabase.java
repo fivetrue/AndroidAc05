@@ -1,12 +1,15 @@
-package com.fivetrue.gimpo.ac05.chatting;
+package com.fivetrue.gimpo.ac05.database;
 
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.util.Base64;
 import android.util.Log;
 
+import com.fivetrue.gimpo.ac05.chatting.GalleryMessage;
 import com.fivetrue.gimpo.ac05.database.DatabaseHelper;
+import com.fivetrue.gimpo.ac05.firebase.model.User;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -15,65 +18,53 @@ import java.util.List;
  * Created by kwonojin on 2016. 10. 14..
  */
 
-public class GalleryMessageDatabase {
+public class GalleryMessageDatabase extends BaseDatabase{
 
     private static final String TAG = "GalleryMessageDatabase";
 
     private static final String TABLE_NAME = "galleryMessage";
+
     private static final String FIELD_KEY = "key";
     private static final String FIELD_IMAGE = "image";
     private static final String FIELD_MESSAGE = "message";
-    private static final String FIELD_AUTHOR = "author";
-    private static final String FIELD_AUTHOR_ID = "authorId";
-    private static final String FIELD_USER_IMAGE = "userImage";
+    private static final String FIELD_PATH = "path";
+    private static final String FIELD_USER = "user";
     private static final String FIELD_CREATE_TIME = "createTime";
     private static final String FIELD_TYPE = "type";
 
-    private Context mContext;
-
-    private DatabaseHelper mDatabaseHelper;
-
     public GalleryMessageDatabase(Context context){
-        mContext = context;
-        mDatabaseHelper = new DatabaseHelper(context);
+        super(context);
     }
 
     public boolean existsChatMessage(String key){
-        SQLiteDatabase db = mDatabaseHelper.getReadableDatabase();
-        db.beginTransaction();
-        Cursor c = db.query(TABLE_NAME, new String[]{FIELD_KEY}, "key=?", new String[]{key}, null, null, null, "1");
-        db.endTransaction();
+        Cursor c = limitQuery(TABLE_NAME, new String[]{FIELD_KEY}, "key=?", new String[]{key}, 1);
         return c != null && c.getCount() > 0;
     }
 
     public void putGalleryMessage(int type, String key, GalleryMessage msg){
         Log.d(TAG, "putGalleryMessage() called with: type = [" + type + "], key = [" + key + "], msg = [" + msg + "]");
+        String user = new String(Base64.encode(getGson().toJson(msg.user).getBytes(), Base64.DEFAULT));
         ContentValues values = new ContentValues();
         values.put(FIELD_KEY, key);
         values.put(FIELD_MESSAGE, msg.message);
-        values.put(FIELD_USER_IMAGE, msg.userImage);
         values.put(FIELD_IMAGE, msg.image);
-        values.put(FIELD_AUTHOR, msg.author);
-        values.put(FIELD_AUTHOR_ID, msg.authorId);
-        values.put(FIELD_CREATE_TIME, msg.createTime);
+        values.put(FIELD_PATH, msg.path);
+        values.put(FIELD_USER, user);
+        values.put(FIELD_CREATE_TIME, msg.updateTime);
         values.put(FIELD_TYPE, type);
-        SQLiteDatabase db = mDatabaseHelper.getWritableDatabase();
-        db.insert(TABLE_NAME, null, values);
+        insertValues(TABLE_NAME, values);
     }
 
-    public int removeGalleryMessage(int type, GalleryMessage msg){
+    public long removeGalleryMessage(int type, GalleryMessage msg){
         return removeGalleryMessage(type, msg.key);
     }
 
-    public int removeGalleryMessage(int type, String key){
-        SQLiteDatabase db = mDatabaseHelper.getWritableDatabase();
-        return db.delete(TABLE_NAME, "type=? and key=?", new String[]{type + "", key});
+    public long removeGalleryMessage(int type, String key){
+        return remove(TABLE_NAME, "type=? and key=?", String.valueOf(type), key);
     }
 
     public List<GalleryMessage> getGalleryMessage(){
-        SQLiteDatabase db = mDatabaseHelper.getReadableDatabase();
-        db.beginTransaction();
-        Cursor c = db.query(TABLE_NAME, null, null, null, null, null, FIELD_CREATE_TIME + " DESC", null);
+        Cursor c = limitQuery(TABLE_NAME, null, null, null, FIELD_CREATE_TIME + " DESC", 1000);
         ArrayList<GalleryMessage> galleryMessages = new ArrayList<>();
         if(c != null){
             try{
@@ -82,12 +73,13 @@ public class GalleryMessageDatabase {
                     String key = c.getString(c.getColumnIndex(FIELD_KEY));
                     String message = c.getString(c.getColumnIndex(FIELD_MESSAGE));
                     String image = c.getString(c.getColumnIndex(FIELD_IMAGE));
-                    String author = c.getString(c.getColumnIndex(FIELD_AUTHOR));
-                    String authorId = c.getString(c.getColumnIndex(FIELD_AUTHOR_ID));
-                    String userImage = c.getString(c.getColumnIndex(FIELD_USER_IMAGE));
+                    String path = c.getString(c.getColumnIndex(FIELD_PATH));
+                    String userData = c.getString(c.getColumnIndex(FIELD_USER));
                     long createTime = c.getLong(c.getColumnIndex(FIELD_CREATE_TIME));
-                    GalleryMessage msg = new GalleryMessage(key, image, message, author
-                            , authorId, userImage, createTime);
+                    String u = new String(Base64.decode(userData.getBytes(), Base64.DEFAULT));
+                    User user = getGson().fromJson(u, User.class);
+                    GalleryMessage msg = new GalleryMessage(key, image, message, path, user);
+                    msg.updateTime = createTime;
                     galleryMessages.add(msg);
                 }while (c.moveToNext());
             }catch (Exception e){
@@ -96,8 +88,6 @@ public class GalleryMessageDatabase {
                 if(c != null){
                     c.close();
                 }
-                db.endTransaction();
-
             }
         }
         return galleryMessages;
@@ -107,9 +97,8 @@ public class GalleryMessageDatabase {
             + FIELD_KEY + " TEXT PRIMARY KEY,"
             + FIELD_MESSAGE +" TEXT NOT NULL,"
             + FIELD_IMAGE + " TEXT,"
-            + FIELD_AUTHOR + " TEXT NOT NULL,"
-            + FIELD_AUTHOR_ID + " TEXT NOT NULL,"
-            + FIELD_USER_IMAGE + " TEXT NOT NULL,"
+            + FIELD_PATH + " TEXT,"
+            + FIELD_USER + " TEXT NOT NULL,"
             + FIELD_CREATE_TIME + " INTEGER NOT NULL,"
             + FIELD_TYPE + " INTEGER NOT NULL"
             +");";

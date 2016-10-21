@@ -6,6 +6,7 @@
         <item name="windowNoTitle">true</item>
     </style>
 
+
     <style name="AppTheme.Chatting" >
     </style>
 
@@ -27,7 +28,6 @@
     </style>
 
     <style name="AppTheme.Toolbar">
-        <item name="android:background">@color/colorPrimaryDark</item>
         <item name="android:textColorSecondary">@android:color/white</item>
         <item name="android:textColorPrimary">@android:color/white</item>
         <item name="android:textColor">@android:color/white</item>

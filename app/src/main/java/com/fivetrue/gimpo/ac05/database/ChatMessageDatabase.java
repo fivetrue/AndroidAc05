@@ -1,12 +1,13 @@
-package com.fivetrue.gimpo.ac05.chatting;
+package com.fivetrue.gimpo.ac05.database;
 
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
+import android.util.Base64;
 import android.util.Log;
 
-import com.fivetrue.gimpo.ac05.database.DatabaseHelper;
+import com.fivetrue.gimpo.ac05.chatting.ChatMessage;
+import com.fivetrue.gimpo.ac05.firebase.model.User;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -15,7 +16,7 @@ import java.util.List;
  * Created by kwonojin on 2016. 10. 14..
  */
 
-public class ChatMessageDatabase {
+public class ChatMessageDatabase extends BaseDatabase{
 
     private static final String TAG = "ChatMessageDatabase";
 
@@ -23,60 +24,45 @@ public class ChatMessageDatabase {
     private static final String FIELD_KEY = "key";
     private static final String FIELD_MESSAGE = "message";
     private static final String FIELD_IMAGE_MESSAGE = "imageMessage";
-    private static final String FIELD_SENDER = "sender";
-    private static final String FIELD_SENDER_ID = "senderId";
-    private static final String FIELD_USER_IMAGE = "userImage";
+    private static final String FIELD_USER = "user";
     private static final String FIELD_CREATE_TIME = "createTime";
     private static final String FIELD_TYPE = "type";
 
-    private Context mContext;
-
-    private DatabaseHelper mDatabaseHelper;
 
     public ChatMessageDatabase(Context context){
-        mContext = context;
-        mDatabaseHelper = new DatabaseHelper(context);
+        super(context);
     }
 
     public boolean existsChatMessage(int type, String key){
-        SQLiteDatabase db = mDatabaseHelper.getReadableDatabase();
-        db.beginTransaction();
-        Cursor c = db.query(TABLE_NAME, new String[]{FIELD_KEY}, "key=? and type=?", new String[]{key, String.valueOf(type)}, null, null, null, "1");
-        db.endTransaction();
+        Cursor c = limitQuery(TABLE_NAME, null, "key=? and type=?", new String[]{key, String.valueOf(type)}, 1);
         return c != null && c.getCount() > 0;
     }
 
     public boolean hasNewChatMessage(int type){
-        SQLiteDatabase db = mDatabaseHelper.getReadableDatabase();
-        db.beginTransaction();
-        Cursor c = db.query(TABLE_NAME, new String[]{FIELD_CREATE_TIME}, "type=?", new String[]{String.valueOf(type)}, null, null, null, "1");
-        db.endTransaction();
+        Cursor c = limitQuery(TABLE_NAME, new String[]{FIELD_CREATE_TIME}, "type=?", new String[]{String.valueOf(type)}, 1);
         c.moveToFirst();
         return c != null && c.getCount() > 0 && c.getLong(0) + 1000 * 60 * 60 * 24 > System.currentTimeMillis();
     }
 
     public void putChatMessage(int type, String key, ChatMessage msg){
         Log.d(TAG, "putChatMessage() called with: type = [" + type + "], key = [" + key + "], msg = [" + msg + "]");
+        String user = new String(Base64.encode(getGson().toJson(msg.user).getBytes(), Base64.DEFAULT));
         ContentValues values = new ContentValues();
         values.put(FIELD_KEY, key);
         values.put(FIELD_MESSAGE, msg.message);
-        values.put(FIELD_USER_IMAGE, msg.userImage);
         values.put(FIELD_IMAGE_MESSAGE, msg.imageMessage);
-        values.put(FIELD_SENDER, msg.sender);
-        values.put(FIELD_SENDER_ID, msg.senderId);
-        values.put(FIELD_CREATE_TIME, msg.createTime);
+        values.put(FIELD_USER, user);
+        values.put(FIELD_CREATE_TIME, msg.updateTime);
         values.put(FIELD_TYPE, type);
-        SQLiteDatabase db = mDatabaseHelper.getWritableDatabase();
-        db.insert(TABLE_NAME, null, values);
+        insertValues(TABLE_NAME, values);
     }
 
     public int removeChatMessage(int type, ChatMessage msg){
         return removeChatMessage(type, msg);
     }
 
-    public int removeChatMessage(int type, String key){
-        SQLiteDatabase db = mDatabaseHelper.getWritableDatabase();
-        return db.delete(TABLE_NAME, "type=? and key=?", new String[]{type + "", key});
+    public long removeChatMessage(int type, String key){
+        return remove(TABLE_NAME, "type=? and key=?", String.valueOf(type), key);
     }
 
     public List<ChatMessage> getChatMessages(int type){
@@ -84,9 +70,7 @@ public class ChatMessageDatabase {
     }
 
     public List<ChatMessage> getChatMessages(int type, boolean reverse){
-        SQLiteDatabase db = mDatabaseHelper.getReadableDatabase();
-        db.beginTransaction();
-        Cursor c = db.query(TABLE_NAME, null, "type=" + type, null, null, null, FIELD_CREATE_TIME + (reverse ? " DESC" : " ASC"), null);
+        Cursor c = limitQuery(TABLE_NAME, null, "type=?", new String[]{String.valueOf(type)}, FIELD_CREATE_TIME + (reverse ? " DESC" : " ASC"), 1000);
         ArrayList<ChatMessage> chatMessages = new ArrayList<>();
         if(c != null){
             try{
@@ -95,12 +79,12 @@ public class ChatMessageDatabase {
                     String key = c.getString(c.getColumnIndex(FIELD_KEY));
                     String message = c.getString(c.getColumnIndex(FIELD_MESSAGE));
                     String imageMessage = c.getString(c.getColumnIndex(FIELD_IMAGE_MESSAGE));
-                    String sender = c.getString(c.getColumnIndex(FIELD_SENDER));
-                    String senderId = c.getString(c.getColumnIndex(FIELD_SENDER_ID));
-                    String userImage = c.getString(c.getColumnIndex(FIELD_USER_IMAGE));
+                    String userData = c.getString(c.getColumnIndex(FIELD_USER));
                     long createTime = c.getLong(c.getColumnIndex(FIELD_CREATE_TIME));
-                    ChatMessage msg = new ChatMessage(key, message, imageMessage, sender, senderId, userImage, createTime);
-                    msg.createTime = createTime;
+                    String d = new String(Base64.decode(userData.getBytes(), Base64.DEFAULT));
+                    User user = getGson().fromJson(d, User.class);
+                    ChatMessage msg = new ChatMessage(key, message, imageMessage, user);
+                    msg.updateTime = createTime;
                     chatMessages.add(msg);
                 }while (c.moveToNext());
             }catch (Exception e){
@@ -109,7 +93,6 @@ public class ChatMessageDatabase {
                 if(c != null){
                     c.close();
                 }
-                db.endTransaction();
 
             }
         }
@@ -120,9 +103,7 @@ public class ChatMessageDatabase {
             + FIELD_KEY + " TEXT PRIMARY KEY,"
             + FIELD_MESSAGE +" TEXT NOT NULL,"
             + FIELD_IMAGE_MESSAGE + " TEXT,"
-            + FIELD_SENDER + " TEXT NOT NULL,"
-            + FIELD_SENDER_ID + " TEXT NOT NULL,"
-            + FIELD_USER_IMAGE + " TEXT NOT NULL,"
+            + FIELD_USER + " TEXT NOT NULL,"
             + FIELD_CREATE_TIME + " INTEGER NOT NULL,"
             + FIELD_TYPE + " INTEGER NOT NULL"
             +");";

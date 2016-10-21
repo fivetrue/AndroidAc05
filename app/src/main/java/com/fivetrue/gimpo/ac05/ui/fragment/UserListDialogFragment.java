@@ -2,18 +2,16 @@ package com.fivetrue.gimpo.ac05.ui.fragment;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.v4.app.DialogFragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 
 import com.fivetrue.fivetrueandroid.ui.adapter.BaseRecyclerAdapter;
 import com.fivetrue.fivetrueandroid.ui.fragment.BaseDialogFragment;
 import com.fivetrue.gimpo.ac05.R;
 import com.fivetrue.gimpo.ac05.ui.adapter.UserListAdapter;
-import com.fivetrue.gimpo.ac05.vo.user.FirebaseUserInfo;
+import com.fivetrue.gimpo.ac05.firebase.model.User;
 
 import java.util.List;
 
@@ -26,19 +24,19 @@ public class UserListDialogFragment extends BaseDialogFragment {
     private static final String TAG = "UserListDialogFragment";
 
     private RecyclerView mRecyclerView;
-    private List<FirebaseUserInfo> mUserList;
+    private List<User> mUserList;
     private UserListAdapter mUserListAdapter;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        mUserList = getArguments().getParcelableArrayList(FirebaseUserInfo.class.getName());
+        mUserList = getArguments().getParcelableArrayList(User.class.getName());
         mUserListAdapter = new UserListAdapter(mUserList);
-        mUserListAdapter.setOnItemClickListener(new BaseRecyclerAdapter.OnItemClickListener<FirebaseUserInfo, UserListAdapter.UserItemView>() {
+        mUserListAdapter.setOnItemClickListener(new BaseRecyclerAdapter.OnItemClickListener<User, UserListAdapter.UserItemView>() {
             @Override
-            public void onClickItem(UserListAdapter.UserItemView holder, FirebaseUserInfo data) {
+            public void onClickItem(UserListAdapter.UserItemView holder, User data) {
                 Bundle b = new Bundle();
-                b.putParcelable(FirebaseUserInfo.class.getName(), data);
+                b.putParcelable(User.class.getName(), data);
                 UserInfoDialogFragment dialog = new UserInfoDialogFragment();
                 dialog.show(getFragmentManager(), null
                         , getString(android.R.string.ok), null, b, new BaseDialogFragment.OnClickDialogFragmentListener() {

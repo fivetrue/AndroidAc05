@@ -5,7 +5,6 @@ import android.content.Context;
 import com.fivetrue.fivetrueandroid.net.BaseApiResponse;
 import com.fivetrue.fivetrueandroid.net.BasicRequest;
 import com.fivetrue.gimpo.ac05.Constants;
-import com.fivetrue.gimpo.ac05.vo.user.FirebaseUserInfo;
 import com.google.gson.reflect.TypeToken;
 
 import java.lang.reflect.Type;

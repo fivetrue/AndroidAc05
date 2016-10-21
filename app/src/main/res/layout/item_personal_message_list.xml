@@ -14,6 +14,15 @@
             android:layout_height="wrap_content"
             android:padding="3dp"
             android:background="@color/colorAccent">
+            <ImageView
+                android:id="@+id/iv_item_personal_delete"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="3dp"
+                android:src="@drawable/ic_delete_20dp"
+                android:background="@drawable/selector_common_negative_button"
+                android:layout_alignParentRight="true"
+                android:padding="10dp"/>
 
             <ImageView
                 android:id="@+id/iv_item_personal_reply"
@@ -21,8 +30,8 @@
                 android:layout_height="wrap_content"
                 android:layout_margin="3dp"
                 android:src="@drawable/ic_reply_20dp"
+                android:layout_toLeftOf="@id/iv_item_personal_delete"
                 android:background="@drawable/selector_common_negative_button"
-                android:layout_alignParentRight="true"
                 android:padding="10dp"/>
 
             <LinearLayout

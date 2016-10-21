@@ -52,7 +52,7 @@ public class ChatListAdapter extends BaseRecyclerAdapter<ChatMessage, ChatListAd
 
     @Override
     public int getItemViewType(int position) {
-        return getItem(position).sender.equals(mUserId) ? 0 : 1;
+        return getItem(position).user.uid.equals(mUserId) ? 0 : 1;
     }
 
     @Override
@@ -60,13 +60,13 @@ public class ChatListAdapter extends BaseRecyclerAdapter<ChatMessage, ChatListAd
         if(holder != null){
             final ChatMessage item = getItem(position);
 
-            holder.userImage.setImageUrl(item.userImage);
-            holder.date.setText(mSdf.format(new Date(item.createTime)));
+            holder.userImage.setImageUrl(item.user.profileImage);
+            holder.date.setText(mSdf.format(new Date(item.updateTime)));
             holder.message.setText(item.message);
             if(item.imageMessage != null){
                 holder.messageImage.setImageUrl(item.imageMessage, ImageLoadManager.getImageLoader());
             }
-            holder.name.setText(item.getName());
+            holder.name.setText(item.user.getDisplayName());
             holder.message.requestLayout();
 
             holder.userImage.setOnClickListener(new View.OnClickListener() {

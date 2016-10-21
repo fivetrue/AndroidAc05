@@ -2,4 +2,6 @@
 <resources>
     <string name="pref_name_config" translatable="false">com.fivetrue.ac05.name.config</string>
     <string name="pref_key_push" translatable="false">com.fivetrue.ac05.key.push</string>
+    <string name="pref_key_first_open" translatable="false">com.fivetrue.ac05.key.open.first</string>
+    <string name="pref_key_read_welcome" translatable="false">com.fivetrue.ac05.key.read.welcome</string>
 </resources>

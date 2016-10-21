@@ -4,7 +4,7 @@ import android.content.Intent;
 import android.os.Bundle;
 
 import com.fivetrue.fivetrueandroid.ui.BaseActivity;
-import com.fivetrue.gimpo.ac05.chatting.FirebaseChattingService;
+import com.fivetrue.gimpo.ac05.service.FirebaseService;
 import com.fivetrue.gimpo.ac05.service.notification.NotificationHelper;
 
 /**
@@ -22,7 +22,7 @@ public class ByPassAcitivty extends BaseActivity {
                 Intent intent = new Intent(getIntent());
                 intent.setClass(this, SplashActivity.class);
                 startActivity(intent);
-            }else if(action.equals(FirebaseChattingService.ACTION_FIREBASE_MESSAGE)){
+            }else if(action.equals(FirebaseService.ACTION_FIREBASE_MESSAGE)){
                 DeepLinkManager.goLink(this, getIntent());
             }
         }

@@ -2,8 +2,6 @@ package com.fivetrue.gimpo.ac05.ui.fragment;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -16,17 +14,13 @@ import com.fivetrue.fivetrueandroid.image.ImageLoadManager;
 import com.fivetrue.fivetrueandroid.ui.fragment.BaseDialogFragment;
 import com.fivetrue.gimpo.ac05.Constants;
 import com.fivetrue.gimpo.ac05.R;
-import com.fivetrue.gimpo.ac05.chatting.BadUserReportMessage;
+import com.fivetrue.gimpo.ac05.firebase.database.UserMessageBoxDatabase;
+import com.fivetrue.gimpo.ac05.firebase.model.BadUserReportMessage;
 import com.fivetrue.gimpo.ac05.chatting.ChatMessage;
-import com.fivetrue.gimpo.ac05.chatting.GalleryMessage;
 import com.fivetrue.gimpo.ac05.preferences.ConfigPreferenceManager;
-import com.fivetrue.gimpo.ac05.ui.adapter.UserListAdapter;
-import com.fivetrue.gimpo.ac05.vo.user.FirebaseUserInfo;
+import com.fivetrue.gimpo.ac05.firebase.model.User;
 import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-
-import java.util.List;
 
 /**
  * Created by kwonojin on 2016. 10. 18..
@@ -39,85 +33,18 @@ public class UserInfoDialogFragment extends BaseDialogFragment implements BaseDi
     private NetworkImageView mUserImage;
     private TextView mUserName;
 
-    private FirebaseUserInfo mUserInfo;
-    private ChatMessage mChatMessage;
-    private GalleryMessage mGalleryMessage;
+    private User mUserInfo;
 
-    private DatabaseReference mPersonDBReference;
+    private UserMessageBoxDatabase mPeronsalMessageDatabase;
 
     private ConfigPreferenceManager mConfigPref;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        mUserInfo = getArguments().getParcelable(FirebaseUserInfo.class.getName());
-        mChatMessage = getArguments().getParcelable(ChatMessage.class.getName());
-        mGalleryMessage= getArguments().getParcelable(GalleryMessage.class.getName());
+        mUserInfo = getArguments().getParcelable(User.class.getName());
         mConfigPref = new ConfigPreferenceManager(getActivity());
-        mPersonDBReference = FirebaseDatabase.getInstance().getReference(Constants.FIREBASE_DB_ROOT_PERSON).child(getUserId());
-    }
-
-    private String getUserImage(){
-        if(mUserInfo != null){
-            return mUserInfo.getPhotoUrl();
-        }
-
-        if(mChatMessage != null){
-            return mChatMessage.getUserImage();
-        }
-
-        if(mGalleryMessage != null){
-            return mGalleryMessage.getUserImage();
-        }
-
-        return null;
-    }
-
-    private String getUserName(){
-        if(mUserInfo != null){
-            return mUserInfo.getName();
-        }
-
-        if(mChatMessage != null){
-            return mChatMessage.getName();
-        }
-
-        if(mGalleryMessage != null){
-            return mGalleryMessage.getName();
-        }
-        return null;
-    }
-
-    private String getUserId(){
-        if(mUserInfo != null){
-            return mUserInfo.getUid();
-        }
-
-        if(mChatMessage != null){
-            return mChatMessage.getUserId();
-        }
-
-        if(mGalleryMessage != null){
-            return mGalleryMessage.getUserId();
-        }
-
-        return null;
-    }
-
-    private String getUserEmail(){
-        if(mUserInfo != null){
-            return mUserInfo.getEmail();
-        }
-
-        if(mChatMessage != null){
-            return mChatMessage.getUser();
-        }
-
-        if(mGalleryMessage != null){
-            return mGalleryMessage.getUser();
-        }
-
-        return null;
+        mPeronsalMessageDatabase = new UserMessageBoxDatabase(mUserInfo.uid);
     }
 
     @Override
@@ -125,7 +52,7 @@ public class UserInfoDialogFragment extends BaseDialogFragment implements BaseDi
         View view = inflater.inflate(R.layout.fragment_user_info, null);
         mUserImage = (NetworkImageView) view.findViewById(R.id.iv_fragment_user_info_image);
         mUserName = (TextView) view.findViewById(R.id.tv_fragment_user_info_name);
-        if(getUserId().equals(mConfigPref.getUserInfo().getUid())){
+        if(mUserInfo.uid.equals(mConfigPref.getUserInfo().uid)){
             view.findViewById(R.id.layout_fragment_user_info_buttons).setVisibility(View.GONE);
         }
         view.findViewById(R.id.btn_fragment_user_info_message).setOnClickListener(new View.OnClickListener() {
@@ -141,10 +68,8 @@ public class UserInfoDialogFragment extends BaseDialogFragment implements BaseDi
                                 Log.d(TAG, "onClickOKButton() called with: f = [" + f + "], data = [" + data + "]");
                                 if(!TextUtils.isEmpty(data)){
                                     ChatMessage message = new ChatMessage(null, data, null
-                                            , mConfigPref.getUserInfo().getEmail()
-                                            , mConfigPref.getUserInfo().getUid()
-                                            ,mConfigPref.getUserInfo().getPhotoUrl(), 0);
-                                    mPersonDBReference.child(Constants.FIREBASE_DB_MESSAGE).push().setValue(message.getValues());
+                                            , mConfigPref.getUserInfo());
+                                    mPeronsalMessageDatabase.pushData(message);
                                 }
                                 f.dismiss();
                             }
@@ -170,8 +95,7 @@ public class UserInfoDialogFragment extends BaseDialogFragment implements BaseDi
                             public void onClickOKButton(BaseDialogFragment f, String data) {
                                 Log.d(TAG, "onClickOKButton() called with: f = [" + f + "], data = [" + data + "]");
                                 if(!TextUtils.isEmpty(data)){
-                                    BadUserReportMessage reportMessage = new BadUserReportMessage(getUserId()
-                                    , getUserEmail(), getUserImage(), data);
+                                    BadUserReportMessage reportMessage = new BadUserReportMessage(data, mUserInfo);
                                     FirebaseDatabase.getInstance()
                                             .getReference(Constants.FIREBASE_DB_ROOT_BAD_USER).push()
                                             .setValue(reportMessage.getValues()).addOnSuccessListener(new OnSuccessListener<Void>() {
@@ -194,8 +118,8 @@ public class UserInfoDialogFragment extends BaseDialogFragment implements BaseDi
 
             }
         });
-        mUserImage.setImageUrl(getUserImage(), ImageLoadManager.getImageLoader());
-        mUserName.setText(getUserName());
+        mUserImage.setImageUrl(mUserInfo.profileImage, ImageLoadManager.getImageLoader());
+        mUserName.setText(mUserInfo.getDisplayName());
         return view;
     }
 

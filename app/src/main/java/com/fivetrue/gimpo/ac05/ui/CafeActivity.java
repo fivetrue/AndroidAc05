@@ -49,7 +49,7 @@ public class CafeActivity extends BaseActivity{
 
         mCustomWebViewClient = new CustomWebViewClient(this, mWebView, mProgress);
 
-        mWebView.loadUrl(mConfigPref.getAppConfig().getClubUrl());
+        mWebView.loadUrl(mConfigPref.getAppConfig().clubUrl);
     }
 
     @Override

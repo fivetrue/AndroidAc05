@@ -14,37 +14,56 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:orientation="vertical">
-            <LinearLayout
+
+            <RelativeLayout
                 android:layout_width="match_parent"
-                android:layout_height="35dp"
-                android:layout_margin="5dp"
-                android:orientation="horizontal">
-                <com.fivetrue.fivetrueandroid.view.CircleImageView
-                    android:id="@+id/iv_item_gallery_user_image"
-                    android:layout_width="35dp"
-                    android:layout_height="match_parent"/>
-
-                <TextView
-                    android:id="@+id/tv_item_gallery_user_id"
+                android:layout_height="35dp">
+                <ImageView
+                    android:id="@+id/iv_item_gallery_delete"
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
-                    android:gravity="center_vertical"
-                    style="@style/CommonText.Small"
-                    android:layout_marginLeft="10dp"/>
+                    android:padding="5dp"
+                    android:layout_alignParentRight="true"
+                    android:scaleType="center"
+                    android:src="@drawable/ic_delete_20dp"
+                    android:background="@drawable/selector_common_list_item_background"/>
 
-                <TextView
-                    android:id="@+id/tv_item_gallery_user_date"
-                    android:layout_width="wrap_content"
+                <LinearLayout
+                    android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:gravity="center_vertical"
-                    style="@style/CommonText.Small"
-                    android:layout_marginLeft="10dp"/>
+                    android:layout_margin="5dp"
+                    android:layout_toLeftOf="@id/iv_item_gallery_delete"
+                    android:orientation="horizontal">
+                    <com.fivetrue.fivetrueandroid.view.CircleImageView
+                        android:id="@+id/iv_item_gallery_user_image"
+                        android:layout_width="35dp"
+                        android:layout_height="match_parent"/>
 
-            </LinearLayout>
+                    <TextView
+                        android:id="@+id/tv_item_gallery_user_id"
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:gravity="center_vertical"
+                        style="@style/CommonText.Small"
+                        android:layout_marginLeft="10dp"/>
+
+                    <TextView
+                        android:id="@+id/tv_item_gallery_user_date"
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:gravity="center_vertical"
+                        style="@style/CommonText.Small"
+                        android:layout_marginLeft="10dp"/>
+
+                </LinearLayout>
+
+            </RelativeLayout>
+
             <com.android.volley.toolbox.NetworkImageView
                 android:id="@+id/iv_item_gallery_image"
                 android:layout_width="match_parent"
-                android:layout_height="320dp"
+                android:minHeight="320dp"
+                android:layout_height="wrap_content"
                 android:scaleType="fitXY"/>
 
             <TextView

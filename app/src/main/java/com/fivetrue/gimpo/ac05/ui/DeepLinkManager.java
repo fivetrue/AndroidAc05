@@ -10,7 +10,6 @@ import com.fivetrue.fivetrueandroid.net.ErrorCode;
 import com.fivetrue.fivetrueandroid.net.NetworkManager;
 import com.fivetrue.fivetrueandroid.ui.BaseActivity;
 import com.fivetrue.gimpo.ac05.Constants;
-import com.fivetrue.gimpo.ac05.chatting.FirebaseChattingService;
 import com.fivetrue.gimpo.ac05.net.request.MainPageDataRequest;
 import com.fivetrue.gimpo.ac05.service.notification.NotificationHelper;
 import com.fivetrue.gimpo.ac05.vo.data.MainDataEntry;
@@ -105,6 +104,7 @@ public class DeepLinkManager {
                                         case Constants.DISTRICT_CHATTING_NOTIFICATION_ID :{
                                             Intent i = new Intent(activity, ChattingActivity.class);
                                             i.putExtra("type", t);
+                                            i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                                             activity.startActivity(i);
                                         }
                                             break;
@@ -112,11 +112,14 @@ public class DeepLinkManager {
                                         case Constants.GALLERY_NOTIFICATION_ID:{
                                             Intent i = new Intent(activity, GalleryActivity.class);
                                             i.putExtra("type", t);
+                                            i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                                             activity.startActivity(i);
+                                            break;
                                         }
                                         case Constants.PERSON_MESSAGE_NOTIFICATION_ID:{
                                             Intent i = new Intent(activity, PersonalActivity.class);
                                             i.putExtra("type", t);
+                                            i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                                             activity.startActivity(i);
                                         }
                                     }

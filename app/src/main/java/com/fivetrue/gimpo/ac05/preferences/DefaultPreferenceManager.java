@@ -47,4 +47,20 @@ public class DefaultPreferenceManager {
     public void setPushChatting(int type, boolean b){
         mSharedPreferences.edit().putBoolean(mContext.getString(R.string.pref_key_push) + "." + type, b).commit();
     }
+
+    public boolean isOpenFirst(){
+        return mSharedPreferences.getBoolean(mContext.getString(R.string.pref_key_first_open), true);
+    }
+
+    public void setOpenFirst(boolean b){
+        mSharedPreferences.edit().putBoolean(mContext.getString(R.string.pref_key_first_open), b).commit();
+    }
+
+    public boolean isReadWelcome(){
+        return mSharedPreferences.getBoolean(mContext.getString(R.string.pref_key_read_welcome), false);
+    }
+
+    public void setReadWelcome(boolean b){
+        mSharedPreferences.edit().putBoolean(mContext.getString(R.string.pref_key_read_welcome), b).commit();
+    }
 }

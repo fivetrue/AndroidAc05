@@ -33,13 +33,16 @@ import com.fivetrue.fivetrueandroid.net.NetworkManager;
 import com.fivetrue.fivetrueandroid.ui.BaseActivity;
 import com.fivetrue.fivetrueandroid.ui.adapter.BaseRecyclerAdapter;
 import com.fivetrue.fivetrueandroid.ui.fragment.BaseFragmentImp;
+import com.fivetrue.fivetrueandroid.utils.AppUtils;
 import com.fivetrue.fivetrueandroid.view.CircleImageView;
 import com.fivetrue.gimpo.ac05.Constants;
 import com.fivetrue.gimpo.ac05.R;
-import com.fivetrue.gimpo.ac05.chatting.ChatMessageDatabase;
+import com.fivetrue.gimpo.ac05.database.ChatMessageDatabase;
 import com.fivetrue.gimpo.ac05.net.request.MainPageDataRequest;
 import com.fivetrue.gimpo.ac05.preferences.ConfigPreferenceManager;
+import com.fivetrue.gimpo.ac05.preferences.DefaultPreferenceManager;
 import com.fivetrue.gimpo.ac05.rss.RSSFeedParser;
+import com.fivetrue.gimpo.ac05.service.FirebaseService;
 import com.fivetrue.gimpo.ac05.ui.adapter.BaseItemListAdapter;
 import com.fivetrue.gimpo.ac05.vo.IBaseItem;
 import com.fivetrue.gimpo.ac05.vo.data.ImageInfoEntry;
@@ -103,6 +106,10 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
          */
         mProgressBar.setVisibility(View.VISIBLE);
         NetworkManager.getInstance().request(mMainDataRequest);
+        if (!AppUtils.isServiceRunning(this, FirebaseService.class)) {
+            startService(new Intent(getApplicationContext(), FirebaseService.class));
+        }
+        DefaultPreferenceManager.getInstance(this).setOpenFirst(false);
     }
 
     @Override
@@ -198,11 +205,11 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
     private void updateUserInfo(){
         if(mNavImage != null && mNavAccount != null && mNavName != null && mNavDistrict != null){
             if(mConfigPref.getUserInfo() != null){
-                mNavImage.setImageUrl(mConfigPref.getUserInfo().getPhotoUrl());
-                mNavAccount.setText(mConfigPref.getUserInfo().getEmail());
+                mNavImage.setImageUrl(mConfigPref.getUserInfo().profileImage);
+                mNavAccount.setText(mConfigPref.getUserInfo().email);
                 mNavName.setText(mConfigPref.getUserInfo().getDisplayName());
-                if(mConfigPref.getUserInfo().getDistrict() > 0){
-                    mNavDistrict.setText(mConfigPref.getUserInfo().getDistrict() + " 동");
+                if(mConfigPref.getUserInfo().district > 0){
+                    mNavDistrict.setText(mConfigPref.getUserInfo().district + " 동");
                 }
             }else{
                 Log.d(TAG, "updateUserInfo() called" + "UserData null");
@@ -430,7 +437,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
                     return true;
 
                 case R.id.nav_district_talk :{
-                    if(mConfigPref.getUserInfo() != null && mConfigPref.getUserInfo().getDistrict() > 0){
+                    if(mConfigPref.getUserInfo() != null && mConfigPref.getUserInfo().district > 0){
                         Intent intent = new Intent(this, ChattingActivity.class);
                         intent.putExtra("type", ChattingActivity.TYPE_CHATTING_DISTRICT);
                         startActivity(intent);

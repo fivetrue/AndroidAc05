@@ -2,7 +2,7 @@
 <resources>
     <color name="colorPrimary">#87b4f6</color>
     <color name="colorPrimaryDark">#2080ff</color>
-    <color name="colorAccent">@android:color/white</color>
+    <color name="colorAccent">#FFFFFF</color>
 
     <color name="color_primary_alpha_10">#1987b4f6</color>
     <color name="color_primary_alpha_30">#4C87b4f6</color>

@@ -118,7 +118,7 @@ public class WebViewActivity extends BaseActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()){
             case android.R.id.home :
-                onBackPressed();
+                finish();
                 return true;
             case R.id.action_share :
                 Intent i = new Intent(Intent.ACTION_SEND);

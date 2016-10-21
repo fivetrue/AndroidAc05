@@ -4,9 +4,6 @@ import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
-import com.fivetrue.gimpo.ac05.chatting.ChatMessageDatabase;
-import com.fivetrue.gimpo.ac05.chatting.GalleryMessageDatabase;
-
 /**
  * Created by kwonojin on 2016. 10. 14..
  */
@@ -16,7 +13,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     private static final String TAG = "DatabaseHelper";
 
     private static final String DB_NAME = "ac05";
-    private static final int VERSION = 2;
+    private static final int VERSION = 4;
 
 
     public DatabaseHelper(Context context) {

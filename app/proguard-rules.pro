@@ -37,5 +37,6 @@
 
 
 -keep class com.fivetrue.gimpo.ac05.vo.** { *; }
+-keep class com.fivetrue.gimpo.ac05.firebase.FirebaseData { *; }
 -keep class com.fivetrue.gimpo.ac05.chatting.** { <fields>; }
 

@@ -3,9 +3,10 @@ package com.fivetrue.gimpo.ac05.preferences;
 import android.content.Context;
 
 import com.fivetrue.fivetrueandroid.preferences.SharedPreferenceHelper;
-import com.fivetrue.gimpo.ac05.vo.config.AppConfig;
-import com.fivetrue.gimpo.ac05.vo.user.District;
-import com.fivetrue.gimpo.ac05.vo.user.FirebaseUserInfo;
+import com.fivetrue.gimpo.ac05.firebase.model.AppConfig;
+import com.fivetrue.gimpo.ac05.firebase.model.AppMessage;
+import com.fivetrue.gimpo.ac05.firebase.model.District;
+import com.fivetrue.gimpo.ac05.firebase.model.User;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
@@ -19,11 +20,8 @@ public class ConfigPreferenceManager {
     private static final String PREF_NAME = "config";
 
     private static final String GCM_DEVICE = "gcm_dvice_id";
-
     private static final String APP_CONFIG = "app_config";
-    private static final String DISTRICTS_INFO = "districts_info";
-
-    private static final String FIRST_OPEN = "first_open";
+    private static final String APP_MESSAGE = "app_message";
 
     private SharedPreferenceHelper mHelper = null;
 
@@ -44,19 +42,19 @@ public class ConfigPreferenceManager {
         return mHelper.getData(GCM_DEVICE, null);
     }
 
-    public void setUserInfo(FirebaseUserInfo userinfo){
+    public void setUserInfo(User userinfo){
         if(userinfo != null){
-            mHelper.putData(FirebaseUserInfo.class.getName(), mGson.toJson(userinfo));
+            mHelper.putData(User.class.getName(), mGson.toJson(userinfo));
         }else{
-            mHelper.putData(FirebaseUserInfo.class.getName(), null);
+            mHelper.putData(User.class.getName(), null);
         }
     }
 
-    public FirebaseUserInfo getUserInfo(){
-        FirebaseUserInfo userinfo = null;
-        String info = mHelper.getData(FirebaseUserInfo.class.getName(), null);
+    public User getUserInfo(){
+        User userinfo = null;
+        String info = mHelper.getData(User.class.getName(), null);
         if(info != null){
-            userinfo = mGson.fromJson(info, FirebaseUserInfo.class);
+            userinfo = mGson.fromJson(info, User.class);
         }
         return userinfo;
     }
@@ -69,23 +67,6 @@ public class ConfigPreferenceManager {
         }
     }
 
-    public ArrayList<District> getDistricts(){
-        ArrayList<District> districts = null;
-        String data = mHelper.getData(DISTRICTS_INFO, null);
-        if(data != null){
-            districts = mGson.fromJson(data, new TypeToken<ArrayList<District>>(){}.getType());
-        }
-        return districts;
-    }
-
-    public void setDistricts(ArrayList<District> districts){
-        if(districts != null){
-            mHelper.putData(DISTRICTS_INFO, mGson.toJson(districts));
-        }else{
-            mHelper.putData(DISTRICTS_INFO, null);
-        }
-    }
-
     public AppConfig getAppConfig(){
         AppConfig config = null;
         String data = mHelper.getData(APP_CONFIG, null);
@@ -95,12 +76,23 @@ public class ConfigPreferenceManager {
         return config;
     }
 
-    public void setFirstOpen(boolean b){
-        mHelper.putData(FIRST_OPEN, b);
+    public void setAppMessage(AppMessage message){
+        if(message != null){
+            mHelper.putData(APP_MESSAGE, mGson.toJson(message));
+        }else{
+            mHelper.putData(APP_MESSAGE, null);
+        }
     }
 
-    public boolean isFirstOpen(){
-        return mHelper.getData(FIRST_OPEN, true);
+    public AppMessage getAppMessage(){
+        AppMessage message = null;
+        String data = mHelper.getData(APP_MESSAGE, null);
+        if(data != null){
+            message = mGson.fromJson(data, AppMessage.class);
+        }
+        return message;
     }
+
+
 
 }

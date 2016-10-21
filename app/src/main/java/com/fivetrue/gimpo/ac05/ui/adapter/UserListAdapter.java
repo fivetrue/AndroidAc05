@@ -7,26 +7,23 @@ import android.widget.TextView;
 import com.android.volley.toolbox.NetworkImageView;
 import com.fivetrue.fivetrueandroid.image.ImageLoadManager;
 import com.fivetrue.fivetrueandroid.ui.adapter.BaseRecyclerAdapter;
-import com.fivetrue.fivetrueandroid.view.CircleImageView;
 import com.fivetrue.gimpo.ac05.R;
-import com.fivetrue.gimpo.ac05.chatting.GalleryMessage;
-import com.fivetrue.gimpo.ac05.vo.user.FirebaseUserInfo;
+import com.fivetrue.gimpo.ac05.firebase.model.User;
 
 import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.List;
 
 /**
  * Created by kwonojin on 2016. 9. 28..
  */
 
-public class UserListAdapter extends BaseRecyclerAdapter<FirebaseUserInfo, UserListAdapter.UserItemView> {
+public class UserListAdapter extends BaseRecyclerAdapter<User, UserListAdapter.UserItemView> {
 
     private static final String TAG = "GalleryListAdapter";
 
     private SimpleDateFormat mSdf = new SimpleDateFormat("yyyy년 MM월 dd일 HH시 mm분");
 
-    public UserListAdapter(List<FirebaseUserInfo> data) {
+    public UserListAdapter(List<User> data) {
         super(data, R.layout.item_user_list);
     }
 
@@ -39,10 +36,10 @@ public class UserListAdapter extends BaseRecyclerAdapter<FirebaseUserInfo, UserL
     @Override
     public void onBindViewHolder(final UserItemView holder, int position) {
         if(holder != null){
-            final FirebaseUserInfo item = getItem(position);
+            final User item = getItem(position);
 
-            holder.image.setImageUrl(item.getPhotoUrl(), ImageLoadManager.getImageLoader());
-            holder.userName.setText(item.getName());
+            holder.image.setImageUrl(item.profileImage, ImageLoadManager.getImageLoader());
+            holder.userName.setText(item.getDisplayName());
             holder.layout.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -65,4 +62,6 @@ public class UserListAdapter extends BaseRecyclerAdapter<FirebaseUserInfo, UserL
             userName = (TextView) itemView.findViewById(R.id.tv_item_user_name);
         }
     }
+
+
 }

@@ -1,8 +1,6 @@
 package com.fivetrue.gimpo.ac05.ui;
 
-import android.app.ActivityManager;
 import android.app.AlertDialog;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Typeface;
@@ -10,7 +8,13 @@ import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.text.Html;
+import android.text.Spanned;
+import android.text.TextUtils;
+import android.text.method.LinkMovementMethod;
+import android.text.util.Linkify;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
 import android.widget.LinearLayout;
@@ -18,33 +22,33 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.android.volley.VolleyError;
 import com.fivetrue.fivetrueandroid.google.GoogleLoginUtil;
-import com.fivetrue.fivetrueandroid.net.BaseApiResponse;
-import com.fivetrue.fivetrueandroid.net.NetworkManager;
 import com.fivetrue.fivetrueandroid.ui.BaseActivity;
 import com.fivetrue.fivetrueandroid.utils.AppUtils;
 import com.fivetrue.fivetrueandroid.utils.SimpleViewUtils;
 import com.fivetrue.fivetrueandroid.view.CircleImageView;
 import com.fivetrue.gimpo.ac05.R;
-import com.fivetrue.gimpo.ac05.chatting.FirebaseChattingService;
-import com.fivetrue.gimpo.ac05.net.request.ConfigRequest;
-import com.fivetrue.gimpo.ac05.net.request.DistrictDataReqeust;
-import com.fivetrue.gimpo.ac05.net.request.RegisterUserRequest;
+import com.fivetrue.gimpo.ac05.firebase.database.AppMessageDatabase;
+import com.fivetrue.gimpo.ac05.firebase.model.AppMessage;
+import com.fivetrue.gimpo.ac05.preferences.DefaultPreferenceManager;
+import com.fivetrue.gimpo.ac05.service.FirebaseService;
+import com.fivetrue.gimpo.ac05.firebase.database.AppConfigDatabase;
+import com.fivetrue.gimpo.ac05.firebase.database.UserInfoDatabase;
+import com.fivetrue.gimpo.ac05.firebase.model.AppConfig;
 import com.fivetrue.gimpo.ac05.preferences.ConfigPreferenceManager;
 import com.fivetrue.gimpo.ac05.service.notification.NotificationHelper;
-import com.fivetrue.gimpo.ac05.vo.config.AppConfig;
-import com.fivetrue.gimpo.ac05.vo.user.District;
-import com.fivetrue.gimpo.ac05.vo.user.FirebaseUserInfo;
+import com.fivetrue.gimpo.ac05.firebase.model.User;
 import com.google.android.gms.gcm.GoogleCloudMessaging;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.ValueEventListener;
 
 import java.io.IOException;
-import java.util.ArrayList;
 
 /**
- * 1. get Application config from server
- * 2. Register GCM
+ * 1. Login check
+ * 2. get Messages from server
  * 3. Login to Naver
  * 4. getNaver Userinfo
  * 5. register UserInfo to Server
@@ -53,10 +57,6 @@ import java.util.ArrayList;
 public class SplashActivity extends BaseActivity implements GoogleLoginUtil.OnAccountManagerListener {
 
     private static final String TAG = "SplashActivity";
-
-    private static final int REQUEST_LOGIN_CODE = 0x33;
-
-    private static final int RETRY_COUNT = 3;
 
     private TextView mMainMessage = null;
     private TextView mLoadingMessage = null;
@@ -69,11 +69,7 @@ public class SplashActivity extends BaseActivity implements GoogleLoginUtil.OnAc
 
     private Button mLoginGoogle = null;
 
-    private ConfigRequest mConfigReqeust = null;
-    private RegisterUserRequest mRegisterUserRequest = null;
     private ConfigPreferenceManager mConfigPref = null;
-    private DistrictDataReqeust mDistrictDataRequest = null;
-
     private GoogleLoginUtil mGoogleLoginUtil = null;
 
     private Typeface mTyeFace = null;
@@ -84,7 +80,7 @@ public class SplashActivity extends BaseActivity implements GoogleLoginUtil.OnAc
         setContentView(R.layout.activity_splash);
         initData();
         initView();
-        getApplicationConfig();
+        checkLoginStatus(mGoogleLoginUtil.getUser());
     }
 
     @Override
@@ -100,7 +96,7 @@ public class SplashActivity extends BaseActivity implements GoogleLoginUtil.OnAc
         mGoogleLoginUtil.onStop();
     }
 
-    private void initView(){
+    private void initView() {
 
         mMainMessage = (TextView) findViewById(R.id.tv_splash_main);
         mLoadingMessage = (TextView) findViewById(R.id.tv_splash_loading);
@@ -118,52 +114,159 @@ public class SplashActivity extends BaseActivity implements GoogleLoginUtil.OnAc
         mLoginGoogle.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                mLoadingMessage.setVisibility(View.VISIBLE);
+                mLoadingMessage.setText(R.string.config_user_info_verify);
                 mGoogleLoginUtil.loginGoogleAccount();
                 showProgress();
             }
         });
 
-        mMainMessage.setTypeface(mTyeFace);
+        new AsyncTask<Void, Void, Void>(){
+
+            @Override
+            protected Void doInBackground(Void... params) {
+                mTyeFace = Typeface.createFromAsset(getAssets(), "Typo_PapyrusM.ttf");
+                return null;
+            }
+
+            @Override
+            protected void onPostExecute(Void aVoid) {
+                super.onPostExecute(aVoid);
+                mMainMessage.setTypeface(mTyeFace);
+            }
+        }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
     }
 
-    private void initData(){
+    private void initData() {
         mConfigPref = new ConfigPreferenceManager(this);
-        mConfigReqeust = new ConfigRequest(this, onConfigResponseListener);
-        mRegisterUserRequest = new RegisterUserRequest(this, onRegisterUserInfoResponse);
-        mDistrictDataRequest = new DistrictDataReqeust(this, districtApiResponse);
-
-        mGoogleLoginUtil = new GoogleLoginUtil(this, getString(R.string.firebase_auth_client_id));
-        mTyeFace = Typeface.createFromAsset(getAssets(), "Typo_PapyrusM.ttf");
+        mGoogleLoginUtil = new GoogleLoginUtil(SplashActivity.this, getString(R.string.firebase_auth_client_id));
     }
 
-    /**
-     * 1. get application config from server
-     */
-    private void getApplicationConfig(){
+    private void checkLoginStatus(final FirebaseUser firebaseUser) {
+        if (firebaseUser != null) {
+            getAppMessage();
+        } else {
+            mLoadingMessage.setVisibility(View.GONE);
+            mProgress.setVisibility(View.GONE);
+            mLoginGoogle.setVisibility(View.VISIBLE);
+        }
+    }
+
+
+    private void getAppMessage(){
+        Log.i(TAG, "check regarding application message");
+        mLoadingMessage.setText(R.string.config_data_check);
+        new AppMessageDatabase().getReference().addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                if(dataSnapshot.getValue() != null){
+                    AppMessage message = dataSnapshot.getValue(AppMessage.class);
+                    mConfigPref.setAppMessage(message);
+                    getApplicationConfig();
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                getApplicationConfig();
+            }
+        });
+    }
+
+    private void getApplicationConfig() {
         Log.i(TAG, "getApplicationConfig : start");
-        NetworkManager.getInstance().request(mConfigReqeust);
+        new AppConfigDatabase().getReference().addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                Log.d(TAG, "onDataChange() called with: dataSnapshot = [" + dataSnapshot + "]");
+                mLoadingMessage.setText(R.string.config_check_app_version);
+                AppConfig appConfig = dataSnapshot.getValue(AppConfig.class);
+                mConfigPref.setAppConfig(appConfig);
+                checkApplication();
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                getApplicationConfig();
+            }
+        });
+    }
+
+    private void checkApplication(){
+        final AppConfig appConfig = mConfigPref.getAppConfig();
+        int recentlyVersion = appConfig.appVersionCode;
+        int appVersion = AppUtils.getApplicationVersionCode(SplashActivity.this);
+        if (recentlyVersion > appVersion && appConfig.forceUpdate) {
+            new AlertDialog.Builder(SplashActivity.this, R.style.Base_Theme_AppCompat_Light_Dialog_Alert)
+                    .setTitle(R.string.notice)
+                    .setMessage(R.string.config_force_update)
+                    .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            dialog.dismiss();
+                        }
+                    })
+                    .setOnCancelListener(new DialogInterface.OnCancelListener() {
+                        @Override
+                        public void onCancel(DialogInterface dialog) {
+                            AppUtils.goAppStore(SplashActivity.this);
+                        }
+                    }).setOnDismissListener(new DialogInterface.OnDismissListener() {
+                @Override
+                public void onDismiss(DialogInterface dialog) {
+                    AppUtils.goAppStore(SplashActivity.this);
+
+                }
+            }).create().show();
+        }else{
+            AppMessage appMessage = mConfigPref.getAppMessage();
+            if(!DefaultPreferenceManager.getInstance(this).isReadWelcome()){
+                View view = LayoutInflater.from(this).inflate(R.layout.layout_simple_text_view, null);
+                Spanned s = Html.fromHtml(appMessage.welcome);
+                TextView message = (TextView) view.findViewById(R.id.message);
+                message.setText(s);
+                message.setMovementMethod(LinkMovementMethod.getInstance());
+                new AlertDialog.Builder(SplashActivity.this, R.style.Base_Theme_AppCompat_Light_Dialog_Alert)
+                        .setTitle(R.string.notice)
+                        .setCancelable(false)
+                        .setView(view)
+                        .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                dialog.dismiss();
+                                DefaultPreferenceManager.getInstance(SplashActivity.this).setReadWelcome(true);
+                                getGcmId(appConfig);
+                            }
+                        }).setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                        finish();
+                    }
+                }).show();
+            }else{
+                getGcmId(appConfig);
+            }
+        }
     }
 
     /**
      * 2. do register device after getting appconfig
+     *
      * @param appConfig
      */
-    private void registerDevice(final AppConfig appConfig) {
-        Log.i(TAG, "registerDevice: start");
+    private void getGcmId(final AppConfig appConfig) {
         mLoadingMessage.setText(R.string.config_data_register);
         if (appConfig != null) {
-            Log.i(TAG, "appConfig = " + appConfig.toString());
-            Log.i(TAG, "registerDevice: init NaverApiManager start");
-
-            new AsyncTask<String, Void, String>() {
+            new AsyncTask<Long, Void, String>() {
                 @Override
-                protected String doInBackground(String... params) {
+                protected String doInBackground(Long... params) {
                     String regId = null;
                     if (params != null && params.length > 0) {
-                        String senderId = params[0];
+                        Long senderId = params[0];
                         GoogleCloudMessaging gcm = GoogleCloudMessaging.getInstance(getApplicationContext());
                         try {
-                            regId = gcm.register(senderId);
+                            regId = gcm.register(String.valueOf(senderId));
                         } catch (IOException e) {
                             e.printStackTrace();
                         }
@@ -179,100 +282,45 @@ public class SplashActivity extends BaseActivity implements GoogleLoginUtil.OnAc
                     } else {
                         Log.e(TAG, "registerDevice Gcm register error");
                     }
-                    checkLoginStatus(mGoogleLoginUtil.getUser());
-
-                }
-            }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, appConfig.getSenderId());
-        }
-    }
-
-    private void checkLoginStatus(FirebaseUser user){
-        if(user != null){
-            FirebaseUserInfo oldUserInfo = mConfigPref.getUserInfo();
-            if(getIntent().getAction().equals(NotificationHelper.ACTION_NOTIFICATION)){
-                startMainActivity(oldUserInfo);
-            }else{
-                mLoadingMessage.setVisibility(View.VISIBLE);
-                showProgress();
-                mLoadingMessage.setText(R.string.config_user_info_register);
-                FirebaseUserInfo userInfo = new FirebaseUserInfo(user
-                        , mConfigPref.getGcmDeviceId()
-                        ,Build.MODEL, oldUserInfo != null ? oldUserInfo.getDistrict() : 0);
-                mConfigPref.setUserInfo(userInfo);
-                mRegisterUserRequest.setObject(userInfo);
-                NetworkManager.getInstance().request(mRegisterUserRequest);
-            }
-        }else{
-            mLoadingMessage.setVisibility(View.GONE);
-            showLoginButton();
-        }
-    }
-
-    /**
-     * 3. login to Naver
-     */
-//    private void loginNaver(){
-//        Log.i(TAG, "loginNaver: start");
-//        mLoadingMessage.setText(R.string.config_data_auto_login);
-//        startActivityForResult(new Intent(this, NaverLoginActivity.class), REQUEST_LOGIN_CODE);
-//    }
-
-    private BaseApiResponse.OnResponseListener<AppConfig> onConfigResponseListener = new BaseApiResponse.OnResponseListener<AppConfig>() {
-
-        private int mRetryCount = 0;
-
-        @Override
-        public void onResponse(BaseApiResponse<AppConfig> response) {
-            if(response != null){
-                Log.i(TAG, "onConfigResponse onResponse : " + response.toString());
-                mLoadingMessage.setText(R.string.config_check_app_version);
-                if(response.getData() != null){
-                    mConfigPref.setAppConfig(response.getData());
-                    final AppConfig config = response.getData();
-                    int lastestVersion = config.getAppVersionCode();
-                    int appVersion = AppUtils.getApplicationVersionCode(SplashActivity.this);
-                    if(lastestVersion > appVersion && config.getForceUpdate() > 0){
-                        new AlertDialog.Builder(SplashActivity.this)
-                                .setTitle(R.string.notice)
-                                .setMessage(R.string.config_force_update)
-                                .setOnCancelListener(new DialogInterface.OnCancelListener() {
-                                    @Override
-                                    public void onCancel(DialogInterface dialog) {
-                                        AppUtils.goAppStore(SplashActivity.this, config.getAppMarketUrl());
-                                    }
-                                }).setOnDismissListener(new DialogInterface.OnDismissListener() {
-                            @Override
-                            public void onDismiss(DialogInterface dialog) {
-                                AppUtils.goAppStore(SplashActivity.this, config.getAppMarketUrl());
-
-                            }
-                        }).create().show();
+                    if (getIntent().getAction().equals(NotificationHelper.ACTION_NOTIFICATION)) {
+                        startMainActivity();
                     }else{
-                        NetworkManager.getInstance().request(mDistrictDataRequest);
+                        prepareUserInfo();
                     }
                 }
-            }else{
-                if(RETRY_COUNT > mRetryCount){
-                    NetworkManager.getInstance().request(mConfigReqeust);
-                    mRetryCount++;
-                }else{
-                    finishError();
+            }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, appConfig.senderId);
+        }
+    }
+
+    private void prepareUserInfo(){
+        mLoadingMessage.setVisibility(View.VISIBLE);
+        showProgress();
+        mLoadingMessage.setText(R.string.config_user_info_register);
+        final UserInfoDatabase userDatabase = new UserInfoDatabase(mGoogleLoginUtil.getUser().getUid());
+        userDatabase.getReference().addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                Log.d(TAG, "onDataChange() called with: dataSnapshot = [" + dataSnapshot + "]");
+                User user = dataSnapshot.getValue(User.class);
+                if (user != null) {
+                    userDatabase.updateTime();
+                    mConfigPref.setUserInfo(user);
+                } else {
+                    user = new User(mGoogleLoginUtil.getUser(), mConfigPref.getGcmDeviceId(), Build.MODEL, 0);
+                    mConfigPref.setUserInfo(user);
+                    dataSnapshot.getRef().setValue(user.getValues());
                 }
+                startApplication(user);
             }
-        }
 
-        @Override
-        public void onError(VolleyError error) {
-            if(RETRY_COUNT > mRetryCount){
-                NetworkManager.getInstance().request(mConfigReqeust);
-                mRetryCount++;
-            }else{
-                finishError();
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
             }
-        }
-    };
+        });
+    }
 
-    private void finishError(){
+    private void finishError() {
         Toast.makeText(SplashActivity.this, R.string.config_data_can_not_read, Toast.LENGTH_SHORT).show();
         new Handler().postDelayed(new Runnable() {
             @Override
@@ -282,14 +330,19 @@ public class SplashActivity extends BaseActivity implements GoogleLoginUtil.OnAc
         }, 500L);
     }
 
-    private void startApplication(final FirebaseUserInfo userInfo){
+    private void startApplication(final User userInfo) {
         Log.i(TAG, "startApplication: start");
+        if (getIntent().getAction().equals(NotificationHelper.ACTION_NOTIFICATION)) {
+            startMainActivity();
+        }else{
+
+        }
+
         SimpleViewUtils.hideView(mLoadingMessage, View.GONE);
         SimpleViewUtils.hideView(mProgress, View.GONE);
-        if(userInfo != null){
-            Log.i(TAG, "startApplication: naverUserInfo = " + userInfo.toString());
-            mUserNickname.setText(userInfo.getDisplayName());
-            mUserImage.setImageUrl(userInfo.getPhotoUrl());
+        if (userInfo != null) {
+            mUserNickname.setText(userInfo.name);
+            mUserImage.setImageUrl(userInfo.profileImage);
 
             SimpleViewUtils.showView(mUserLayout, View.VISIBLE, new SimpleViewUtils.SimpleAnimationStatusListener() {
                 @Override
@@ -302,7 +355,7 @@ public class SplashActivity extends BaseActivity implements GoogleLoginUtil.OnAc
                     mUserLayout.postDelayed(new Runnable() {
                         @Override
                         public void run() {
-                            startMainActivity(userInfo);
+                            startMainActivity();
                         }
                     }, 700L);
                 }
@@ -325,7 +378,7 @@ public class SplashActivity extends BaseActivity implements GoogleLoginUtil.OnAc
         });
     }
 
-    private void showLoginButton(){
+    private void showLoginButton() {
         SimpleViewUtils.hideView(mProgress, View.GONE, new SimpleViewUtils.SimpleAnimationStatusListener() {
             @Override
             public void onStart() {
@@ -339,25 +392,26 @@ public class SplashActivity extends BaseActivity implements GoogleLoginUtil.OnAc
         });
     }
 
-    private void startMainActivity(FirebaseUserInfo info){
+    private void startMainActivity() {
         Log.i(TAG, "startMainActivity: start");
-
-        if(!AppUtils.isServiceRunning(this, FirebaseChattingService.class)){
-            startService(new Intent(getApplicationContext(), FirebaseChattingService.class));
-        }
-
-        Intent intent = null;
-        if(getIntent() != null
-                && getIntent().getAction() != null
-                && getIntent().getAction().equals(NotificationHelper.ACTION_NOTIFICATION)){
-            intent = new Intent(this, MainActivity.class);
-            intent.setData(getIntent().getData());
-            intent.putExtra(NotificationHelper.KEY_NOTIFICATION_PARCELABLE, getIntent().getParcelableExtra(NotificationHelper.KEY_NOTIFICATION_PARCELABLE));
-
+        if(TextUtils.isEmpty(mConfigPref.getUserInfo().nickName)
+                || mConfigPref.getUserInfo().district == 0){
+            Intent intent = new Intent(this, UserInfoInputActivity.class);
+            startActivityWithClipRevealAnimation(intent, mMainMessage);
         }else{
-            intent = new Intent(this, MainActivity.class);
+            Intent intent = null;
+            if (getIntent() != null
+                    && getIntent().getAction() != null
+                    && getIntent().getAction().equals(NotificationHelper.ACTION_NOTIFICATION)) {
+                intent = new Intent(this, MainActivity.class);
+                intent.setData(getIntent().getData());
+                intent.putExtra(NotificationHelper.KEY_NOTIFICATION_PARCELABLE, getIntent().getParcelableExtra(NotificationHelper.KEY_NOTIFICATION_PARCELABLE));
+
+            } else {
+                intent = new Intent(this, MainActivity.class);
+            }
+            startActivityWithClipRevealAnimation(intent, mMainMessage);
         }
-        startActivityWithClipRevealAnimation(intent, mMainMessage);
         finish();
     }
 
@@ -367,78 +421,15 @@ public class SplashActivity extends BaseActivity implements GoogleLoginUtil.OnAc
         overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
     }
 
-//    private void failedLogin(){
-//        Toast.makeText(this, R.string.fail_auth_user_info, Toast.LENGTH_SHORT).show();
-//        GoogleAnalytics.getInstance().sendLogEventProperties(Event.EnterSplashActivity_LoginFailed);
-//        getBaseLayoutContainer().postDelayed(new Runnable() {
-//            @Override
-//            public void run() {
-//                finish();
-//            }
-//        }, 1000L);
-//    }
-
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         mGoogleLoginUtil.onActivityResult(requestCode, resultCode, data);
     }
 
-    private BaseApiResponse.OnResponseListener<FirebaseUserInfo> onRegisterUserInfoResponse = new BaseApiResponse.OnResponseListener<FirebaseUserInfo>() {
-
-        private int mRetryCount = 0;
-
-        @Override
-        public void onResponse(BaseApiResponse<FirebaseUserInfo> response) {
-            Log.i(TAG, "onRegisterUserInfoResponse onResponse: " + response.toString());
-            if(response != null && response.getData() != null){
-                final FirebaseUserInfo userInfo = response.getData();
-                mConfigPref.setUserInfo(userInfo);
-                startApplication(userInfo);
-            }else{
-                if(RETRY_COUNT > mRetryCount){
-                    NetworkManager.getInstance().request(mRegisterUserRequest);
-                    mRetryCount++;
-                }
-            }
-        }
-
-        @Override
-        public void onError(VolleyError error) {
-            if(RETRY_COUNT > mRetryCount){
-                NetworkManager.getInstance().request(mRegisterUserRequest);
-                mRetryCount++;
-            }else{
-                Log.i(TAG, "onRegisterUserInfoResponse error : " + error.toString());
-                startApplication(mConfigPref.getUserInfo());
-            }
-        }
-    };
-
-    private BaseApiResponse.OnResponseListener<ArrayList<District>> districtApiResponse = new BaseApiResponse.OnResponseListener<ArrayList<District>>() {
-        private int mRetry = 0;
-        @Override
-        public void onResponse(BaseApiResponse<ArrayList<District>> response) {
-            if(response != null){
-                mConfigPref.setDistricts(response.getData());
-                registerDevice(mConfigPref.getAppConfig());
-            }else{
-                if(BaseApiResponse.RETRY_COUNT > mRetry){
-                    NetworkManager.getInstance().request(mDistrictDataRequest);
-                    mRetry++;
-                }
-            }
-        }
-
-        @Override
-        public void onError(VolleyError error) {
-            Log.w(TAG, "onError: ", error);
-        }
-    };
-
     @Override
-    public void onUserAddSuccess(FirebaseUser user) {
-        checkLoginStatus(user);
+    public void onUserAddSuccess(final FirebaseUser firebaseUser) {
+        getAppMessage();
     }
 
     @Override

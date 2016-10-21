@@ -5,7 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 
 import com.fivetrue.fivetrueandroid.utils.AppUtils;
-import com.fivetrue.gimpo.ac05.chatting.FirebaseChattingService;
+import com.fivetrue.gimpo.ac05.service.FirebaseService;
 
 /**
  * Created by kwonojin on 2016. 10. 13..
@@ -27,8 +27,8 @@ public class ApplicationChecker extends BroadcastReceiver {
     }
 
     private void onBootCompleted(Context context){
-        if(!AppUtils.isServiceRunning(context, FirebaseChattingService.class)){
-            Intent intent = new Intent(context.getApplicationContext(), FirebaseChattingService.class);
+        if(!AppUtils.isServiceRunning(context, FirebaseService.class)){
+            Intent intent = new Intent(context.getApplicationContext(), FirebaseService.class);
             context.getApplicationContext().startActivity(intent);
         }
     }
