@@ -14,8 +14,8 @@ public class ActiveChatUserDatabase extends BaseFirebaseReference<User> {
 
     public static final String PATH = "/active/chat/%s";
 
-    public ActiveChatUserDatabase(String type) {
-        super(String.format(PATH, type));
+    public ActiveChatUserDatabase(String child) {
+        super(String.format(PATH, child));
     }
 
     @Override

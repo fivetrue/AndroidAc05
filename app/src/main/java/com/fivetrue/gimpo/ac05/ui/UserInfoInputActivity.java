@@ -163,7 +163,7 @@ public class UserInfoInputActivity extends BaseActivity {
                             }else{
                                 dataSnapshot.child(mUserInfo.uid)
                                         .child("nickName")
-                                        .getRef().setValue(nickName).addOnSuccessListener(new OnSuccessListener<Void>() {
+                                        .getRef().setValue(nickName.trim()).addOnSuccessListener(new OnSuccessListener<Void>() {
                                     @Override
                                     public void onSuccess(Void aVoid) {
                                         dataSnapshot.child(mUserInfo.uid)
@@ -225,7 +225,7 @@ public class UserInfoInputActivity extends BaseActivity {
                 }
             }).show();
         }else{
-            onBackPressed();
+            super.onBackPressed();
         }
     }
 }

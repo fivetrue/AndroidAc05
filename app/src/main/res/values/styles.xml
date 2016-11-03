@@ -58,7 +58,7 @@
     </style>
 
     <style name="CommonText.Small">
-        <item name="android:textSize">10dp</item>
+        <item name="android:textSize">13dp</item>
     </style>
 
     <style name="CommonText.Chat">

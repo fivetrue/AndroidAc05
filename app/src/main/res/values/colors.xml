@@ -6,6 +6,7 @@
 
     <color name="color_primary_alpha_10">#1987b4f6</color>
     <color name="color_primary_alpha_30">#4C87b4f6</color>
+    <color name="color_primary_dark_alpha_30">#4C2080ff</color>
 
     <color name="actionbar_background">#4C3887fa</color>
 

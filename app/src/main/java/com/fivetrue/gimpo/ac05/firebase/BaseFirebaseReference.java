@@ -7,6 +7,8 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ServerValue;
 
+import java.util.Comparator;
+
 /**
  * Created by kwonojin on 2016. 10. 19..
  */
@@ -44,4 +46,11 @@ public class BaseFirebaseReference <T extends FirebaseData> {
     public void updateTime(){
         getUpdateTimeRef().setValue(ServerValue.TIMESTAMP);
     }
+
+    public static final Comparator<FirebaseData> DESC_SORTING = new Comparator<FirebaseData>() {
+        @Override
+        public int compare(FirebaseData o1, FirebaseData o2) {
+            return (o1.updateTime > o2.updateTime) ? -1: (o1.updateTime > o2.updateTime) ? 1:0 ;
+        }
+    };
 }

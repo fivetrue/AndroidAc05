@@ -3,36 +3,29 @@
     android:orientation="vertical" android:layout_width="match_parent"
     android:layout_height="wrap_content">
 
-    <include layout="@layout/layout_divider_vertical" />
     <LinearLayout
         android:id="@+id/layout_recycler_container"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="10dp"
-        android:background="@color/colorAccent"
-        android:orientation="vertical">
+        android:orientation="vertical"
+        android:background="@android:color/white">
         <RelativeLayout
             android:id="@+id/layout_recycler_container_title"
             android:layout_width="match_parent"
-            android:layout_height="40dp"
-            android:paddingLeft="10dp"
-            android:paddingRight="10dp"
+            android:layout_height="60dp"
             android:background="@drawable/selector_common_list_item_background">
 
-            <ImageView
-                android:id="@+id/iv_recycler_container_title_button"
+            <TextView
+                android:id="@+id/tv_recycler_container_title_button"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_height="match_parent"
                 android:layout_alignParentRight="true"
-                android:src="@drawable/ic_square_arrow_right_20dp"
-                android:layout_centerVertical="true"/>
-
-            <ImageView
-                android:id="@+id/iv_recycler_container_title_icon"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentLeft="true"
-                android:layout_centerVertical="true"/>
+                android:text="@string/read_more"
+                android:padding="10dp"
+                android:textColor="@color/colorNegative"
+                style="@style/CommonText.Small"
+                android:gravity="center_vertical"/>
 
             <TextView
                 android:id="@+id/tv_recycler_container_title"
@@ -41,29 +34,21 @@
                 android:gravity="center_vertical"
                 android:text="@string/public_notice"
                 android:textColor="@color/colorPrimaryDark"
-                android:layout_marginLeft="10dp"
-                android:layout_marginRight="10dp"
-                android:layout_toRightOf="@id/iv_recycler_container_title_icon"
-                android:layout_toLeftOf="@id/iv_recycler_container_title_button"
-                android:singleLine="true"/>
+                android:padding="10dp"
+                android:textStyle="bold"
+                android:layout_toLeftOf="@id/tv_recycler_container_title_button"
+                android:singleLine="true"
+                style="@style/CommonText.Medium"/>
 
         </RelativeLayout>
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="0.5dp"
-            android:paddingLeft="10dp"
-            android:paddingRight="10dp"
-            android:background="@color/colorPrimaryDark"/>
-
         <android.support.v7.widget.RecyclerView
             android:id="@+id/rv_recycler_conatainer_list"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="5dp"
-            android:layout_marginTop="5dp"/>
+            android:layout_marginBottom="5dp"/>
     </LinearLayout>
     <View
         android:layout_width="match_parent"
-        android:layout_height="1dp"
+        android:layout_height="@dimen/common_shadow_height"
         android:background="@drawable/common_action_bg_shadow"/>
 </LinearLayout>

@@ -53,8 +53,8 @@
                     android:layout_centerVertical="true"
                     android:gravity="center_vertical"
                     android:text="City"
-                    android:singleLine="true"
-                    style="@style/CommonText.Tiny"
+                    android:maxLines="3"
+                    style="@style/CommonText.Small"
                     android:textColor="@color/colorAccent"
                     android:textStyle="bold"/>
 
@@ -66,6 +66,7 @@
                     android:text="Name"
                     android:singleLine="true"
                     style="@style/CommonText.Small"
+                    android:maxLines="3"
                     android:textColor="@color/colorAccent"
                     android:textStyle="bold"/>
 
@@ -75,7 +76,8 @@
                     android:layout_height="wrap_content"
                     android:text="Author"
                     android:singleLine="true"
-                    style="@style/CommonText.Tiny"
+                    style="@style/CommonText.Small"
+                    android:maxLines="3"
                     android:textColor="@color/colorAccent"
                     android:textStyle="bold"/>
             </LinearLayout>

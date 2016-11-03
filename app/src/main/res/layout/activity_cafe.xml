@@ -11,17 +11,36 @@
         android:id="@+id/layout_cafe"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
-
         <WebView
             android:id="@+id/webview_cafe"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:isScrollContainer="false"/>
-        <android.support.v4.widget.ContentLoadingProgressBar
-            android:id="@+id/pb_cafe"
-            android:layout_width="match_parent"
-            android:layout_gravity="top"
-            android:layout_height="4dp"
-            style="?android:attr/android:progressBarStyleHorizontal"/>
+    </FrameLayout>
+
+    <FrameLayout
+        android:id="@+id/layout_cafe_capture"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        android:background="@color/colorPrimaryDark"
+        android:layout_gravity="bottom"
+        android:visibility="invisible">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/colorAccent"
+            android:text="@string/cafe_content_scrap"
+            android:layout_gravity="center"
+            style="@style/CommonText.Medium"/>
+
+        <ImageView
+            android:id="@+id/iv_cafe_capture_close"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_delete_white_20dp"
+            android:layout_gravity="center_vertical|right"
+            android:padding="20dp"/>
+
     </FrameLayout>
 </android.support.design.widget.CoordinatorLayout>

@@ -25,12 +25,15 @@ public class InputDialogFragment extends BaseDialogFragment{
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        mText = getArguments().getString("text");
     }
 
     @Override
     protected View onCreateChildView(LayoutInflater inflater) {
         View view = inflater.inflate(R.layout.fragment_input, null);
         mInput = (EditText) view.findViewById(R.id.et_fragment_input);
+        mInput.setText(mText);
+        mInput.selectAll();
         mInput.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {

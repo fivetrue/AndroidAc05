@@ -14,12 +14,18 @@ import com.fivetrue.fivetrueandroid.net.BaseApiResponse;
 import com.fivetrue.fivetrueandroid.net.NetworkManager;
 import com.fivetrue.fivetrueandroid.ui.BaseActivity;
 import com.fivetrue.fivetrueandroid.ui.adapter.BaseRecyclerAdapter;
+import com.fivetrue.fivetrueandroid.ui.diaglog.LoadingDialog;
 import com.fivetrue.gimpo.ac05.R;
+import com.fivetrue.gimpo.ac05.database.TownNewsLocalDB;
+import com.fivetrue.gimpo.ac05.firebase.database.TownNewsDatabase;
+import com.fivetrue.gimpo.ac05.firebase.model.TownNews;
 import com.fivetrue.gimpo.ac05.net.request.AdminUpdateDataRequest;
 import com.fivetrue.gimpo.ac05.preferences.ConfigPreferenceManager;
 import com.fivetrue.gimpo.ac05.ui.adapter.AdminListAdapter;
+import com.fivetrue.gimpo.ac05.utils.TownDataParser;
 
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by kwonojin on 16. 6. 10..
@@ -28,11 +34,17 @@ public class AdminActivity extends BaseActivity {
 
     private static final String TAG = "AdminActivity";
 
+    public interface IAdminItem{
+        String getTitle();
+        void doFunction();
+    }
+
     private RecyclerView mRecyclerView;
-
-    private ArrayList<BaseApiRequest> requestArrayList;
-
+    private AdminListAdapter mAdapter;
+    private LoadingDialog mLoadingDialog;
     private ConfigPreferenceManager mConfig;
+
+    private TownNewsLocalDB mTownNewsLocalDB;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -44,11 +56,44 @@ public class AdminActivity extends BaseActivity {
 
     protected void initData(){
         mConfig = new ConfigPreferenceManager(this);
-        requestArrayList = new ArrayList<>();
-        AdminUpdateDataRequest updateDataRequest = new AdminUpdateDataRequest(this, onResponseListener);
-        updateDataRequest.setTimeoutMills(1000 * 1000 * 5);
-        updateDataRequest.putParam("email", mConfig.getUserInfo().email);
-        requestArrayList.add(updateDataRequest);
+        mTownNewsLocalDB = new TownNewsLocalDB(this);
+        mAdapter = new AdminListAdapter(new ArrayList<IAdminItem>());
+        mAdapter.setOnItemClickListener(new BaseRecyclerAdapter.OnItemClickListener<IAdminItem, AdminListAdapter.AdminViewHolder>() {
+            @Override
+            public void onClickItem(AdminListAdapter.AdminViewHolder holder, final IAdminItem data) {
+                if(data != null){
+                    data.doFunction();
+                }
+            }
+        });
+        mAdapter.getData().add(new IAdminItem() {
+            @Override
+            public String getTitle() {
+                return "구래동 뉴스 업데이트";
+            }
+
+            @Override
+            public void doFunction() {
+                mLoadingDialog.show();
+                new TownDataParser(AdminActivity.this
+                        , mConfig.getAppConfig(), new TownDataParser.OnLoadTownDataListener() {
+                    @Override
+                    public void onLoad(List<TownNews> list) {
+
+                        if(list != null && list.size() > 0){
+                            for(TownNews news : list){
+                                if(!mTownNewsLocalDB.existsTownNews(news.url)){
+                                    new TownNewsDatabase().pushData(news);
+                                }
+                            }
+                        }
+                        Toast.makeText(AdminActivity.this, getTitle() + " : 완료", Toast.LENGTH_SHORT).show();
+                        mLoadingDialog.dismiss();
+                    }
+                }).execute();
+
+            }
+        });
     }
 
     private void initView(){
@@ -57,19 +102,10 @@ public class AdminActivity extends BaseActivity {
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setTitle(R.string.admin);
+        mLoadingDialog = new LoadingDialog(this);
         mRecyclerView = (RecyclerView) findViewById(R.id.rv_admin_list);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
-        AdminListAdapter adapter = new AdminListAdapter(requestArrayList);
-        adapter.setOnItemClickListener(new BaseRecyclerAdapter.OnItemClickListener<BaseApiRequest, AdminListAdapter.AdminViewHolder>() {
-            @Override
-            public void onClickItem(AdminListAdapter.AdminViewHolder holder, final BaseApiRequest data) {
-                if(data != null){
-                    Toast.makeText(AdminActivity.this, data.getUrl(), Toast.LENGTH_SHORT).show();
-                    NetworkManager.getInstance().request(data);
-                }
-            }
-        });
-        mRecyclerView.setAdapter(adapter);
+        mRecyclerView.setAdapter(mAdapter);
     }
 
     @Override
@@ -86,19 +122,4 @@ public class AdminActivity extends BaseActivity {
     protected boolean transitionModeWhenFinish() {
         return true;
     }
-
-    private BaseApiResponse.OnResponseListener<String> onResponseListener = new BaseApiResponse.OnResponseListener<String>() {
-        @Override
-        public void onResponse(BaseApiResponse<String> response) {
-            if(response != null){
-                Log.d(TAG, "onResponse() called with: response = [" + response + "]");
-                Toast.makeText(AdminActivity.this, response.getData(), Toast.LENGTH_SHORT).show();
-            }
-        }
-
-        @Override
-        public void onError(VolleyError error) {
-            Toast.makeText(AdminActivity.this, error.toString(), Toast.LENGTH_SHORT).show();
-        }
-    };
 }

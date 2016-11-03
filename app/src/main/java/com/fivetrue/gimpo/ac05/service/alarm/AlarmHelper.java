@@ -8,7 +8,6 @@ import android.preference.PreferenceManager;
 import android.util.Base64;
 
 import com.fivetrue.gimpo.ac05.service.BaseServiceHelper;
-import com.fivetrue.gimpo.ac05.service.notification.NotificationHelper;
 import com.google.gson.Gson;
 
 /**

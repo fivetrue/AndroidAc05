@@ -4,7 +4,7 @@
     tools:context=".ui.WebViewActivity">
     <item
         android:id="@+id/action_share"
-        android:icon="@drawable/ic_share_20dp_accent"
+        android:icon="@drawable/ic_share_white_20dp"
         android:title="@string/action_settings"
         app:showAsAction="ifRoom"/>
 </menu>

@@ -44,6 +44,7 @@
     <string name="admin">관리자</string>
     <string name="send">보내기</string>
     <string name="delete">삭제</string>
+    <string name="read_more">더 보기</string>
     <string name="chat_alarm_on">알람 켬</string>
     <string name="chat_alarm_off">알람 끔</string>
 
@@ -63,7 +64,7 @@
 
     <!-- Main -->
     <string name="public_notice">공지사항</string>
-    <string name="town_news">우리동네 소식</string>
+    <string name="town_news">구래동 소식</string>
     <string name="gimpo_journal">김포 저널</string>
     <string name="gimpo_news">김포 뉴스</string>
 
@@ -107,9 +108,22 @@
     <string name="delete_chat_message">메세지가 삭제 됩니다.</string>
     <string name="can_not_delete_chat_message">본인의 작성한 메세지만 삭제 할 수 있습니다.</string>
     <string name="delete_gallery_message">사진을 삭제 하시겠습니까?</string>
+    <string name="delete_captured_data">캡쳐된 게시물을 삭제 하시겠습니까?</string>
 
     <string name="does_not_setting_message">값이 설정되지 않았습니다.</string>
     <string name="duplication_nickname">중복된 닉네임 입니다.</string>
     <string name="cancel_input_user_info_message">정보입력을 취소하시겠습니까? 취소 할 경우 앱이 종료됩니다.</string>
+
+    <!-- Cafe -->
+    <string name="scrap_data_name">스크랩 이름</string>
+    <string name="scraped_cafe_content">스크랩된 카페 게시물</string>
+    <string name="cafe_content_scrap">현재 카페 게시물 앱으로 스크랩</string>
+    <string name="already_scrap_content">이미 스크랩된 게시물입니다.</string>
+    <string name="new_scrap_data">새로운 스크랩 게시물 등록</string>
+    <string name="added_new_comment_to_scrap">%s 에 새로운 코멘트가 추가 되었습니다</string>
+
+    <string name="new_alarm">새로운 알림</string>
+
+
 
 </resources>

@@ -14,9 +14,9 @@ import com.fivetrue.fivetrueandroid.image.ImageLoadManager;
 import com.fivetrue.fivetrueandroid.ui.fragment.BaseDialogFragment;
 import com.fivetrue.gimpo.ac05.Constants;
 import com.fivetrue.gimpo.ac05.R;
-import com.fivetrue.gimpo.ac05.firebase.database.UserMessageBoxDatabase;
+import com.fivetrue.gimpo.ac05.firebase.database.MessageBoxDatabase;
 import com.fivetrue.gimpo.ac05.firebase.model.BadUserReportMessage;
-import com.fivetrue.gimpo.ac05.chatting.ChatMessage;
+import com.fivetrue.gimpo.ac05.firebase.model.ChatMessage;
 import com.fivetrue.gimpo.ac05.preferences.ConfigPreferenceManager;
 import com.fivetrue.gimpo.ac05.firebase.model.User;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -32,10 +32,11 @@ public class UserInfoDialogFragment extends BaseDialogFragment implements BaseDi
 
     private NetworkImageView mUserImage;
     private TextView mUserName;
+    private TextView mUserDistrict;
 
     private User mUserInfo;
 
-    private UserMessageBoxDatabase mPeronsalMessageDatabase;
+    private MessageBoxDatabase mPersonMessageDatabase;
 
     private ConfigPreferenceManager mConfigPref;
 
@@ -44,7 +45,7 @@ public class UserInfoDialogFragment extends BaseDialogFragment implements BaseDi
         super.onCreate(savedInstanceState);
         mUserInfo = getArguments().getParcelable(User.class.getName());
         mConfigPref = new ConfigPreferenceManager(getActivity());
-        mPeronsalMessageDatabase = new UserMessageBoxDatabase(mUserInfo.uid);
+        mPersonMessageDatabase = new MessageBoxDatabase(mUserInfo.uid);
     }
 
     @Override
@@ -52,6 +53,7 @@ public class UserInfoDialogFragment extends BaseDialogFragment implements BaseDi
         View view = inflater.inflate(R.layout.fragment_user_info, null);
         mUserImage = (NetworkImageView) view.findViewById(R.id.iv_fragment_user_info_image);
         mUserName = (TextView) view.findViewById(R.id.tv_fragment_user_info_name);
+        mUserDistrict = (TextView) view.findViewById(R.id.tv_fragment_user_info_district);
         if(mUserInfo.uid.equals(mConfigPref.getUserInfo().uid)){
             view.findViewById(R.id.layout_fragment_user_info_buttons).setVisibility(View.GONE);
         }
@@ -69,7 +71,7 @@ public class UserInfoDialogFragment extends BaseDialogFragment implements BaseDi
                                 if(!TextUtils.isEmpty(data)){
                                     ChatMessage message = new ChatMessage(null, data, null
                                             , mConfigPref.getUserInfo());
-                                    mPeronsalMessageDatabase.pushData(message);
+                                    mPersonMessageDatabase.getPersonReference().push().setValue(message.getValues());
                                 }
                                 f.dismiss();
                             }
@@ -120,6 +122,7 @@ public class UserInfoDialogFragment extends BaseDialogFragment implements BaseDi
         });
         mUserImage.setImageUrl(mUserInfo.profileImage, ImageLoadManager.getImageLoader());
         mUserName.setText(mUserInfo.getDisplayName());
+        mUserDistrict.setText(mUserInfo.district + "동");
         return view;
     }
 

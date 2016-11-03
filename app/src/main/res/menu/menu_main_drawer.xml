@@ -13,10 +13,6 @@
             android:title="@string/talk_local" />
 
         <item
-            android:id="@+id/nav_gram"
-            android:icon="@drawable/ic_multi_camera_20dp"
-            android:title="@string/camera_photo" />
-        <item
             android:id="@+id/nav_cafe"
             android:icon="@drawable/ic_cafe_20dp"
             android:title="@string/cafe" />

@@ -10,6 +10,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.net.Uri;
 import android.os.Build;
 import android.os.IBinder;
 import android.os.RemoteCallbackList;
@@ -23,25 +24,28 @@ import com.android.volley.toolbox.ImageLoader;
 import com.fivetrue.fivetrueandroid.image.ImageLoadManager;
 import com.fivetrue.gimpo.ac05.Constants;
 import com.fivetrue.gimpo.ac05.R;
-import com.fivetrue.gimpo.ac05.chatting.ChatMessage;
-import com.fivetrue.gimpo.ac05.chatting.GalleryMessage;
-import com.fivetrue.gimpo.ac05.chatting.IChattingCallback;
-import com.fivetrue.gimpo.ac05.chatting.IChattingService;
-import com.fivetrue.gimpo.ac05.chatting.MessageData;
-import com.fivetrue.gimpo.ac05.database.ChatMessageDatabase;
-import com.fivetrue.gimpo.ac05.database.GalleryMessageDatabase;
-import com.fivetrue.gimpo.ac05.firebase.database.UserMessageBoxDatabase;
+import com.fivetrue.gimpo.ac05.database.ScrapLocalDB;
+import com.fivetrue.gimpo.ac05.database.TownNewsLocalDB;
+import com.fivetrue.gimpo.ac05.firebase.MessageData;
+import com.fivetrue.gimpo.ac05.database.ChatLocalDB;
+import com.fivetrue.gimpo.ac05.firebase.database.ChatDatabase;
+import com.fivetrue.gimpo.ac05.firebase.database.ScrapContentDatabase;
+import com.fivetrue.gimpo.ac05.firebase.database.MessageBoxDatabase;
+import com.fivetrue.gimpo.ac05.firebase.database.TownNewsDatabase;
+import com.fivetrue.gimpo.ac05.firebase.model.ChatMessage;
+import com.fivetrue.gimpo.ac05.firebase.model.NotifyMessage;
+import com.fivetrue.gimpo.ac05.firebase.model.ScrapContent;
+import com.fivetrue.gimpo.ac05.firebase.model.TownNews;
 import com.fivetrue.gimpo.ac05.preferences.ConfigPreferenceManager;
 import com.fivetrue.gimpo.ac05.preferences.DefaultPreferenceManager;
 import com.fivetrue.gimpo.ac05.ui.ByPassAcitivty;
+import com.fivetrue.gimpo.ac05.ui.ScrapContentListActivity;
 import com.fivetrue.gimpo.ac05.ui.ChattingActivity;
-import com.fivetrue.gimpo.ac05.ui.DeepLinkManager;
 import com.fivetrue.gimpo.ac05.firebase.model.User;
+import com.fivetrue.gimpo.ac05.ui.PersonalActivity;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
 
 /**
  * Created by kwonojin on 2016. 10. 13..
@@ -55,19 +59,22 @@ public class FirebaseService extends Service{
     public static final String ACTION_DELETE_NOTIFICATION_MESSAGE = "com.fivetrue.gimpo.ac05.delete.message";
     public static final String ACTION_FIREBASE_MESSAGE = "com.fivetrue.gimpo.ac05.firebase.message";
 
-    private DatabaseReference mChattingDBReference;
-    private DatabaseReference mPublicDBReference;
-    private DatabaseReference mDistrictDBReference;
-    private DatabaseReference mGalleryDBReference;
+    private static final long VALID_NOTIFICATION_GAP = 1000 * 60;
 
-    private UserMessageBoxDatabase mUserMessageBoxDatabase;
 
-    private RemoteCallbackList<IChattingCallback> mCallbacks = new RemoteCallbackList<>();
+    private ChatDatabase mPublicChatDB;
+    private ChatDatabase mDistricChatDB;
+    private MessageBoxDatabase mMessageBoxDatabase;
+    private ScrapContentDatabase mScrapContentDatabase;
+    private TownNewsDatabase mTownNewsDatabase;
+
+    private ChatLocalDB mChatLocalDB;
+    private ScrapLocalDB mScrapLocalDB;
+    private TownNewsLocalDB mTownNewsLocalDB;
+
+    private RemoteCallbackList<IFirebaseServiceCallback> mCallbacks = new RemoteCallbackList<>();
 
     private ConfigPreferenceManager mConfigPref;
-    private ChatMessageDatabase mChatMessageDatabase;
-    private GalleryMessageDatabase mGalleryMessageDatabase;
-
     private NotificationManager mNotificationManager;
 
     @Override
@@ -76,13 +83,13 @@ public class FirebaseService extends Service{
         Log.d(TAG, "onCreate() called");
         initData();
 
-        mPublicDBReference.addChildEventListener(new ChildEventListener() {
+        mPublicChatDB.getReference().addChildEventListener(new ChildEventListener() {
             @Override
             public void onChildAdded(DataSnapshot dataSnapshot, String s) {
                 Log.d(TAG, "onChildAdded() called with: dataSnapshot = [" + dataSnapshot + "], s = [" + s + "]");
                 String key = dataSnapshot.getKey();
                 ChatMessage chatMessage = dataSnapshot.getValue(ChatMessage.class);
-                onReceivedChatMessage(Constants.PUBLIC_CHATTING_NOTIFICATION_ID, key, chatMessage);
+                onReceivedChatMessage(Constants.PUBLIC_CHATTING_ID, key, chatMessage);
             }
 
             @Override
@@ -110,28 +117,24 @@ public class FirebaseService extends Service{
     private void initData(){
         mConfigPref = new ConfigPreferenceManager(this);
         mNotificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
-        mChatMessageDatabase = new ChatMessageDatabase(this);
-        mGalleryMessageDatabase = new GalleryMessageDatabase(this);
+        mChatLocalDB = new ChatLocalDB(this);
+        mScrapLocalDB = new ScrapLocalDB(this);
+        mTownNewsLocalDB = new TownNewsLocalDB(this);
 
-        FirebaseDatabase database = FirebaseDatabase.getInstance();
         /**
          * Chatting
          */
-        mChattingDBReference = database.getReference(Constants.FIREBASE_DB_ROOT_CHATTING);
-        mPublicDBReference = mChattingDBReference.child(Constants.FIREBASE_DB_CHATTING_PUBLIC);
+        mPublicChatDB = new ChatDatabase(String.valueOf(Constants.PUBLIC_CHATTING_ID));
         updateDistrictChatting();
 
-        /**
-         * Gallery
-         */
-        mGalleryDBReference = database.getReference(Constants.FIREBASE_DB_ROOT_GALLERY);
-        mGalleryDBReference.addChildEventListener(new ChildEventListener() {
+        mScrapContentDatabase = new ScrapContentDatabase();
+        mScrapContentDatabase.getReference().addChildEventListener(new ChildEventListener() {
             @Override
             public void onChildAdded(DataSnapshot dataSnapshot, String s) {
-                Log.d(TAG, "onChildAdded() called with: dataSnapshot = [" + dataSnapshot + "], s = [" + s + "]");
-                String key = dataSnapshot.getKey();
-                GalleryMessage galleryMessage = dataSnapshot.getValue(GalleryMessage.class);
-                onReceivedGallery(Constants.GALLERY_NOTIFICATION_ID, key, galleryMessage);
+                if(dataSnapshot != null && dataSnapshot.getValue() != null){
+                    ScrapContent page = dataSnapshot.getValue(ScrapContent.class);
+                    onReceivedScrapContentMessage(dataSnapshot.getKey(), page);
+                }
             }
 
             @Override
@@ -141,7 +144,19 @@ public class FirebaseService extends Service{
 
             @Override
             public void onChildRemoved(DataSnapshot dataSnapshot) {
-                mGalleryMessageDatabase.removeGalleryMessage(Constants.GALLERY_NOTIFICATION_ID, dataSnapshot.getKey());
+                if(mScrapLocalDB != null && dataSnapshot != null){
+                    ScrapContent content = dataSnapshot.getValue(ScrapContent.class);
+                    mScrapLocalDB.removeScrapContent(content.url);
+                    mCallbacks.beginBroadcast();
+                    for(int i = 0 ; i < mCallbacks.getRegisteredCallbackCount() ; i ++){
+                        try {
+                            mCallbacks.getBroadcastItem(i).onRefreshData();
+                        } catch (RemoteException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                    mCallbacks.finishBroadcast();
+                }
             }
 
             @Override
@@ -156,13 +171,13 @@ public class FirebaseService extends Service{
         });
 
         if(mConfigPref.getUserInfo() != null){
-            mUserMessageBoxDatabase = new UserMessageBoxDatabase(mConfigPref.getUserInfo().uid);
-            mUserMessageBoxDatabase.getReference().addChildEventListener(new ChildEventListener() {
+            mMessageBoxDatabase = new MessageBoxDatabase(mConfigPref.getUserInfo().uid);
+            mMessageBoxDatabase.getPersonReference().addChildEventListener(new ChildEventListener() {
                 @Override
                 public void onChildAdded(DataSnapshot dataSnapshot, String s) {
                     String key = dataSnapshot.getKey();
                     ChatMessage chatMessage = dataSnapshot.getValue(ChatMessage.class);
-                    onReceivedChatMessage(Constants.PERSON_MESSAGE_NOTIFICATION_ID, key, chatMessage);
+                    onReceivedChatMessage(Constants.PERSON_MESSAGE_ID, key, chatMessage);
                 }
 
                 @Override
@@ -172,7 +187,80 @@ public class FirebaseService extends Service{
 
                 @Override
                 public void onChildRemoved(DataSnapshot dataSnapshot) {
-                    mChatMessageDatabase.removeChatMessage(Constants.PERSON_MESSAGE_NOTIFICATION_ID, dataSnapshot.getKey());
+                    mChatLocalDB.removeChatMessage(Constants.PERSON_MESSAGE_ID, dataSnapshot.getKey());
+                }
+
+                @Override
+                public void onChildMoved(DataSnapshot dataSnapshot, String s) {
+
+                }
+
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
+
+                }
+            });
+
+            mMessageBoxDatabase.getNotifyReference().addChildEventListener(new ChildEventListener() {
+                @Override
+                public void onChildAdded(DataSnapshot dataSnapshot, String s) {
+                    if(dataSnapshot != null && dataSnapshot.getValue() != null){
+                        NotifyMessage notifyMessage = dataSnapshot.getValue(NotifyMessage.class);
+                        if(notifyMessage != null ){
+                            if(notifyMessage.getUpdateTime() + VALID_NOTIFICATION_GAP > System.currentTimeMillis()){
+                                showNotification(Constants.NOTIFY_MESSASGE_ID
+                                        , dataSnapshot.getKey(), notifyMessage);
+                            }
+                        }
+                        dataSnapshot.getRef().setValue(null);
+                    }
+                }
+
+                @Override
+                public void onChildChanged(DataSnapshot dataSnapshot, String s) {
+
+                }
+
+                @Override
+                public void onChildRemoved(DataSnapshot dataSnapshot) {
+
+                }
+
+                @Override
+                public void onChildMoved(DataSnapshot dataSnapshot, String s) {
+
+                }
+
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
+
+                }
+            });
+        }
+
+        if(mConfigPref.getAppConfig() != null){
+            mTownNewsDatabase = new TownNewsDatabase();
+            mTownNewsDatabase.getReference().addChildEventListener(new ChildEventListener() {
+                @Override
+                public void onChildAdded(DataSnapshot dataSnapshot, String s) {
+                    if(dataSnapshot != null && dataSnapshot.getValue() != null){
+                        TownNews news = dataSnapshot.getValue(TownNews.class);
+                        if(!mTownNewsLocalDB.existsTownNews(news.url)){
+                            mTownNewsLocalDB.putTownNews(dataSnapshot.getKey(), news);
+                            showNotification(Constants.TOWN_NEWS_CONTENT_ID, dataSnapshot.getKey(), news);
+                        }
+                    }
+
+                }
+
+                @Override
+                public void onChildChanged(DataSnapshot dataSnapshot, String s) {
+
+                }
+
+                @Override
+                public void onChildRemoved(DataSnapshot dataSnapshot) {
+
                 }
 
                 @Override
@@ -190,37 +278,12 @@ public class FirebaseService extends Service{
 
     private void updateDistrictChatting(){
         User user = mConfigPref.getUserInfo();
-        if(user != null && user.district > 0 && mChattingDBReference != null){
-            mDistrictDBReference = mChattingDBReference.child(Constants.FIREBASE_DB_CHATTING_DISTRICT).child(user.district + "");
-            mDistrictDBReference.addChildEventListener(new ChildEventListener() {
-                @Override
-                public void onChildAdded(DataSnapshot dataSnapshot, String s) {
-                    Log.d(TAG, "onChildAdded() called with: dataSnapshot = [" + dataSnapshot + "], s = [" + s + "]");
-                    String key = dataSnapshot.getKey();
-                    ChatMessage chatMessage = dataSnapshot.getValue(ChatMessage.class);
-                    onReceivedChatMessage(Constants.DISTRICT_CHATTING_NOTIFICATION_ID, key, chatMessage);
-                }
-
-                @Override
-                public void onChildChanged(DataSnapshot dataSnapshot, String s) {
-
-                }
-
-                @Override
-                public void onChildRemoved(DataSnapshot dataSnapshot) {
-                    mChatMessageDatabase.removeChatMessage(Constants.DISTRICT_CHATTING_NOTIFICATION_ID, dataSnapshot.getKey());
-                }
-
-                @Override
-                public void onChildMoved(DataSnapshot dataSnapshot, String s) {
-
-                }
-
-                @Override
-                public void onCancelled(DatabaseError databaseError) {
-
-                }
-            });
+        if(user != null && user.district > 0){
+            if(mDistricChatDB != null){
+                mDistricChatDB.getReference().removeEventListener(districtChattingChildEventListener);
+            }
+            mDistricChatDB = new ChatDatabase(Constants.DISTRICT_CHATTING_ID + "/" + user.district);
+            mDistricChatDB.getReference().addChildEventListener(districtChattingChildEventListener);
         }
     }
 
@@ -228,7 +291,7 @@ public class FirebaseService extends Service{
     @Override
     public IBinder onBind(Intent intent) {
         if(intent != null && ACTION_BIND_SERVICE.equals(intent.getAction())){
-          return chattingService;
+            return chattingService;
         }
         return null;
     }
@@ -241,35 +304,40 @@ public class FirebaseService extends Service{
         return super.onStartCommand(intent, flags, startId);
     }
 
-    public void sendMessage(int type, ChatMessage msg){
-        if(type == Constants.PUBLIC_CHATTING_NOTIFICATION_ID){
-            mPublicDBReference.push().setValue(msg.getValues(), new DatabaseReference.CompletionListener() {
-                @Override
-                public void onComplete(DatabaseError databaseError, DatabaseReference databaseReference) {
-                    Log.d(TAG, "onComplete() called with: databaseError = [" + databaseError + "], databaseReference = [" + databaseReference + "]");
+    private synchronized void onReceivedScrapContentMessage(String key, ScrapContent content){
+        if(content != null){
+            content.key = key;
+            showNotification(Constants.SCRAP_CONTENT_ID
+                    , key
+                    , content);
+
+            if(!mScrapLocalDB.existsScrapContent(content.url)){
+                mScrapLocalDB.putScrap(key, content);
+                mCallbacks.beginBroadcast();
+                for(int i = 0 ; i < mCallbacks.getRegisteredCallbackCount() ; i++){
+                    try {
+                        mCallbacks.getBroadcastItem(i).onReceivedScrapContent(content);
+                    } catch (RemoteException e) {
+                        Log.w(TAG, "onReceivedChatMessage: ", e);
+                    }
                 }
-            });
-        }else{
-            mDistrictDBReference.push().setValue(msg.getValues(), new DatabaseReference.CompletionListener() {
-                @Override
-                public void onComplete(DatabaseError databaseError, DatabaseReference databaseReference) {
-                    Log.d(TAG, "onComplete() called with: databaseError = [" + databaseError + "], databaseReference = [" + databaseReference + "]");
-                }
-            });
+                mCallbacks.finishBroadcast();
+            }
         }
+
     }
 
     private synchronized void onReceivedChatMessage(int type, String key, ChatMessage msg){
         Log.d(TAG, "onReceivedChatMessage() called with: msg = [" + msg + "]");
-        if(!mChatMessageDatabase.existsChatMessage(type, key)){
-            mChatMessageDatabase.putChatMessage(type, key, msg);
+        if(!mChatLocalDB.existsChatMessage(type, key)){
+            mChatLocalDB.putChatMessage(type, key, msg);
             showNotification(type, key, msg);
 
-            if(type == Constants.PUBLIC_CHATTING_NOTIFICATION_ID || type == Constants.DISTRICT_CHATTING_NOTIFICATION_ID){
+            if(type == Constants.PUBLIC_CHATTING_ID || type == Constants.DISTRICT_CHATTING_ID){
                 mCallbacks.beginBroadcast();
                 for(int i = 0 ; i < mCallbacks.getRegisteredCallbackCount() ; i++){
                     try {
-                        mCallbacks.getBroadcastItem(i).onReceivedMessage(type, key, msg);
+                        mCallbacks.getBroadcastItem(i).onReceivedChat(type, key, msg);
                     } catch (RemoteException e) {
                         Log.w(TAG, "onReceivedChatMessage: ", e);
                     }
@@ -279,22 +347,17 @@ public class FirebaseService extends Service{
         }
     }
 
-    private synchronized void onReceivedGallery(int type, String key, GalleryMessage msg){
-        Log.d(TAG, "onReceivedChatMessage() called with: msg = [" + msg + "]");
-        if(!mGalleryMessageDatabase.existsChatMessage(key)){
-            mGalleryMessageDatabase.putGalleryMessage(type, key, msg);
-            showNotification(type, key, msg);
-        }
-    }
-
     private void showNotification(final int type, String key, final MessageData message){
 
         /**
          * 채팅방에서는 Notification 울리지 않음
          */
         boolean canPush = true;
+        if(message.getUpdateTime() + VALID_NOTIFICATION_GAP < System.currentTimeMillis()){
+            return;
+        }
 
-        if(type == Constants.PUBLIC_CHATTING_NOTIFICATION_ID || type == Constants.DISTRICT_CHATTING_NOTIFICATION_ID){
+        if(type == Constants.PUBLIC_CHATTING_ID || type == Constants.DISTRICT_CHATTING_ID){
             ActivityManager am = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
             ComponentName cn = am.getRunningTasks(1).get(0).topActivity;
             if(cn.getClassName().equals(ChattingActivity.class.getName())){
@@ -303,46 +366,73 @@ public class FirebaseService extends Service{
 
             boolean isPush = DefaultPreferenceManager.getInstance(FirebaseService.this).isPushChatting(type);
             canPush = message != null && !message.getUser().uid.equals(mConfigPref.getUserInfo().uid) && isPush;
-        }else if(type == Constants.PERSON_MESSAGE_NOTIFICATION_ID){
+        }else if(type == Constants.PERSON_MESSAGE_ID){
             canPush = DefaultPreferenceManager.getInstance(FirebaseService.this).isPushChatting(type);
-        }else if(type == Constants.GALLERY_NOTIFICATION_ID){
-
+        }else if(type == Constants.SCRAP_CONTENT_ID || type == Constants.NOTIFY_MESSASGE_ID || type == Constants.TOWN_NEWS_CONTENT_ID){
+            boolean isPush = DefaultPreferenceManager.getInstance(this).isPushService();
+            if(message != null && message.getUser() != null){
+                canPush = message != null && !message.getUser().uid.equals(mConfigPref.getUserInfo().uid) && isPush;
+            }else{
+                canPush = isPush;
+            }
         }
 
         if(canPush){
-            ImageLoadManager.getInstance().loadImageUrl(message.getUser().profileImage, new ImageLoader.ImageListener() {
+            ImageLoadManager.getInstance().loadImageUrl(message.getImageUrl(), new ImageLoader.ImageListener() {
                 @Override
                 public void onResponse(ImageLoader.ImageContainer response, boolean isImmediate) {
 
                     String title = "";
                     String content = "";
                     String summary = "";
+                    Intent intent = new Intent();
+                    intent.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP
+                            | Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS);
                     switch (type){
-                        case Constants.PUBLIC_CHATTING_NOTIFICATION_ID :
-                            title = getString(R.string.talk);
+                        case Constants.PUBLIC_CHATTING_ID:
+                        case Constants.DISTRICT_CHATTING_ID:
+                            title = type == Constants.PUBLIC_CHATTING_ID
+                                    ? getString(R.string.talk)
+                                    : String.format(getString(R.string.district_talk), String.valueOf(mConfigPref.getUserInfo().district));
                             content = message.getMessage();
                             summary = message.getUser().getDisplayName();
-                            break;
-                        case Constants.DISTRICT_CHATTING_NOTIFICATION_ID :
-                            int district = mConfigPref.getUserInfo().district;
-                            title = String.format(getString(R.string.district_talk), String.valueOf(district));
-                            content = message.getMessage();
-                            summary = message.getUser().getDisplayName();
+                            intent.setClass(FirebaseService.this, ChattingActivity.class);
+                            intent.putExtra("type", type);
                             break;
 
-                        case Constants.GALLERY_NOTIFICATION_ID :
-                            title = getString(R.string.camera_photo);
-                            content = getString(R.string.upload_new_photo_from_user);
-                            summary = message.getMessage();
-                            break;
-
-                        case Constants.PERSON_MESSAGE_NOTIFICATION_ID :
+                        case Constants.PERSON_MESSAGE_ID:
                             title = getString(R.string.person_alarm);
                             content = getString(R.string.received_messages_from_user);
                             summary = message.getUser().getDisplayName();
+                            intent.setClass(FirebaseService.this, PersonalActivity.class);
                             break;
 
+                        case Constants.SCRAP_CONTENT_ID:
+                            title = getString(R.string.new_scrap_data);
+                            content = message.getMessage();
+                            summary = message.getUser().getDisplayName();
+                            intent.setClass(FirebaseService.this, ScrapContentListActivity.class);
+                            intent.putExtra("title", getString(R.string.scraped_cafe_content));
+                            break;
+
+                        case Constants.NOTIFY_MESSASGE_ID :
+                            title = ((NotifyMessage)message).title;
+                            content = message.getMessage();
+                            summary = message.getUser().getDisplayName();
+                            intent.setAction(Constants.ACTION_NOTIFICATION);
+                            intent.setClass(FirebaseService.this, ByPassAcitivty.class);
+                            intent.setData(Uri.parse(((NotifyMessage)message).deeplink));
+                            break;
+
+                        case Constants.TOWN_NEWS_CONTENT_ID:
+                            title = getString(R.string.new_alarm);
+                            content = message.getMessage();
+                            summary = getString(R.string.town_news);
+                            intent.setAction(Constants.ACTION_NOTIFICATION);
+                            intent.setClass(FirebaseService.this, ByPassAcitivty.class);
+                            break;
                     }
+                    intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 
                     Bitmap bm = null;
                     if(response != null && response.getBitmap() != null
@@ -371,10 +461,6 @@ public class FirebaseService extends Service{
                     if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP){
                         builder.setVibrate(new long[0]);
                     }
-
-                    Intent intent = new Intent(FirebaseService.this, ByPassAcitivty.class);
-                    intent.setAction(ACTION_FIREBASE_MESSAGE);
-                    intent.setData(DeepLinkManager.makeFirebaseNotification(type));
                     PendingIntent pendingIntent = PendingIntent.getActivity(FirebaseService.this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
                     builder.setContentIntent(pendingIntent);
                     mNotificationManager.notify(type, builder.build());
@@ -388,23 +474,48 @@ public class FirebaseService extends Service{
         }
     }
 
-    private IChattingService.Stub chattingService = new IChattingService.Stub() {
+    private IFirebaseService.Stub chattingService = new IFirebaseService.Stub() {
 
         @Override
-        public boolean registerCallback(int type, IChattingCallback callback) throws RemoteException {
+        public boolean registerCallback(IFirebaseServiceCallback callback) throws RemoteException {
             updateDistrictChatting();
             return mCallbacks.register(callback);
         }
 
         @Override
-        public boolean unregisterCallback(IChattingCallback callback) throws RemoteException {
+        public boolean unregisterCallback(IFirebaseServiceCallback callback) throws RemoteException {
             return mCallbacks.unregister(callback);
         }
 
+    };
+
+    private ChildEventListener districtChattingChildEventListener = new ChildEventListener() {
         @Override
-        public void sendMessage(int type, ChatMessage msg) throws RemoteException {
-            FirebaseService.this.sendMessage(type, msg);
+        public void onChildAdded(DataSnapshot dataSnapshot, String s) {
+            Log.d(TAG, "onChildAdded() called with: dataSnapshot = [" + dataSnapshot + "], s = [" + s + "]");
+            String key = dataSnapshot.getKey();
+            ChatMessage chatMessage = dataSnapshot.getValue(ChatMessage.class);
+            onReceivedChatMessage(Constants.DISTRICT_CHATTING_ID, key, chatMessage);
         }
 
+        @Override
+        public void onChildChanged(DataSnapshot dataSnapshot, String s) {
+
+        }
+
+        @Override
+        public void onChildRemoved(DataSnapshot dataSnapshot) {
+            mChatLocalDB.removeChatMessage(Constants.DISTRICT_CHATTING_ID, dataSnapshot.getKey());
+        }
+
+        @Override
+        public void onChildMoved(DataSnapshot dataSnapshot, String s) {
+
+        }
+
+        @Override
+        public void onCancelled(DatabaseError databaseError) {
+
+        }
     };
 }

@@ -22,6 +22,7 @@
                     android:id="@+id/tv_item_admin_text"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_gravity="center"
                     style="@style/CommonText.Medium"/>
 
             </FrameLayout>

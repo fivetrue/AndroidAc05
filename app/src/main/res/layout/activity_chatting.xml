@@ -35,6 +35,13 @@
             android:padding="5dp"
             android:layout_alignParentBottom="true"
             android:orientation="horizontal">
+            <ImageButton
+                android:id="@+id/iv_chatting_add"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1.2"
+                android:src="@drawable/ic_add_white_20dp"
+                android:background="@drawable/selector_common_button"/>
             <EditText
                 android:id="@+id/et_chatting_input"
                 android:layout_width="0dp"
@@ -46,13 +53,13 @@
                 android:paddingRight="5dp"
                 android:paddingTop="2dp"
                 android:paddingBottom="2dp"
-                android:layout_weight="8.5"/>
+                android:layout_weight="8.6"/>
             <ImageButton
                 android:id="@+id/btn_chatting_send"
                 android:text="@string/send"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
-                android:layout_weight="1.5"
+                android:layout_weight="1.2"
                 android:src="@drawable/ic_send_20dp"
                 android:layout_margin="5dp"
                 android:background="@drawable/selector_common_button"/>

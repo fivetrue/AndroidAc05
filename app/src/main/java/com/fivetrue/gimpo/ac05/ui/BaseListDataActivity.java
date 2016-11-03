@@ -87,6 +87,12 @@ public class BaseListDataActivity<T extends IBaseItem> extends BaseActivity impl
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
     }
 
+
+    public String getContentTitle(){
+        return mTitle;
+    }
+
+
     public void setData(ArrayList<T> data){
         if(data != null && data.size() > 0){
             if(mAdapter == null){
@@ -97,6 +103,10 @@ public class BaseListDataActivity<T extends IBaseItem> extends BaseActivity impl
                 mAdapter.setData(data);
             }
         }
+    }
+
+    public BaseItemListAdapter<T> getAdapter(){
+        return mAdapter;
     }
 
     public void addData(ArrayList<T> data){

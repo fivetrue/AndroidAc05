@@ -1,5 +1,6 @@
 package com.fivetrue.gimpo.ac05.ui.adapter;
 
+import android.content.Intent;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -11,7 +12,8 @@ import com.fivetrue.fivetrueandroid.image.ImageLoadManager;
 import com.fivetrue.fivetrueandroid.ui.adapter.BaseRecyclerAdapter;
 import com.fivetrue.fivetrueandroid.view.CircleImageView;
 import com.fivetrue.gimpo.ac05.R;
-import com.fivetrue.gimpo.ac05.chatting.ChatMessage;
+import com.fivetrue.gimpo.ac05.firebase.model.ChatMessage;
+import com.fivetrue.gimpo.ac05.ui.ImageDetailActivity;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -65,6 +67,14 @@ public class ChatListAdapter extends BaseRecyclerAdapter<ChatMessage, ChatListAd
             holder.message.setText(item.message);
             if(item.imageMessage != null){
                 holder.messageImage.setImageUrl(item.imageMessage, ImageLoadManager.getImageLoader());
+                holder.messageImage.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        Intent intent = new Intent(v.getContext(), ImageDetailActivity.class);
+                        intent.putExtra("url", item.imageMessage);
+                        v.getContext().startActivity(intent);
+                    }
+                });
             }
             holder.name.setText(item.user.getDisplayName());
             holder.message.requestLayout();

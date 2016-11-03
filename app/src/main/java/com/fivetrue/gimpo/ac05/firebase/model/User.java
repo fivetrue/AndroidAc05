@@ -25,6 +25,8 @@ public class User extends FirebaseData implements Parcelable{
 
     public int district;
 
+    public boolean isAuthUser;
+
     public User(){}
 
     public User(FirebaseUser user, String gcm, String device, int district){
@@ -84,5 +86,13 @@ public class User extends FirebaseData implements Parcelable{
         dest.writeString(device);
         dest.writeInt(district);
         dest.writeLong(updateTime);
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if(obj != null && obj instanceof User){
+            return this.uid.equals(((User) obj).uid);
+        }
+        return super.equals(obj);
     }
 }

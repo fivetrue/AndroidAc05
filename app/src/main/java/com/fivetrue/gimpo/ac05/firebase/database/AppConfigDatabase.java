@@ -5,7 +5,6 @@ import android.content.Context;
 import com.fivetrue.gimpo.ac05.firebase.BaseFirebaseReference;
 import com.fivetrue.gimpo.ac05.firebase.model.AppConfig;
 import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.ServerValue;
 
 /**
  * Created by kwonojin on 2016. 10. 19..

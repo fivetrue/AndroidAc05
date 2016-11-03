@@ -35,8 +35,21 @@
 # Application classes that will be serialized/deserialized over Gson
 -keep class com.google.gson.examples.android.model.** { *; }
 
+-keep class com.google.firebase.** { *; }
+-keep class android.support.** { *; }
+
+
+-keep class com.fivetrue.fivetrueandroid.google.** { *; }
+-keep class com.android.volley.** { *; }
+-keep class com.fivetrue.fivetrueandroid.net.BaseApiResponse { <fields>; }
+-keep class com.fivetrue.fivetrueandroid.net.BaseApiRequest { <fields>; }
+-keep class com.fivetrue.fivetrueandroid.utils.CustomWebViewClient { *; }
+
 
 -keep class com.fivetrue.gimpo.ac05.vo.** { *; }
--keep class com.fivetrue.gimpo.ac05.firebase.FirebaseData { *; }
+-keep class com.fivetrue.gimpo.ac05.firebase.** { *; }
 -keep class com.fivetrue.gimpo.ac05.chatting.** { <fields>; }
+-keep class com.fivetrue.gimpo.ac05.ui.CafeActivity$CafeJSInterface { *; }
+-keep class com.fivetrue.gimpo.ac05.ui.CapturedPageActivity$JSInterface { *; }
+-keep class com.fivetrue.gimpo.ac05.ui.TownWebViewActivity$TownJSInterface { *; }
 

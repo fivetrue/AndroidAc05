@@ -53,11 +53,4 @@
             android:layout_height="match_parent"
             android:isScrollContainer="false"/>
     </android.support.v4.widget.NestedScrollView>
-
-    <android.support.v4.widget.ContentLoadingProgressBar
-        android:id="@+id/pb_webview"
-        android:layout_width="match_parent"
-        android:layout_gravity="bottom"
-        android:layout_height="4dp"
-        style="?android:attr/android:progressBarStyleHorizontal"/>
 </android.support.design.widget.CoordinatorLayout>

@@ -12,7 +12,6 @@ import android.text.Html;
 import android.text.Spanned;
 import android.text.TextUtils;
 import android.text.method.LinkMovementMethod;
-import android.text.util.Linkify;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -27,16 +26,15 @@ import com.fivetrue.fivetrueandroid.ui.BaseActivity;
 import com.fivetrue.fivetrueandroid.utils.AppUtils;
 import com.fivetrue.fivetrueandroid.utils.SimpleViewUtils;
 import com.fivetrue.fivetrueandroid.view.CircleImageView;
+import com.fivetrue.gimpo.ac05.Constants;
 import com.fivetrue.gimpo.ac05.R;
 import com.fivetrue.gimpo.ac05.firebase.database.AppMessageDatabase;
 import com.fivetrue.gimpo.ac05.firebase.model.AppMessage;
 import com.fivetrue.gimpo.ac05.preferences.DefaultPreferenceManager;
-import com.fivetrue.gimpo.ac05.service.FirebaseService;
 import com.fivetrue.gimpo.ac05.firebase.database.AppConfigDatabase;
 import com.fivetrue.gimpo.ac05.firebase.database.UserInfoDatabase;
 import com.fivetrue.gimpo.ac05.firebase.model.AppConfig;
 import com.fivetrue.gimpo.ac05.preferences.ConfigPreferenceManager;
-import com.fivetrue.gimpo.ac05.service.notification.NotificationHelper;
 import com.fivetrue.gimpo.ac05.firebase.model.User;
 import com.google.android.gms.gcm.GoogleCloudMessaging;
 import com.google.firebase.auth.FirebaseUser;
@@ -125,7 +123,7 @@ public class SplashActivity extends BaseActivity implements GoogleLoginUtil.OnAc
 
             @Override
             protected Void doInBackground(Void... params) {
-                mTyeFace = Typeface.createFromAsset(getAssets(), "Typo_PapyrusM.ttf");
+                mTyeFace = Typeface.createFromAsset(getAssets(), "font/Typo_PapyrusM.ttf");
                 return null;
             }
 
@@ -282,11 +280,7 @@ public class SplashActivity extends BaseActivity implements GoogleLoginUtil.OnAc
                     } else {
                         Log.e(TAG, "registerDevice Gcm register error");
                     }
-                    if (getIntent().getAction().equals(NotificationHelper.ACTION_NOTIFICATION)) {
-                        startMainActivity();
-                    }else{
-                        prepareUserInfo();
-                    }
+                    prepareUserInfo();
                 }
             }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, appConfig.senderId);
         }
@@ -332,12 +326,6 @@ public class SplashActivity extends BaseActivity implements GoogleLoginUtil.OnAc
 
     private void startApplication(final User userInfo) {
         Log.i(TAG, "startApplication: start");
-        if (getIntent().getAction().equals(NotificationHelper.ACTION_NOTIFICATION)) {
-            startMainActivity();
-        }else{
-
-        }
-
         SimpleViewUtils.hideView(mLoadingMessage, View.GONE);
         SimpleViewUtils.hideView(mProgress, View.GONE);
         if (userInfo != null) {
@@ -357,7 +345,7 @@ public class SplashActivity extends BaseActivity implements GoogleLoginUtil.OnAc
                         public void run() {
                             startMainActivity();
                         }
-                    }, 700L);
+                    }, 500L);
                 }
             });
             mUserLayout.setVisibility(View.VISIBLE);
@@ -399,26 +387,16 @@ public class SplashActivity extends BaseActivity implements GoogleLoginUtil.OnAc
             Intent intent = new Intent(this, UserInfoInputActivity.class);
             startActivityWithClipRevealAnimation(intent, mMainMessage);
         }else{
-            Intent intent = null;
-            if (getIntent() != null
-                    && getIntent().getAction() != null
-                    && getIntent().getAction().equals(NotificationHelper.ACTION_NOTIFICATION)) {
-                intent = new Intent(this, MainActivity.class);
-                intent.setData(getIntent().getData());
-                intent.putExtra(NotificationHelper.KEY_NOTIFICATION_PARCELABLE, getIntent().getParcelableExtra(NotificationHelper.KEY_NOTIFICATION_PARCELABLE));
-
-            } else {
+            Intent intent;
+            if(Constants.ACTION_NOTIFICATION.equals(getIntent().getAction())){
+                intent = new Intent(getIntent());
+                intent.setClass(this, MainActivity.class);
+            }else{
                 intent = new Intent(this, MainActivity.class);
             }
             startActivityWithClipRevealAnimation(intent, mMainMessage);
         }
         finish();
-    }
-
-    @Override
-    public void finish() {
-        super.finish();
-        overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
     }
 
     @Override

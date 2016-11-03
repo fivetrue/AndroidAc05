@@ -46,10 +46,6 @@
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.Transparent"/>
 
-        <activity android:name=".ui.PageDataListActivity"
-            android:screenOrientation="portrait"
-            android:theme="@style/AppTheme.Transparent"/>
-
         <activity android:name=".ui.ImageInfoListActivity"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.Transparent"/>
@@ -73,6 +69,22 @@
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.TransparentStatusBar.Transparent"/>
 
+        <activity android:name=".ui.TownWebViewActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme.Chatting"/>
+
+        <activity android:name=".ui.ScrapContentActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme.Chatting"/>
+
+        <activity android:name=".ui.ScrapContentListActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme.Transparent" />
+
+        <activity android:name=".ui.FeedListActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme.Transparent" />
+
         <activity android:name=".ui.ChattingActivity"
             android:screenOrientation="portrait"
             android:windowSoftInputMode="adjustUnspecified"
@@ -82,12 +94,6 @@
             android:screenOrientation="portrait"
             android:windowSoftInputMode="adjustPan"
             android:theme="@style/AppTheme.Chatting"/>
-
-        <activity android:name=".ui.GalleryActivity"
-            android:screenOrientation="portrait"/>
-
-        <activity android:name=".ui.ImageUploadActivity"
-            android:screenOrientation="portrait"/>
 
         <activity android:name=".ui.ByPassAcitivty"
             android:screenOrientation="portrait"
@@ -116,8 +122,8 @@
         <service
             android:name=".service.GCMService"
             android:exported="false" >
-            <intent-filter>
-                <action android:name="com.google.android.c2dm.intent.RECEIVE" />
+            <intent-filter android:priority="10000">
+                <action android:name="com.google.android.c2dm.intent.RECEIVE"/>
             </intent-filter>
         </service>
 

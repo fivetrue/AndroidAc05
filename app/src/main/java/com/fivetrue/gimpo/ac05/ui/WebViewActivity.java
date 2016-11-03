@@ -3,7 +3,6 @@ package com.fivetrue.gimpo.ac05.ui;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
-import android.support.v4.widget.ContentLoadingProgressBar;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.MenuItem;
@@ -18,18 +17,18 @@ import com.fivetrue.fivetrueandroid.image.ImageLoadManager;
 import com.fivetrue.fivetrueandroid.ui.BaseActivity;
 import com.fivetrue.fivetrueandroid.utils.CustomWebViewClient;
 import com.fivetrue.fivetrueandroid.utils.SimpleViewUtils;
+import com.fivetrue.gimpo.ac05.Constants;
 import com.fivetrue.gimpo.ac05.R;
 
 /**
  * Created by kwonojin on 16. 6. 10..
  */
-public class WebViewActivity extends BaseActivity {
+public class WebViewActivity extends BaseActivity implements CustomWebViewClient.JSInterface{
 
     private static final String TAG = "WebViewActivity";
 
     private ImageView mMainImage = null;
 
-    private ContentLoadingProgressBar mProgress = null;
     private WebView mWebView = null;
 
     private String mUrl = null;
@@ -46,6 +45,25 @@ public class WebViewActivity extends BaseActivity {
         initView();
     }
 
+    @Override
+    protected void onStart() {
+        super.onStart();
+        mCustomWebViewClient.onStart();
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        mCustomWebViewClient.onStop();
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        mCustomWebViewClient.onDestroy();
+        mWebView = null;
+    }
+
     protected void initData(){
         mUrl = getIntent().getStringExtra("url");
         mTitle = getIntent().getStringExtra("title");
@@ -59,14 +77,12 @@ public class WebViewActivity extends BaseActivity {
 
         mMainImage = (ImageView) findViewById(R.id.iv_webview_image);
 
-        mProgress = (ContentLoadingProgressBar) findViewById(R.id.pb_webview);
         mWebView = (WebView) findViewById(R.id.webview);
         mWebView.getSettings().setJavaScriptEnabled(true);
         mWebView.getSettings().setPluginState(WebSettings.PluginState.ON);
         mWebView.getSettings().setMediaPlaybackRequiresUserGesture(false);
-        mProgress.setMax(100);
 
-        mCustomWebViewClient  = new CustomWebViewClient(this, mWebView, mProgress);
+        mCustomWebViewClient  = new CustomWebViewClient(this, mWebView, this);
 
         if(mUrl != null){
             mWebView.loadUrl(mUrl);
@@ -131,16 +147,40 @@ public class WebViewActivity extends BaseActivity {
     }
 
     @Override
-    protected boolean transitionModeWhenFinish() {
-        return true;
-    }
-
-    @Override
     public void onBackPressed() {
         if(mWebView.canGoBack()){
             mWebView.goBack();
             return;
         }
         super.onBackPressed();
+    }
+
+    @Override
+    public String getInterfaceName() {
+        return Constants.JS_INTERFACE_NAME;
+    }
+
+    @Override
+    public Object getInterface() {
+        return new DefaultJSInterface();
+    }
+
+    @Override
+    public void onLoadedPage(WebView webView, String url) {
+//        webView.loadUrl("document.getElementsByTagName('head')[0].innerHtml += <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\" />;");
+//        webView.loadUrl("javascript:window."+ Constants.JS_INTERFACE_NAME + ".onLoadHtml(document.getElementsByTagName('html')[0].innerHtml);");
+    }
+
+    @Override
+    public void onStartPage(WebView webView, String url) {
+
+    }
+
+    private class DefaultJSInterface{
+
+        @android.webkit.JavascriptInterface
+        void onLoadHtml(String html){
+            Log.d(TAG, "onLoadHtml() called with: html = [" + html + "]");
+        }
     }
 }

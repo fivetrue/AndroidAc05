@@ -1,11 +1,10 @@
 package com.fivetrue.gimpo.ac05.ui;
 
-import android.content.ComponentName;
 import android.content.Intent;
-import android.content.ServiceConnection;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.net.Uri;
 import android.os.Bundle;
-import android.os.IBinder;
-import android.os.RemoteException;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
@@ -15,23 +14,24 @@ import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewTreeObserver;
 import android.view.inputmethod.EditorInfo;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.fivetrue.fivetrueandroid.ui.BaseActivity;
+import com.fivetrue.fivetrueandroid.google.FirebaseStorageManager;
 import com.fivetrue.fivetrueandroid.ui.adapter.BaseRecyclerAdapter;
+import com.fivetrue.fivetrueandroid.ui.diaglog.LoadingDialog;
 import com.fivetrue.fivetrueandroid.ui.fragment.BaseDialogFragment;
 import com.fivetrue.gimpo.ac05.Constants;
 import com.fivetrue.gimpo.ac05.R;
-import com.fivetrue.gimpo.ac05.chatting.ChatMessage;
 import com.fivetrue.gimpo.ac05.firebase.database.ActiveChatUserDatabase;
-import com.fivetrue.gimpo.ac05.service.FirebaseService;
-import com.fivetrue.gimpo.ac05.database.ChatMessageDatabase;
-import com.fivetrue.gimpo.ac05.chatting.IChattingCallback;
-import com.fivetrue.gimpo.ac05.chatting.IChattingService;
+import com.fivetrue.gimpo.ac05.firebase.database.ChatDatabase;
+import com.fivetrue.gimpo.ac05.database.ChatLocalDB;
+import com.fivetrue.gimpo.ac05.firebase.model.ChatMessage;
 import com.fivetrue.gimpo.ac05.preferences.ConfigPreferenceManager;
 import com.fivetrue.gimpo.ac05.preferences.DefaultPreferenceManager;
 import com.fivetrue.gimpo.ac05.ui.adapter.ChatListAdapter;
@@ -41,10 +41,9 @@ import com.fivetrue.gimpo.ac05.firebase.model.User;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
+import com.theartofdev.edmodo.cropper.CropImage;
 
+import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -53,14 +52,18 @@ import java.util.Map;
  * Created by kwonojin on 2016. 10. 11..
  */
 
-public class ChattingActivity extends BaseActivity implements ChildEventListener{
+public class ChattingActivity extends FirebaseBaseAcitivty implements ChildEventListener{
 
     private static final String TAG = "ChattingActivity";
 
-    public static final int TYPE_CHATTING_PUBLIC = Constants.PUBLIC_CHATTING_NOTIFICATION_ID;
-    public static final int TYPE_CHATTING_DISTRICT = Constants.DISTRICT_CHATTING_NOTIFICATION_ID;
+    public static final int TYPE_CHATTING_PUBLIC = Constants.PUBLIC_CHATTING_ID;
+    public static final int TYPE_CHATTING_DISTRICT = Constants.DISTRICT_CHATTING_ID;
+
+    private static final int REQUEST_CODE_CHOOSE_IMAGE = 0x30;
+    private static final String CHATTING_STORAGE_PATH = "/images/chatting/";
 
     private RecyclerView mDialogueList;
+    private ImageButton mAddImage;
     private ImageButton mSendMessage;
     private EditText mInputMessage;
 
@@ -68,15 +71,17 @@ public class ChattingActivity extends BaseActivity implements ChildEventListener
     private int mType = TYPE_CHATTING_PUBLIC;
     private User mUserInfo;
 
-    private IChattingService iChattingService;
-
-    private ChatMessageDatabase mChatMessageDb;
+    private ChatLocalDB mChatLocalDB;
 
     private ChatListAdapter mAdapter;
 
     private Map<String, User> mActiveUsers = new HashMap<>();
 
     private ActiveChatUserDatabase mActiveUserDBReference;
+    private ChatDatabase mChatDatabase;
+    private FirebaseStorageManager mFirebaseStorageManager;
+
+    private InputMethodManager mImm;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -90,7 +95,6 @@ public class ChattingActivity extends BaseActivity implements ChildEventListener
     @Override
     protected void onStart() {
         super.onStart();
-        bindChatting();
         if(mActiveUserDBReference != null){
             mActiveUserDBReference.getReference().child(mConfigPref.getUserInfo().uid).setValue(mConfigPref.getUserInfo().getValues());
             mActiveUserDBReference.getReference().addChildEventListener(this);
@@ -100,24 +104,21 @@ public class ChattingActivity extends BaseActivity implements ChildEventListener
     @Override
     protected void onStop() {
         super.onStop();
-        if(iChattingService != null){
-            unbindService(serviceConnection);
-        }
         mActiveUserDBReference.getReference().child(mConfigPref.getUserInfo().uid).setValue(null);
+        mActiveUserDBReference.getReference().removeEventListener(this);
     }
 
-    private void bindChatting(){
-        Intent intent = new Intent(this, FirebaseService.class);
-        intent.setAction(FirebaseService.ACTION_BIND_SERVICE);
-        bindService(intent, serviceConnection, BIND_AUTO_CREATE);
-    }
 
     private void initData(){
         mConfigPref = new ConfigPreferenceManager(this);
         mType = getIntent().getIntExtra("type", TYPE_CHATTING_PUBLIC);
+        mImm = (InputMethodManager) getSystemService(INPUT_METHOD_SERVICE);
+
+        mFirebaseStorageManager = new FirebaseStorageManager();
+
         mUserInfo = mConfigPref.getUserInfo();
-        mChatMessageDb = new ChatMessageDatabase(this);
-        mAdapter = new ChatListAdapter(mChatMessageDb.getChatMessages(mType), mConfigPref.getUserInfo().uid);
+        mChatLocalDB = new ChatLocalDB(this);
+        mAdapter = new ChatListAdapter(mChatLocalDB.getChatMessages(mType), mConfigPref.getUserInfo().uid);
         mAdapter.setOnItemClickListener(new BaseRecyclerAdapter.OnItemClickListener<ChatMessage, ChatListAdapter.ChatItemViewHolder>() {
             @Override
             public void onClickItem(ChatListAdapter.ChatItemViewHolder holder, ChatMessage data) {
@@ -139,11 +140,14 @@ public class ChattingActivity extends BaseActivity implements ChildEventListener
             }
         });
 
+        String child = null;
         if(mType == TYPE_CHATTING_PUBLIC){
-            mActiveUserDBReference = new ActiveChatUserDatabase(Constants.FIREBASE_DB_CHATTING_PUBLIC);
+            child = String.valueOf(mType);
         }else{
-            mActiveUserDBReference = new ActiveChatUserDatabase(Constants.FIREBASE_DB_CHATTING_DISTRICT + "/" + mConfigPref.getUserInfo().district);
+            child = mType + "/" + mConfigPref.getUserInfo().district;
         }
+        mChatDatabase = new ChatDatabase(child);
+        mActiveUserDBReference = new ActiveChatUserDatabase(child);
     }
 
     private void initView(){
@@ -155,6 +159,7 @@ public class ChattingActivity extends BaseActivity implements ChildEventListener
         getSupportActionBar().setTitle(title);
 
         mDialogueList = (RecyclerView) findViewById(R.id.rv_chatting_dialogue_list);
+        mAddImage = (ImageButton) findViewById(R.id.iv_chatting_add);
         mSendMessage = (ImageButton) findViewById(R.id.btn_chatting_send);
         mInputMessage = (EditText) findViewById(R.id.et_chatting_input);
 
@@ -171,6 +176,13 @@ public class ChattingActivity extends BaseActivity implements ChildEventListener
             }
         });
 
+        mAddImage.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                FirebaseStorageManager.chooseDeviceImage(ChattingActivity.this, REQUEST_CODE_CHOOSE_IMAGE);
+            }
+        });
+
         mInputMessage.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
             public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
@@ -183,64 +195,46 @@ public class ChattingActivity extends BaseActivity implements ChildEventListener
         });
 
         mDialogueList.scrollToPosition(mAdapter.getCount() - 1);
+        mDialogueList.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+            @Override
+            public void onGlobalLayout() {
+                int heightDiff = mDialogueList.getRootView().getHeight() - mDialogueList.getHeight();
+
+                if (heightDiff > 100) {
+                    Log.e("MyActivity", "keyboard opened");
+                }
+
+                if (heightDiff < 100) {
+                    Log.e("MyActivity", "keyboard closed");
+                }
+            }
+        });
+
     }
 
     private void sendMessage(String message){
         if(message != null){
             ChatMessage msg = new ChatMessage(null, message.trim()
                     , null, mUserInfo);
-            try {
-                iChattingService.sendMessage(mType, msg);
-            } catch (RemoteException e) {
-                Log.w(TAG, "sendMessage: ", e);
-            }
+            mChatDatabase.pushData(msg);
         }
     }
 
-    private void onReceiveMessage(int type, String key, ChatMessage message){
-        if(message != null ){
-            Log.d(TAG, "onReceiveMessage() called with: message = [" + message + "]");
-            mAdapter.getData().add(message);
-            mAdapter.notifyDataSetChanged();
-            mDialogueList.smoothScrollToPosition(mAdapter.getCount() - 1);
-        }
+    @Override
+    protected void onReceivedPublicChat(String key, ChatMessage msg) {
+        super.onReceivedPublicChat(key, msg);
+        mAdapter.getData().add(msg);
+        mAdapter.notifyDataSetChanged();
+        mDialogueList.smoothScrollToPosition(mAdapter.getCount() - 1);
     }
 
-    private IChattingCallback.Stub callback = new IChattingCallback.Stub(){
-
-        @Override
-        public void onReceivedMessage(int type, String key, ChatMessage msg) throws RemoteException {
-            ChattingActivity.this.onReceiveMessage(type, key, msg);
-        }
-    };
-
-    private void onBindService(){
-        try {
-            this.iChattingService.registerCallback(mType, callback);
-        } catch (RemoteException e) {
-            Log.w(TAG, "onBindService: ", e);
-        }
-
+    @Override
+    protected void onReceivedDistrictChat(String key, ChatMessage msg) {
+        super.onReceivedDistrictChat(key, msg);
+        mAdapter.getData().add(msg);
+        mAdapter.notifyDataSetChanged();
+        mDialogueList.smoothScrollToPosition(mAdapter.getCount() - 1);
     }
-
-    private ServiceConnection serviceConnection = new ServiceConnection() {
-        @Override
-        public void onServiceConnected(ComponentName name, IBinder service) {
-            iChattingService = IChattingService.Stub.asInterface(service);
-            onBindService();
-        }
-
-        @Override
-        public void onServiceDisconnected(ComponentName name) {
-            try {
-                iChattingService.unregisterCallback(callback);
-            } catch (RemoteException e) {
-                Log.w(TAG, "onServiceDisconnected: ", e);
-            }finally {
-                iChattingService = null;
-            }
-        }
-    };
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -260,16 +254,16 @@ public class ChattingActivity extends BaseActivity implements ChildEventListener
                 dialog.show(getCurrentFragmentManager(), getString(R.string.chat_user_list), getString(android.R.string.ok)
                         , null, b
                         , new BaseDialogFragment.OnClickDialogFragmentListener() {
-                    @Override
-                    public void onClickOKButton(BaseDialogFragment f, Object data) {
-                        f.dismiss();
-                    }
+                            @Override
+                            public void onClickOKButton(BaseDialogFragment f, Object data) {
+                                f.dismiss();
+                            }
 
-                    @Override
-                    public void onClickCancelButton(BaseDialogFragment f, Object data) {
-                        f.dismiss();
-                    }
-                });
+                            @Override
+                            public void onClickCancelButton(BaseDialogFragment f, Object data) {
+                                f.dismiss();
+                            }
+                        });
                 return true;
 
             case R.id.action_chat :
@@ -329,5 +323,52 @@ public class ChattingActivity extends BaseActivity implements ChildEventListener
     @Override
     public void onCancelled(DatabaseError databaseError) {
 
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if(requestCode == REQUEST_CODE_CHOOSE_IMAGE){
+            if(resultCode == RESULT_OK){
+                FirebaseStorageManager.cropChooseDeviceImage(this, data.getData());
+            }
+        }else if(requestCode == CropImage.CROP_IMAGE_ACTIVITY_REQUEST_CODE){
+            if(resultCode == RESULT_OK){
+                CropImage.ActivityResult result = CropImage.getActivityResult(data);
+                Uri croppedUri =  result.getUri();
+                if(croppedUri != null){
+                    try {
+                        final Bitmap bm = BitmapFactory.decodeStream(getContentResolver().openInputStream(croppedUri));
+                        if(bm != null && !bm.isRecycled()){
+                            final LoadingDialog dialog = new LoadingDialog(this);
+                            dialog.show();
+                            String fileName = mUserInfo.uid + "_" + System.currentTimeMillis() + ".png";
+                            mFirebaseStorageManager.uploadBitmapImage(CHATTING_STORAGE_PATH, fileName, bm, new FirebaseStorageManager.OnUploadResultListener(){
+
+                                @Override
+                                public void onUploadSuccess(Uri url, String path) {
+                                    Log.d(TAG, "onUploadSuccess: url = " + url);
+                                    Log.d(TAG, "onUploadSuccess: path = " + path);
+                                    bm.recycle();
+                                    ChatMessage message = new ChatMessage(null, getString(R.string.image_infomation), url.toString(), mUserInfo);
+                                    mChatDatabase.pushData(message);
+                                    dialog.dismiss();
+                                }
+
+                                @Override
+                                public void onUploadFailed(Exception e) {
+                                    Toast.makeText(ChattingActivity.this, R.string.error_image_upload_failed, Toast.LENGTH_SHORT).show();
+                                    bm.recycle();
+                                    dialog.dismiss();
+                                }
+                            });
+
+                        }
+                    } catch (FileNotFoundException e) {
+                        Log.w(TAG, "onActivityResult: image decoded error", e);
+                    }
+                }
+            }
+        }
     }
 }

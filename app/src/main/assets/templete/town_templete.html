@@ -1,0 +1,41 @@
+
+<!DOCTYPE html>
+<html lang=ko>
+<head>
+<meta charset="utf-8">
+     <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+     <meta name="viewport" content="width=device-width, initial-scale=1.0" />    
+     <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+     <meta name="description" content=""/>
+     <meta name="author" content=""/>
+
+     <title>%s</title>
+
+     <!-- Bootstrap core CSS -->
+     <link href="https://project-2283695982257928447.firebaseapp.com/dist/css/bootstrap.min.css" rel="stylesheet">
+     <!-- Bootstrap theme -->
+     <link href="https://project-2283695982257928447.firebaseapp.com/dist/css/bootstrap-theme.min.css" rel="stylesheet">
+
+     <script type="text/javascript">
+         function fn_egov_downFile(atchFileId, fileSn){
+            window.Gimpo.onDownloadFile("/cmm/fms/FileDown.do?atchFileId="+atchFileId+"&fileSn="+fileSn+"")
+		 }
+     </script>
+</head>
+<body role="document">
+     <div class="container">
+          <div class="jumbotron">
+               <h2><a href="%s"><span class="label label-success">구래동 소식 원문보기</span></a></h2>
+          </div>
+          <div class="panel panel-primary">
+               <div class="panel-heading">
+                    <h3 class="panel-title">%s</h3>
+               </div>
+               <div class="panel-body">
+               %s
+               </div>
+          </div>
+     </div>    
+</body>
+</html>

@@ -1,27 +1,27 @@
 {
   "project_info": {
-    "project_number": "78268034449",
-    "firebase_url": "https://gimpo-1334.firebaseio.com",
-    "project_id": "gimpo-1334",
-    "storage_bucket": "gimpo-1334.appspot.com"
+    "project_number": "11419798935",
+    "firebase_url": "https://project-2283695982257928447.firebaseio.com",
+    "project_id": "project-2283695982257928447",
+    "storage_bucket": "project-2283695982257928447.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:78268034449:android:14ca1001924ca31a",
+        "mobilesdk_app_id": "1:11419798935:android:14ca1001924ca31a",
         "android_client_info": {
           "package_name": "com.fivetrue.gimpo.ac05"
         }
       },
       "oauth_client": [
         {
-          "client_id": "78268034449-sp46iq1t0dq4kqgkvr8n6ff7b02s0qh9.apps.googleusercontent.com",
+          "client_id": "11419798935-dbaf8kclepmf7o0d9il94pag6ds1c5ch.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyDLvL7CuRPd21UqZglpU0fm53Q0bxD-mBI"
+          "current_key": "AIzaSyDP9lJMKaWI1js6LdBFxYutyoMUvcglBnU"
         }
       ],
       "services": {

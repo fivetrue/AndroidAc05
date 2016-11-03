@@ -38,4 +38,8 @@ public abstract class FirebaseData {
         map.put("updateTime", ServerValue.TIMESTAMP);
         return map;
     };
+
+    public long getUpdateTime(){
+        return updateTime;
+    }
 }
