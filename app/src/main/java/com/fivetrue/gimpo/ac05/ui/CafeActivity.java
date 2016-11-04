@@ -3,7 +3,6 @@ package com.fivetrue.gimpo.ac05.ui;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.Handler;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
@@ -266,14 +265,13 @@ public class CafeActivity extends BaseActivity implements CustomWebViewClient.JS
         mCaptureContentView.setVisibility(View.INVISIBLE);
     }
 
-    private class CafeJSInterface{
+    public class CafeJSInterface{
 
         private String pageContentHtml;
         private String pageTitleText;
 
         @android.webkit.JavascriptInterface
-        void onLoadPostContentHtml(String postContentHtml){
-            Log.d(TAG, "onLoadBodyHtml() called with: postContentHtml = [" + postContentHtml + "]");
+        public void onLoadPostContentHtml(String postContentHtml){
             if(postContentHtml != null){
                 postContentHtml = postContentHtml.replaceAll("\n", "");
                 postContentHtml = postContentHtml.replaceAll("\t", "");
@@ -303,13 +301,11 @@ public class CafeActivity extends BaseActivity implements CustomWebViewClient.JS
                 }
                 pageContentHtml = remakeBuilder.toString();
                 updateScrapContentView();
-                Log.d(TAG, "pageContentHtml = [" + pageContentHtml + "]");
             }
         }
 
         @android.webkit.JavascriptInterface
-        void onLoadPostTitleText(String title){
-            Log.d(TAG, "onLoadPostTitleText() called with: title = [" + title + "]");
+        public void onLoadPostTitleText(String title){
             pageTitleText = title;
             updateScrapContentView();
         }

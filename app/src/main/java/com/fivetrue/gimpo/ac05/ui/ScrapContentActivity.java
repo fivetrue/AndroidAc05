@@ -47,7 +47,6 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.ValueEventListener;
 
 import com.sothree.slidinguppanel.SlidingUpPanelLayout;
 import com.sothree.slidinguppanel.SlidingUpPanelLayout.PanelSlideListener;
@@ -413,10 +412,10 @@ public class ScrapContentActivity extends BaseActivity implements CustomWebViewC
     public void onStartPage(WebView webView, String url) {
     }
 
-    private class JSInterface{
+    public class JSInterface{
 
         @JavascriptInterface
-        void onClickInfo(){
+        public void onClickInfo(){
             runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
@@ -443,7 +442,7 @@ public class ScrapContentActivity extends BaseActivity implements CustomWebViewC
         }
 
         @JavascriptInterface
-        void onClickImage(final String imageUrl){
+        public void onClickImage(final String imageUrl){
 
             runOnUiThread(new Runnable() {
                 @Override

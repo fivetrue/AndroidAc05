@@ -10,7 +10,7 @@ import com.google.firebase.database.DatabaseReference;
 
 public class AppMessageDatabase extends BaseFirebaseReference<AppMessage> {
 
-    public static final String PATH = "/config/message";
+    public static final String PATH = "/static/message";
 
     public AppMessageDatabase() {
         super(PATH);

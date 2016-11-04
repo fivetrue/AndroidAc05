@@ -28,6 +28,19 @@
 # For using GSON @Expose annotation
 -keepattributes *Annotation*
 
+-keepclassmembers class com.fivetrue.fivetrueandroid.utils.CustomWebViewClient$JSInterface {
+    public *;
+}
+-keepclassmembers class com.fivetrue.gimpo.ac05.ui.ScrapContentActivity$JSInterface {
+    public *;
+}
+-keepclassmembers class com.fivetrue.gimpo.ac05.ui.CafeActivity$CafeJSInterface {
+    public *;
+}
+-keepclassmembers class com.fivetrue.gimpo.ac05.ui.TownWebViewActivity$TownJSInterface {
+    public *;
+}
+
 # Gson specific classes
 -keep class sun.misc.Unsafe { *; }
 -keep class com.google.gson.stream.** { *; }
@@ -37,6 +50,10 @@
 
 -keep class com.google.firebase.** { *; }
 -keep class android.support.** { *; }
+-keep class android.webkit.** { *; }
+
+-keep class com.theartofdev.edmodo.cropper.** { *; }
+-keep class com.sothree.slidinguppanel.** { *; }
 
 
 -keep class com.fivetrue.fivetrueandroid.google.** { *; }
@@ -49,7 +66,4 @@
 -keep class com.fivetrue.gimpo.ac05.vo.** { *; }
 -keep class com.fivetrue.gimpo.ac05.firebase.** { *; }
 -keep class com.fivetrue.gimpo.ac05.chatting.** { <fields>; }
--keep class com.fivetrue.gimpo.ac05.ui.CafeActivity$CafeJSInterface { *; }
--keep class com.fivetrue.gimpo.ac05.ui.CapturedPageActivity$JSInterface { *; }
--keep class com.fivetrue.gimpo.ac05.ui.TownWebViewActivity$TownJSInterface { *; }
 

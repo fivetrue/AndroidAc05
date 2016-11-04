@@ -30,7 +30,9 @@ import com.fivetrue.gimpo.ac05.R;
 import com.fivetrue.gimpo.ac05.database.ChatLocalDB;
 import com.fivetrue.gimpo.ac05.database.ScrapLocalDB;
 import com.fivetrue.gimpo.ac05.database.TownNewsLocalDB;
+import com.fivetrue.gimpo.ac05.firebase.database.ImageInfoDatabase;
 import com.fivetrue.gimpo.ac05.firebase.database.RssMessageDatabase;
+import com.fivetrue.gimpo.ac05.firebase.model.ImageInfo;
 import com.fivetrue.gimpo.ac05.firebase.model.RssMessage;
 import com.fivetrue.gimpo.ac05.firebase.model.ScrapContent;
 import com.fivetrue.gimpo.ac05.firebase.model.TownNews;
@@ -51,6 +53,7 @@ import com.google.android.gms.ads.MobileAds;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -84,6 +87,7 @@ public class MainActivity extends FirebaseBaseAcitivty implements NavigationView
     private BaseItemListAdapter<ScrapContent> mScrapContentAdapter;
 
     private RssMessageDatabase mRssDatabase;
+    private ImageInfoDatabase mImageInfoDatabase;
 
     private ChatLocalDB mChatLocalDB;
     private ScrapLocalDB mScrapLocalDB;
@@ -144,6 +148,7 @@ public class MainActivity extends FirebaseBaseAcitivty implements NavigationView
          * Firebase Database
          */
         mRssDatabase = new RssMessageDatabase();
+        mImageInfoDatabase = new ImageInfoDatabase();
 
         /**
          * Local Database
@@ -285,6 +290,37 @@ public class MainActivity extends FirebaseBaseAcitivty implements NavigationView
             }
         });
 
+        mImageInfoDatabase.getReference().addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                if(dataSnapshot != null && dataSnapshot.getValue() != null){
+                    if(dataSnapshot.getChildrenCount() > 0){
+                        ArrayList<ImageInfo> imageInfos = new ArrayList<ImageInfo>();
+                        for(DataSnapshot s : dataSnapshot.getChildren()){
+                            imageInfos.add(s.getValue(ImageInfo.class));
+                        }
+                        BaseItemListAdapter<ImageInfo> adapter = new BaseItemListAdapter<>(imageInfos, R.layout.item_base_list_item_grid);
+                        adapter.setOnItemClickListener(new BaseRecyclerAdapter.OnItemClickListener<ImageInfo, BaseItemListAdapter.BaseItemViewHolder>() {
+                            @Override
+                            public void onClickItem(BaseItemListAdapter.BaseItemViewHolder holder, ImageInfo data) {
+                                Intent intent = new Intent(MainActivity.this, ImageInfoDetailActivity.class);
+                                intent.putExtra(ImageInfo.class.getName(), data);
+                                startActivityWithClipRevealAnimation(intent, holder.layout);
+                            }
+                        });
+                        mAdapter.getData().add(new MainItem(getString(R.string.camera_photo)
+                                , null , ImageInfoListActivity.class, adapter));
+                        mAdapter.notifyItemInserted(mAdapter.getCount() - 1);
+                    }
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+
         List<TownNews> townNewsList = mTownNewsLocalDB.getTownNews(true);
         if(townNewsList != null && townNewsList.size() > 0){
             BaseItemListAdapter<TownNews> adapter = new BaseItemListAdapter<>(townNewsList, R.layout.item_base_list_item_grid);
@@ -404,9 +440,15 @@ public class MainActivity extends FirebaseBaseAcitivty implements NavigationView
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()){
-            case R.id.action_person :
+            case R.id.action_cafe : {
+                Intent intent = new Intent(this, CafeActivity.class);
+                startActivity(intent);
+            }
+                return true;
+            case R.id.action_person : {
                 Intent intent = new Intent(this, PersonalActivity.class);
                 startActivity(intent);
+            }
                 return true;
         }
         return super.onOptionsItemSelected(item);
@@ -441,6 +483,14 @@ public class MainActivity extends FirebaseBaseAcitivty implements NavigationView
                 }
 
                     return true;
+
+                case R.id.nav_gallery :{
+                    Intent intent = new Intent(this, ImageInfoListActivity.class);
+                    intent.putExtra("title", getString(R.string.camera_photo));
+                    startActivity(intent);
+                }
+
+                return true;
 
                 case R.id.nav_cafe:{
                     Intent intent = new Intent(this, CafeActivity.class);

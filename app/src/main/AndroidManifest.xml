@@ -38,10 +38,6 @@
             android:name=".ui.MainActivity"
             android:screenOrientation="portrait"/>
 
-        <activity android:name=".ui.NotificationDataListActivity"
-            android:screenOrientation="portrait"
-            android:theme="@style/AppTheme.Transparent"/>
-
         <activity android:name=".ui.TownDataListActivity"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.Transparent"/>
@@ -50,12 +46,11 @@
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.Transparent"/>
 
-        <activity android:name=".ui.AdminActivity"
+        <activity android:name=".ui.ImageInfoDetailActivity"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.Transparent"/>
 
-        <activity
-            android:name=".ui.ImageInfoEntryListActivity"
+        <activity android:name=".ui.AdminActivity"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.Transparent"/>
 

@@ -29,7 +29,7 @@ public class ApplicationChecker extends BroadcastReceiver {
     private void onBootCompleted(Context context){
         if(!AppUtils.isServiceRunning(context, FirebaseService.class)){
             Intent intent = new Intent(context.getApplicationContext(), FirebaseService.class);
-            context.getApplicationContext().startActivity(intent);
+            context.getApplicationContext().startService(intent);
         }
     }
 }

@@ -147,7 +147,8 @@ public class TownWebViewActivity extends BaseActivity implements CustomWebViewCl
 
     @Override
     public void onLoadedPage(WebView webView, String url) {
-        webView.loadUrl("javascript:window."+ Constants.JS_INTERFACE_NAME + ".onLoadTableContent(document.getElementsByTagName('tbody')[0].innerHTML);");
+        String reLoadurl = "javascript:window."+ Constants.JS_INTERFACE_NAME + ".onLoadTableContent(document.getElementsByTagName('tbody')[0].innerHTML);";
+        webView.loadUrl(reLoadurl);
     }
 
     @Override
@@ -155,11 +156,11 @@ public class TownWebViewActivity extends BaseActivity implements CustomWebViewCl
 
     }
 
-    private class TownJSInterface {
+    public class TownJSInterface {
 
         boolean loaded;
         @android.webkit.JavascriptInterface
-        void onLoadTableContent(String content){
+        public void onLoadTableContent(String content){
 
                 final String html = String.format(mHtmlTemplete , mTownNews.title, mTownNews.url, mTownNews.title
                         , content);
@@ -176,7 +177,7 @@ public class TownWebViewActivity extends BaseActivity implements CustomWebViewCl
         }
 
         @android.webkit.JavascriptInterface
-        void onDownloadFile(String downloadPath){
+        public void onDownloadFile(String downloadPath){
             String downloadUrl = mConfigPref.getAppConfig().townHostUrl + downloadPath;
             Intent intent = new Intent(Intent.ACTION_VIEW);
             intent.setData(Uri.parse(downloadUrl));

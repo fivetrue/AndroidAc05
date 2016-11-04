@@ -179,7 +179,7 @@ public class WebViewActivity extends BaseActivity implements CustomWebViewClient
     private class DefaultJSInterface{
 
         @android.webkit.JavascriptInterface
-        void onLoadHtml(String html){
+        public void onLoadHtml(String html){
             Log.d(TAG, "onLoadHtml() called with: html = [" + html + "]");
         }
     }
