@@ -2,6 +2,7 @@ package com.fivetrue.gimpo.ac05.firebase.model;
 
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.text.TextUtils;
 
 import com.fivetrue.gimpo.ac05.firebase.FirebaseData;
 import com.fivetrue.gimpo.ac05.firebase.MessageData;
@@ -54,7 +55,7 @@ public class ChatMessage extends FirebaseData implements Parcelable, MessageData
 
     @Override
     public String getImageUrl() {
-        return imageMessage;
+        return TextUtils.isEmpty(imageMessage) ? user.profileImage : imageMessage;
     }
 
     @Override

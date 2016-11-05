@@ -28,7 +28,10 @@ public class ScrapContentDatabase extends BaseFirebaseReference<ScrapContent> {
     }
 
     public DatabaseReference getCommentReference(String scrapKey){
-        return getReference().child(scrapKey).child(COMMENT).getRef();
+        if(scrapKey != null){
+            return getReference().child(scrapKey).child(COMMENT).getRef();
+        }
+        return null;
     }
 
 }

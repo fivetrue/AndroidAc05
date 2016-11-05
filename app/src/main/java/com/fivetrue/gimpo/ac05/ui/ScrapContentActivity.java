@@ -48,6 +48,7 @@ import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 
+import com.google.firebase.database.DatabaseReference;
 import com.sothree.slidinguppanel.SlidingUpPanelLayout;
 import com.sothree.slidinguppanel.SlidingUpPanelLayout.PanelSlideListener;
 import com.sothree.slidinguppanel.SlidingUpPanelLayout.PanelState;
@@ -95,8 +96,9 @@ public class ScrapContentActivity extends BaseActivity implements CustomWebViewC
         setContentView(R.layout.activity_scrap_content);
         initData();
         initView();
-
-        mScrapContentDatabase.getCommentReference(mScrapContent.key).addChildEventListener(new ChildEventListener() {
+        DatabaseReference reference = mScrapContentDatabase.getCommentReference(mScrapContent.key);
+        if(reference != null)
+            reference.addChildEventListener(new ChildEventListener() {
             @Override
             public void onChildAdded(DataSnapshot dataSnapshot, String s) {
                 if(dataSnapshot != null && dataSnapshot.getValue() != null){

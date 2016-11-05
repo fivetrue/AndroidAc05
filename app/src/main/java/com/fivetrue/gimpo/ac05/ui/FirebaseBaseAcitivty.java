@@ -29,27 +29,27 @@ public class FirebaseBaseAcitivty extends BaseActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
         Intent intent = new Intent(this, FirebaseService.class);
         intent.setAction(FirebaseService.ACTION_BIND_SERVICE);
         bindService(intent, serviceConnection, BIND_AUTO_CREATE);
     }
 
     @Override
-    protected void onDestroy() {
-        super.onDestroy();
+    protected void onStop() {
+        super.onStop();
         if(mService != null){
             unbindService(serviceConnection);
         }
-    }
-
-    @Override
-    protected void onStart() {
-        super.onStart();
-    }
-
-    @Override
-    protected void onStop() {
-        super.onStop();
     }
 
     protected void onBindService(IFirebaseService service){

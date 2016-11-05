@@ -66,6 +66,7 @@ public class ChattingActivity extends FirebaseBaseAcitivty implements ChildEvent
     private ImageButton mAddImage;
     private ImageButton mSendMessage;
     private EditText mInputMessage;
+    private TextView mActiveUserCount;
 
     private ConfigPreferenceManager mConfigPref;
     private int mType = TYPE_CHATTING_PUBLIC;
@@ -162,6 +163,7 @@ public class ChattingActivity extends FirebaseBaseAcitivty implements ChildEvent
         mAddImage = (ImageButton) findViewById(R.id.iv_chatting_add);
         mSendMessage = (ImageButton) findViewById(R.id.btn_chatting_send);
         mInputMessage = (EditText) findViewById(R.id.et_chatting_input);
+        mActiveUserCount = (TextView) findViewById(R.id.tv_chatting_active_count);
 
         mDialogueList.setAdapter(mAdapter);
         mDialogueList.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
@@ -223,17 +225,21 @@ public class ChattingActivity extends FirebaseBaseAcitivty implements ChildEvent
     @Override
     protected void onReceivedPublicChat(String key, ChatMessage msg) {
         super.onReceivedPublicChat(key, msg);
-        mAdapter.getData().add(msg);
-        mAdapter.notifyDataSetChanged();
-        mDialogueList.smoothScrollToPosition(mAdapter.getCount() - 1);
+        if(mType == Constants.PUBLIC_CHATTING_ID){
+            mAdapter.getData().add(msg);
+            mAdapter.notifyDataSetChanged();
+            mDialogueList.smoothScrollToPosition(mAdapter.getCount() - 1);
+        }
     }
 
     @Override
     protected void onReceivedDistrictChat(String key, ChatMessage msg) {
         super.onReceivedDistrictChat(key, msg);
-        mAdapter.getData().add(msg);
-        mAdapter.notifyDataSetChanged();
-        mDialogueList.smoothScrollToPosition(mAdapter.getCount() - 1);
+        if(mType == Constants.DISTRICT_CHATTING_ID){
+            mAdapter.getData().add(msg);
+            mAdapter.notifyDataSetChanged();
+            mDialogueList.smoothScrollToPosition(mAdapter.getCount() - 1);
+        }
     }
 
     @Override
@@ -302,6 +308,9 @@ public class ChattingActivity extends FirebaseBaseAcitivty implements ChildEvent
         String key = dataSnapshot.getKey();
         User userInfo = dataSnapshot.getValue(User.class);
         mActiveUsers.put(key, userInfo);
+        if(mActiveUserCount != null){
+            mActiveUserCount.setText(mActiveUsers.size() + "");
+        }
     }
 
     @Override
@@ -313,6 +322,9 @@ public class ChattingActivity extends FirebaseBaseAcitivty implements ChildEvent
     public void onChildRemoved(DataSnapshot dataSnapshot) {
         Log.d(TAG, "onChildRemoved() called with: dataSnapshot = [" + dataSnapshot + "]");
         mActiveUsers.remove(dataSnapshot.getKey());
+        if(mActiveUserCount != null){
+            mActiveUserCount.setText(mActiveUsers.size() + "");
+        }
     }
 
     @Override

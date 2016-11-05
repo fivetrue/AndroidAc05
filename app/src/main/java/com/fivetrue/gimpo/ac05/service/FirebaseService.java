@@ -17,6 +17,7 @@ import android.os.RemoteCallbackList;
 import android.os.RemoteException;
 import android.support.annotation.Nullable;
 import android.support.v4.app.NotificationCompat;
+import android.support.v4.app.TaskStackBuilder;
 import android.util.Log;
 
 import com.android.volley.VolleyError;
@@ -39,6 +40,7 @@ import com.fivetrue.gimpo.ac05.firebase.model.TownNews;
 import com.fivetrue.gimpo.ac05.preferences.ConfigPreferenceManager;
 import com.fivetrue.gimpo.ac05.preferences.DefaultPreferenceManager;
 import com.fivetrue.gimpo.ac05.ui.ByPassAcitivty;
+import com.fivetrue.gimpo.ac05.ui.MainActivity;
 import com.fivetrue.gimpo.ac05.ui.ScrapContentListActivity;
 import com.fivetrue.gimpo.ac05.ui.ChattingActivity;
 import com.fivetrue.gimpo.ac05.firebase.model.User;
@@ -378,99 +380,110 @@ public class FirebaseService extends Service{
         }
 
         if(canPush){
-            ImageLoadManager.getInstance().loadImageUrl(message.getImageUrl(), new ImageLoader.ImageListener() {
-                @Override
-                public void onResponse(ImageLoader.ImageContainer response, boolean isImmediate) {
-
-                    String title = "";
-                    String content = "";
-                    String summary = "";
-                    Intent intent = new Intent();
-                    intent.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP
-                            | Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS);
-                    switch (type){
-                        case Constants.PUBLIC_CHATTING_ID:
-                        case Constants.DISTRICT_CHATTING_ID:
-                            title = type == Constants.PUBLIC_CHATTING_ID
-                                    ? getString(R.string.talk)
-                                    : String.format(getString(R.string.district_talk), String.valueOf(mConfigPref.getUserInfo().district));
-                            content = message.getMessage();
-                            summary = message.getUser().getDisplayName();
-                            intent.setClass(FirebaseService.this, ChattingActivity.class);
-                            intent.putExtra("type", type);
-                            break;
-
-                        case Constants.PERSON_MESSAGE_ID:
-                            title = getString(R.string.person_alarm);
-                            content = getString(R.string.received_messages_from_user);
-                            summary = message.getUser().getDisplayName();
-                            intent.setClass(FirebaseService.this, PersonalActivity.class);
-                            break;
-
-                        case Constants.SCRAP_CONTENT_ID:
-                            title = getString(R.string.new_scrap_data);
-                            content = message.getMessage();
-                            summary = message.getUser().getDisplayName();
-                            intent.setClass(FirebaseService.this, ScrapContentListActivity.class);
-                            intent.putExtra("title", getString(R.string.scraped_cafe_content));
-                            break;
-
-                        case Constants.NOTIFY_MESSASGE_ID :
-                            title = ((NotifyMessage)message).title;
-                            content = message.getMessage();
-                            summary = message.getUser().getDisplayName();
-                            intent.setAction(Constants.ACTION_NOTIFICATION);
-                            intent.setClass(FirebaseService.this, ByPassAcitivty.class);
-                            intent.setData(Uri.parse(((NotifyMessage)message).deeplink));
-                            break;
-
-                        case Constants.TOWN_NEWS_CONTENT_ID:
-                            title = getString(R.string.new_alarm);
-                            content = message.getMessage();
-                            summary = getString(R.string.town_news);
-                            intent.setAction(Constants.ACTION_NOTIFICATION);
-                            intent.setClass(FirebaseService.this, ByPassAcitivty.class);
-                            break;
-                    }
-                    intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-
-                    Bitmap bm = null;
-                    if(response != null && response.getBitmap() != null
-                            && !response.getBitmap().isRecycled()){
-                        bm = response.getBitmap();
+            if(message.getImageUrl() != null){
+                ImageLoadManager.getInstance().loadImageUrl(message.getImageUrl(), new ImageLoader.ImageListener() {
+                    @Override
+                    public void onResponse(ImageLoader.ImageContainer response, boolean isImmediate) {
+                        if(response != null){
+                            showNotification(type, message, response.getBitmap());
+                        }
                     }
 
-                    if(bm == null){
-                        bm = BitmapFactory.decodeResource(getResources(), R.drawable.ic_launcher);
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        Log.w(TAG, "onErrorResponse: ", error);
                     }
-                    NotificationCompat.BigTextStyle bigTextStyle = new NotificationCompat.BigTextStyle();
-                    bigTextStyle.setBigContentTitle(title)
-                            .setSummaryText(summary)
-                            .bigText(content);
-                    NotificationCompat.Builder builder = new NotificationCompat.Builder(FirebaseService.this);
-                    builder.setColor(getResources().getColor(R.color.colorPrimary))
-                            .setAutoCancel(true)
-                            .setContentTitle(title)
-                            .setSmallIcon(R.drawable.push_icon)
-                            .setLargeIcon(bm)
-                            .setContentText(content)
-                            .setDefaults(Notification.DEFAULT_ALL)
-                            .setPriority(NotificationCompat.PRIORITY_HIGH)
-                            .setStyle(bigTextStyle);
+                });
+            }else{
+                showNotification(type, message, null);
+            }
+        }
+    }
 
-                    if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP){
-                        builder.setVibrate(new long[0]);
-                    }
-                    PendingIntent pendingIntent = PendingIntent.getActivity(FirebaseService.this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
-                    builder.setContentIntent(pendingIntent);
-                    mNotificationManager.notify(type, builder.build());
-                }
+    private void showNotification(int type, MessageData message, Bitmap bm){
+        if(message != null){
+            String title = "";
+            String content = "";
+            String summary = "";
+            Intent intent = new Intent();
+            switch (type){
+                case Constants.PUBLIC_CHATTING_ID:
+                case Constants.DISTRICT_CHATTING_ID:
+                    title = type == Constants.PUBLIC_CHATTING_ID
+                            ? getString(R.string.talk)
+                            : String.format(getString(R.string.district_talk), String.valueOf(mConfigPref.getUserInfo().district));
+                    content = message.getMessage();
+                    summary = message.getUser().getDisplayName();
+                    intent.setClass(FirebaseService.this, ChattingActivity.class);
+                    intent.putExtra("type", type);
+                    break;
 
-                @Override
-                public void onErrorResponse(VolleyError error) {
-                    Log.w(TAG, "onErrorResponse: ", error);
-                }
-            });
+                case Constants.PERSON_MESSAGE_ID:
+                    title = getString(R.string.person_alarm);
+                    content = getString(R.string.received_messages_from_user);
+                    summary = message.getUser().getDisplayName();
+                    intent.setClass(FirebaseService.this, PersonalActivity.class);
+                    break;
+
+                case Constants.SCRAP_CONTENT_ID:
+                    title = getString(R.string.new_scrap_data);
+                    content = message.getMessage();
+                    summary = message.getUser().getDisplayName();
+                    intent.setClass(FirebaseService.this, ScrapContentListActivity.class);
+                    intent.putExtra("title", getString(R.string.scraped_cafe_content));
+                    break;
+
+                case Constants.NOTIFY_MESSASGE_ID :
+                    title = ((NotifyMessage)message).title;
+                    content = message.getMessage();
+                    summary = message.getUser().getDisplayName();
+                    intent.setAction(Constants.ACTION_NOTIFICATION);
+                    intent.setClass(FirebaseService.this, ByPassAcitivty.class);
+                    intent.setData(Uri.parse(((NotifyMessage)message).deeplink));
+                    break;
+
+                case Constants.TOWN_NEWS_CONTENT_ID:
+                    title = getString(R.string.new_alarm);
+                    content = message.getMessage();
+                    summary = getString(R.string.town_news);
+                    intent.setAction(Constants.ACTION_NOTIFICATION);
+                    intent.setClass(FirebaseService.this, ByPassAcitivty.class);
+                    break;
+            }
+
+            if(bm == null || bm.isRecycled()){
+                bm = BitmapFactory.decodeResource(getResources(), R.drawable.ic_launcher);
+            }
+            NotificationCompat.BigTextStyle bigTextStyle = new NotificationCompat.BigTextStyle();
+            bigTextStyle.setBigContentTitle(title)
+                    .setSummaryText(summary)
+                    .bigText(content);
+            NotificationCompat.Builder builder = new NotificationCompat.Builder(FirebaseService.this);
+            builder.setColor(getResources().getColor(R.color.colorPrimary))
+                    .setAutoCancel(true)
+                    .setContentTitle(title)
+                    .setSmallIcon(R.drawable.push_icon)
+                    .setLargeIcon(bm)
+                    .setContentText(content)
+                    .setDefaults(Notification.DEFAULT_ALL)
+                    .setPriority(NotificationCompat.PRIORITY_HIGH)
+                    .setStyle(bigTextStyle);
+
+            if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP){
+                builder.setVibrate(new long[0]);
+            }
+            TaskStackBuilder taskStackBuilder = TaskStackBuilder.create(this);
+            Intent parentIntent = new Intent(this, MainActivity.class);
+            parentIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+            intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+            PendingIntent pendingIntent = taskStackBuilder.addNextIntent(parentIntent)
+                .addNextIntent(intent)
+                .getPendingIntent(0, PendingIntent.FLAG_ONE_SHOT);
+
+
+//            PendingIntent pendingIntent = PendingIntent.getActivity(FirebaseService.this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+            builder.setContentIntent(pendingIntent);
+            mNotificationManager.notify(type, builder.build());
         }
     }
 
