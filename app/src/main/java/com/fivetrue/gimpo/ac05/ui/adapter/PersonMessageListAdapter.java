@@ -96,7 +96,7 @@ public class PersonMessageListAdapter extends BaseRecyclerAdapter<ChatMessage, P
                                 public void onClickOKButton(BaseDialogFragment f, String data) {
                                     if(!TextUtils.isEmpty(data)){
                                         ChatMessage message = new ChatMessage(null, data, null
-                                                , item.user);
+                                                , mUserInfo);
                                         new MessageBoxDatabase(item.user.uid)
                                                 .getPersonReference().push().setValue(message.getValues());
                                     }

@@ -67,7 +67,6 @@ public class FirebaseService extends Service{
     private ChatDatabase mPublicChatDB;
     private ChatDatabase mDistricChatDB;
     private MessageBoxDatabase mMessageBoxDatabase;
-    private ScrapContentDatabase mScrapContentDatabase;
     private TownNewsDatabase mTownNewsDatabase;
 
     private ChatLocalDB mChatLocalDB;
@@ -129,48 +128,48 @@ public class FirebaseService extends Service{
         mPublicChatDB = new ChatDatabase(String.valueOf(Constants.PUBLIC_CHATTING_ID));
         updateDistrictChatting();
 
-        mScrapContentDatabase = new ScrapContentDatabase();
-        mScrapContentDatabase.getReference().addChildEventListener(new ChildEventListener() {
-            @Override
-            public void onChildAdded(DataSnapshot dataSnapshot, String s) {
-                if(dataSnapshot != null && dataSnapshot.getValue() != null){
-                    ScrapContent page = dataSnapshot.getValue(ScrapContent.class);
-                    onReceivedScrapContentMessage(dataSnapshot.getKey(), page);
-                }
-            }
-
-            @Override
-            public void onChildChanged(DataSnapshot dataSnapshot, String s) {
-
-            }
-
-            @Override
-            public void onChildRemoved(DataSnapshot dataSnapshot) {
-                if(mScrapLocalDB != null && dataSnapshot != null){
-                    ScrapContent content = dataSnapshot.getValue(ScrapContent.class);
-                    mScrapLocalDB.removeScrapContent(content.url);
-                    mCallbacks.beginBroadcast();
-                    for(int i = 0 ; i < mCallbacks.getRegisteredCallbackCount() ; i ++){
-                        try {
-                            mCallbacks.getBroadcastItem(i).onRefreshData();
-                        } catch (RemoteException e) {
-                            e.printStackTrace();
-                        }
-                    }
-                    mCallbacks.finishBroadcast();
-                }
-            }
-
-            @Override
-            public void onChildMoved(DataSnapshot dataSnapshot, String s) {
-
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-
-            }
-        });
+//        mScrapContentDatabase = new ScrapContentDatabase();
+//        mScrapContentDatabase.getReference().addChildEventListener(new ChildEventListener() {
+//            @Override
+//            public void onChildAdded(DataSnapshot dataSnapshot, String s) {
+//                if(dataSnapshot != null && dataSnapshot.getValue() != null){
+//                    ScrapContent page = dataSnapshot.getValue(ScrapContent.class);
+//                    onReceivedScrapContentMessage(dataSnapshot.getKey(), page);
+//                }
+//            }
+//
+//            @Override
+//            public void onChildChanged(DataSnapshot dataSnapshot, String s) {
+//
+//            }
+//
+//            @Override
+//            public void onChildRemoved(DataSnapshot dataSnapshot) {
+//                if(mScrapLocalDB != null && dataSnapshot != null){
+//                    ScrapContent content = dataSnapshot.getValue(ScrapContent.class);
+//                    mScrapLocalDB.removeScrapContent(content.url);
+//                    mCallbacks.beginBroadcast();
+//                    for(int i = 0 ; i < mCallbacks.getRegisteredCallbackCount() ; i ++){
+//                        try {
+//                            mCallbacks.getBroadcastItem(i).onRefreshData();
+//                        } catch (RemoteException e) {
+//                            e.printStackTrace();
+//                        }
+//                    }
+//                    mCallbacks.finishBroadcast();
+//                }
+//            }
+//
+//            @Override
+//            public void onChildMoved(DataSnapshot dataSnapshot, String s) {
+//
+//            }
+//
+//            @Override
+//            public void onCancelled(DatabaseError databaseError) {
+//
+//            }
+//        });
 
         if(mConfigPref.getUserInfo() != null){
             mMessageBoxDatabase = new MessageBoxDatabase(mConfigPref.getUserInfo().uid);

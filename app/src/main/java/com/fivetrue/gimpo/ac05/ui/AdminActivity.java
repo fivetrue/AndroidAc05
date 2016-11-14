@@ -15,7 +15,9 @@ import com.fivetrue.gimpo.ac05.database.TownNewsLocalDB;
 import com.fivetrue.gimpo.ac05.firebase.database.TownNewsDatabase;
 import com.fivetrue.gimpo.ac05.firebase.model.TownNews;
 import com.fivetrue.gimpo.ac05.preferences.ConfigPreferenceManager;
+import com.fivetrue.gimpo.ac05.service.GcmMessage;
 import com.fivetrue.gimpo.ac05.ui.adapter.AdminListAdapter;
+import com.fivetrue.gimpo.ac05.utils.NotificationSender;
 import com.fivetrue.gimpo.ac05.utils.TownDataParser;
 
 import java.util.ArrayList;
@@ -63,7 +65,7 @@ public class AdminActivity extends BaseActivity {
         mAdapter.getData().add(new IAdminItem() {
             @Override
             public String getTitle() {
-                return "구래동 뉴스 업데이트";
+                return "구래동 소식 업데이트";
             }
 
             @Override
@@ -74,14 +76,19 @@ public class AdminActivity extends BaseActivity {
                     @Override
                     public void onLoad(List<TownNews> list) {
 
+                        GcmMessage message = new GcmMessage();
+                        message.title = getTitle();
+                        message.message = "";
                         if(list != null && list.size() > 0){
                             for(TownNews news : list){
                                 if(!mTownNewsLocalDB.existsTownNews(news.url)){
                                     new TownNewsDatabase().pushData(news);
+                                    message.message += news.title + "\n";
                                 }
                             }
                         }
                         Toast.makeText(AdminActivity.this, getTitle() + " : 완료", Toast.LENGTH_SHORT).show();
+                        NotificationSender.sendNotificationToUsers(message, mConfig.getAppConfig());
                         mLoadingDialog.dismiss();
                     }
                 }).execute();

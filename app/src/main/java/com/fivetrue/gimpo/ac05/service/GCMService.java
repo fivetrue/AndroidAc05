@@ -98,6 +98,12 @@ public class GCMService extends GcmListenerService {
                         .bigPicture(image)
                         .bigLargeIcon(BitmapFactory.decodeResource(getResources(), R.drawable.ic_launcher));
                 builder.setStyle(bigPictureStyle);
+            }else{
+                NotificationCompat.BigTextStyle bigTextStyle = new NotificationCompat.BigTextStyle();
+                bigTextStyle.setBigContentTitle(title)
+                        .setSummaryText(getString(R.string.app_name))
+                        .bigText(data.message);
+                builder.setStyle(bigTextStyle);
             }
 
             Intent targetIntent = data.toIntent();

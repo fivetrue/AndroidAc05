@@ -14,6 +14,7 @@ public class AppConfig extends FirebaseData {
     public long clubId;
     public String clubUrl;
     public String clubMyInfo;
+    public String gcmKey;
     public long senderId;
     public boolean forceUpdate;
     public ArrayList<District> districts;

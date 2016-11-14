@@ -101,7 +101,6 @@ public class MainActivity extends FirebaseBaseAcitivty implements NavigationView
         initView();
         initAds();
         loadData();
-
         /**
          * Check Serivce
          */

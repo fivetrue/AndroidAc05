@@ -64,8 +64,10 @@ public class ChatListAdapter extends BaseRecyclerAdapter<ChatMessage, ChatListAd
 
             holder.userImage.setImageUrl(item.user.profileImage);
             holder.date.setText(mSdf.format(new Date(item.updateTime)));
+            holder.messageImage.setVisibility(View.GONE);
             holder.message.setText(item.message);
             if(item.imageMessage != null){
+                holder.messageImage.setVisibility(View.VISIBLE);
                 holder.messageImage.setImageUrl(item.imageMessage, ImageLoadManager.getImageLoader());
                 holder.messageImage.setOnClickListener(new View.OnClickListener() {
                     @Override

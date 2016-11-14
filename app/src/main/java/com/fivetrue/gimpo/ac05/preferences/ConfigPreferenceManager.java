@@ -69,9 +69,13 @@ public class ConfigPreferenceManager {
 
     public AppConfig getAppConfig(){
         AppConfig config = null;
-        String data = mHelper.getData(APP_CONFIG, null);
-        if(data != null){
-            config = mGson.fromJson(data, AppConfig.class);
+        try{
+            String data = mHelper.getData(APP_CONFIG, null);
+            if(data != null){
+                config = mGson.fromJson(data, AppConfig.class);
+            }
+        }catch (Exception e){
+            mHelper.putData(APP_CONFIG, null);
         }
         return config;
     }

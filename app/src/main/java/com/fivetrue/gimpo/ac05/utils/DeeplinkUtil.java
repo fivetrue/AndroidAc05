@@ -20,7 +20,7 @@ public class DeeplinkUtil {
 
 
     public enum Host{
-        Scrap
+        Scrap, TownNews
     }
 
     private static final String TAG = "DeeplinkUtil";
