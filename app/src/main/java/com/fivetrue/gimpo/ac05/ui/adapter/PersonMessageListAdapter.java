@@ -125,7 +125,7 @@ public class PersonMessageListAdapter extends BaseRecyclerAdapter<ChatMessage, P
                                             .getPersonReference().child(item.key).setValue(null).addOnSuccessListener(new OnSuccessListener<Void>() {
                                         @Override
                                         public void onSuccess(Void aVoid) {
-                                            int count = new ChatLocalDB(v.getContext()).removeChatMessage(Constants.PERSON_MESSAGE_ID, item);
+                                            long count = new ChatLocalDB(v.getContext()).removeChatMessage(Constants.PERSON_MESSAGE_ID, item);
                                             getData().remove(item);
                                             notifyItemRemoved(position);
 
