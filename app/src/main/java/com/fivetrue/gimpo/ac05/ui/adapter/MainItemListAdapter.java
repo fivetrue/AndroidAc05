@@ -16,6 +16,7 @@ import com.fivetrue.gimpo.ac05.vo.data.MainItem;
 
 import java.util.List;
 
+import jp.wasabeef.recyclerview.animators.FadeInAnimator;
 import jp.wasabeef.recyclerview.animators.SlideInRightAnimator;
 
 /**
@@ -77,7 +78,7 @@ public class MainItemListAdapter extends BaseRecyclerAdapter<MainItem, MainItemL
             subTitle = (TextView) itemView.findViewById(R.id.tv_item_main_list_subtitle);
             subList = (RecyclerView) itemView.findViewById(R.id.rv_item_main_list_sub_list);
             subList.setLayoutManager(new LinearLayoutManager(itemView.getContext(), LinearLayoutManager.HORIZONTAL, false));
-            subList.setItemAnimator(new SlideInRightAnimator());
+            subList.setItemAnimator(new FadeInAnimator());
         }
     }
 }

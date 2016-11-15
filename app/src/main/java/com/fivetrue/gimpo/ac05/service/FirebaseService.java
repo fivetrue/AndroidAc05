@@ -10,7 +10,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.net.Uri;
 import android.os.Build;
 import android.os.IBinder;
 import android.os.RemoteCallbackList;
@@ -25,8 +24,6 @@ import com.android.volley.toolbox.ImageLoader;
 import com.fivetrue.fivetrueandroid.image.ImageLoadManager;
 import com.fivetrue.gimpo.ac05.Constants;
 import com.fivetrue.gimpo.ac05.R;
-import com.fivetrue.gimpo.ac05.database.ScrapLocalDB;
-import com.fivetrue.gimpo.ac05.database.TownNewsLocalDB;
 import com.fivetrue.gimpo.ac05.firebase.MessageData;
 import com.fivetrue.gimpo.ac05.database.ChatLocalDB;
 import com.fivetrue.gimpo.ac05.firebase.database.ChatDatabase;
@@ -34,14 +31,10 @@ import com.fivetrue.gimpo.ac05.firebase.database.ScrapContentDatabase;
 import com.fivetrue.gimpo.ac05.firebase.database.MessageBoxDatabase;
 import com.fivetrue.gimpo.ac05.firebase.database.TownNewsDatabase;
 import com.fivetrue.gimpo.ac05.firebase.model.ChatMessage;
-import com.fivetrue.gimpo.ac05.firebase.model.NotifyMessage;
 import com.fivetrue.gimpo.ac05.firebase.model.ScrapContent;
-import com.fivetrue.gimpo.ac05.firebase.model.TownNews;
 import com.fivetrue.gimpo.ac05.preferences.ConfigPreferenceManager;
 import com.fivetrue.gimpo.ac05.preferences.DefaultPreferenceManager;
-import com.fivetrue.gimpo.ac05.ui.ByPassAcitivty;
 import com.fivetrue.gimpo.ac05.ui.MainActivity;
-import com.fivetrue.gimpo.ac05.ui.ScrapContentListActivity;
 import com.fivetrue.gimpo.ac05.ui.ChattingActivity;
 import com.fivetrue.gimpo.ac05.firebase.model.User;
 import com.fivetrue.gimpo.ac05.ui.PersonalActivity;
@@ -70,8 +63,6 @@ public class FirebaseService extends Service{
     private TownNewsDatabase mTownNewsDatabase;
 
     private ChatLocalDB mChatLocalDB;
-    private ScrapLocalDB mScrapLocalDB;
-    private TownNewsLocalDB mTownNewsLocalDB;
 
     private RemoteCallbackList<IFirebaseServiceCallback> mCallbacks = new RemoteCallbackList<>();
 
@@ -119,57 +110,12 @@ public class FirebaseService extends Service{
         mConfigPref = new ConfigPreferenceManager(this);
         mNotificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
         mChatLocalDB = new ChatLocalDB(this);
-        mScrapLocalDB = new ScrapLocalDB(this);
-        mTownNewsLocalDB = new TownNewsLocalDB(this);
 
         /**
          * Chatting
          */
         mPublicChatDB = new ChatDatabase(String.valueOf(Constants.PUBLIC_CHATTING_ID));
         updateDistrictChatting();
-
-//        mScrapContentDatabase = new ScrapContentDatabase();
-//        mScrapContentDatabase.getReference().addChildEventListener(new ChildEventListener() {
-//            @Override
-//            public void onChildAdded(DataSnapshot dataSnapshot, String s) {
-//                if(dataSnapshot != null && dataSnapshot.getValue() != null){
-//                    ScrapContent page = dataSnapshot.getValue(ScrapContent.class);
-//                    onReceivedScrapContentMessage(dataSnapshot.getKey(), page);
-//                }
-//            }
-//
-//            @Override
-//            public void onChildChanged(DataSnapshot dataSnapshot, String s) {
-//
-//            }
-//
-//            @Override
-//            public void onChildRemoved(DataSnapshot dataSnapshot) {
-//                if(mScrapLocalDB != null && dataSnapshot != null){
-//                    ScrapContent content = dataSnapshot.getValue(ScrapContent.class);
-//                    mScrapLocalDB.removeScrapContent(content.url);
-//                    mCallbacks.beginBroadcast();
-//                    for(int i = 0 ; i < mCallbacks.getRegisteredCallbackCount() ; i ++){
-//                        try {
-//                            mCallbacks.getBroadcastItem(i).onRefreshData();
-//                        } catch (RemoteException e) {
-//                            e.printStackTrace();
-//                        }
-//                    }
-//                    mCallbacks.finishBroadcast();
-//                }
-//            }
-//
-//            @Override
-//            public void onChildMoved(DataSnapshot dataSnapshot, String s) {
-//
-//            }
-//
-//            @Override
-//            public void onCancelled(DatabaseError databaseError) {
-//
-//            }
-//        });
 
         if(mConfigPref.getUserInfo() != null){
             mMessageBoxDatabase = new MessageBoxDatabase(mConfigPref.getUserInfo().uid);
@@ -202,78 +148,6 @@ public class FirebaseService extends Service{
                 }
             });
 
-            mMessageBoxDatabase.getNotifyReference().addChildEventListener(new ChildEventListener() {
-                @Override
-                public void onChildAdded(DataSnapshot dataSnapshot, String s) {
-                    if(dataSnapshot != null && dataSnapshot.getValue() != null){
-                        NotifyMessage notifyMessage = dataSnapshot.getValue(NotifyMessage.class);
-                        if(notifyMessage != null ){
-                            if(notifyMessage.getUpdateTime() + VALID_NOTIFICATION_GAP > System.currentTimeMillis()){
-                                showNotification(Constants.NOTIFY_MESSASGE_ID
-                                        , dataSnapshot.getKey(), notifyMessage);
-                            }
-                        }
-                        dataSnapshot.getRef().setValue(null);
-                    }
-                }
-
-                @Override
-                public void onChildChanged(DataSnapshot dataSnapshot, String s) {
-
-                }
-
-                @Override
-                public void onChildRemoved(DataSnapshot dataSnapshot) {
-
-                }
-
-                @Override
-                public void onChildMoved(DataSnapshot dataSnapshot, String s) {
-
-                }
-
-                @Override
-                public void onCancelled(DatabaseError databaseError) {
-
-                }
-            });
-        }
-
-        if(mConfigPref.getAppConfig() != null){
-            mTownNewsDatabase = new TownNewsDatabase();
-            mTownNewsDatabase.getReference().addChildEventListener(new ChildEventListener() {
-                @Override
-                public void onChildAdded(DataSnapshot dataSnapshot, String s) {
-                    if(dataSnapshot != null && dataSnapshot.getValue() != null){
-                        TownNews news = dataSnapshot.getValue(TownNews.class);
-                        if(!mTownNewsLocalDB.existsTownNews(news.url)){
-                            mTownNewsLocalDB.putTownNews(dataSnapshot.getKey(), news);
-                            showNotification(Constants.TOWN_NEWS_CONTENT_ID, dataSnapshot.getKey(), news);
-                        }
-                    }
-
-                }
-
-                @Override
-                public void onChildChanged(DataSnapshot dataSnapshot, String s) {
-
-                }
-
-                @Override
-                public void onChildRemoved(DataSnapshot dataSnapshot) {
-
-                }
-
-                @Override
-                public void onChildMoved(DataSnapshot dataSnapshot, String s) {
-
-                }
-
-                @Override
-                public void onCancelled(DatabaseError databaseError) {
-
-                }
-            });
         }
     }
 
@@ -303,29 +177,6 @@ public class FirebaseService extends Service{
             String action = intent.getAction();
         }
         return super.onStartCommand(intent, flags, startId);
-    }
-
-    private synchronized void onReceivedScrapContentMessage(String key, ScrapContent content){
-        if(content != null){
-            content.key = key;
-            showNotification(Constants.SCRAP_CONTENT_ID
-                    , key
-                    , content);
-
-            if(!mScrapLocalDB.existsScrapContent(content.url)){
-                mScrapLocalDB.putScrap(key, content);
-                mCallbacks.beginBroadcast();
-                for(int i = 0 ; i < mCallbacks.getRegisteredCallbackCount() ; i++){
-                    try {
-                        mCallbacks.getBroadcastItem(i).onReceivedScrapContent(content);
-                    } catch (RemoteException e) {
-                        Log.w(TAG, "onReceivedChatMessage: ", e);
-                    }
-                }
-                mCallbacks.finishBroadcast();
-            }
-        }
-
     }
 
     private synchronized void onReceivedChatMessage(int type, String key, ChatMessage msg){
@@ -369,7 +220,7 @@ public class FirebaseService extends Service{
             canPush = message != null && !message.getUser().uid.equals(mConfigPref.getUserInfo().uid) && isPush;
         }else if(type == Constants.PERSON_MESSAGE_ID){
             canPush = DefaultPreferenceManager.getInstance(FirebaseService.this).isPushChatting(type);
-        }else if(type == Constants.SCRAP_CONTENT_ID || type == Constants.NOTIFY_MESSASGE_ID || type == Constants.TOWN_NEWS_CONTENT_ID){
+        }else if(type == Constants.NOTIFY_MESSASGE_ID){
             boolean isPush = DefaultPreferenceManager.getInstance(this).isPushService();
             if(message != null && message.getUser() != null){
                 canPush = message != null && !message.getUser().uid.equals(mConfigPref.getUserInfo().uid) && isPush;
@@ -422,31 +273,6 @@ public class FirebaseService extends Service{
                     content = getString(R.string.received_messages_from_user);
                     summary = message.getUser().getDisplayName();
                     intent.setClass(FirebaseService.this, PersonalActivity.class);
-                    break;
-
-                case Constants.SCRAP_CONTENT_ID:
-                    title = getString(R.string.new_scrap_data);
-                    content = message.getMessage();
-                    summary = message.getUser().getDisplayName();
-                    intent.setClass(FirebaseService.this, ScrapContentListActivity.class);
-                    intent.putExtra("title", getString(R.string.scraped_cafe_content));
-                    break;
-
-                case Constants.NOTIFY_MESSASGE_ID :
-                    title = ((NotifyMessage)message).title;
-                    content = message.getMessage();
-                    summary = message.getUser().getDisplayName();
-                    intent.setAction(Constants.ACTION_NOTIFICATION);
-                    intent.setClass(FirebaseService.this, ByPassAcitivty.class);
-                    intent.setData(Uri.parse(((NotifyMessage)message).deeplink));
-                    break;
-
-                case Constants.TOWN_NEWS_CONTENT_ID:
-                    title = getString(R.string.new_alarm);
-                    content = message.getMessage();
-                    summary = getString(R.string.town_news);
-                    intent.setAction(Constants.ACTION_NOTIFICATION);
-                    intent.setClass(FirebaseService.this, ByPassAcitivty.class);
                     break;
             }
 

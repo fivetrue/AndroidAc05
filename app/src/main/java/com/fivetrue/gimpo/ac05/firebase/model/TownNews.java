@@ -128,4 +128,12 @@ public class TownNews extends FirebaseData implements Parcelable, IBaseItem , Me
     public boolean isShowingNew() {
         return getTime() + (ONE_DAY * 5) > System.currentTimeMillis();
     }
+
+    @Override
+    public boolean equals(Object obj) {
+        if(obj != null && obj instanceof TownNews){
+            return this.url.equals(((TownNews) obj).url);
+        }
+        return super.equals(obj);
+    }
 }

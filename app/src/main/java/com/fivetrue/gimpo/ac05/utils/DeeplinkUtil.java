@@ -4,10 +4,13 @@ import android.app.Activity;
 import android.content.Intent;
 import android.net.Uri;
 
+import com.fivetrue.gimpo.ac05.R;
 import com.fivetrue.gimpo.ac05.firebase.database.ScrapContentDatabase;
 import com.fivetrue.gimpo.ac05.firebase.model.ScrapContent;
 import com.fivetrue.gimpo.ac05.ui.ScrapContentActivity;
+import com.fivetrue.gimpo.ac05.ui.ScrapContentListActivity;
 import com.fivetrue.gimpo.ac05.ui.SplashActivity;
+import com.fivetrue.gimpo.ac05.ui.TownDataListActivity;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.ValueEventListener;
@@ -38,21 +41,37 @@ public class DeeplinkUtil {
                 case Scrap:
                 {
                     String key = uri.getQueryParameter("key");
-                    new ScrapContentDatabase().getReference().child(key).addListenerForSingleValueEvent(new ValueEventListener() {
-                        @Override
-                        public void onDataChange(DataSnapshot dataSnapshot) {
-                            ScrapContent content = dataSnapshot.getValue(ScrapContent.class);
-                            content.key = dataSnapshot.getKey();
-                            Intent intent = new Intent(activity, ScrapContentActivity.class);
-                            intent.putExtra(ScrapContent.class.getName(), content);
-                            activity.startActivity(intent);
-                        }
+                    if(key != null){
+                        new ScrapContentDatabase().getReference().child(key).addListenerForSingleValueEvent(new ValueEventListener() {
+                            @Override
+                            public void onDataChange(DataSnapshot dataSnapshot) {
+                                ScrapContent content = dataSnapshot.getValue(ScrapContent.class);
+                                content.key = dataSnapshot.getKey();
+                                Intent intent = new Intent(activity, ScrapContentActivity.class);
+                                intent.putExtra(ScrapContent.class.getName(), content);
+                                activity.startActivity(intent);
+                            }
 
-                        @Override
-                        public void onCancelled(DatabaseError databaseError) {
-                            goSplash(activity, receivedIntent);
-                        }
-                    });
+                            @Override
+                            public void onCancelled(DatabaseError databaseError) {
+                                goSplash(activity, receivedIntent);
+                            }
+                        });
+                    }else{
+                        Intent intent = new Intent(activity, ScrapContentListActivity.class);
+                        intent.putExtra("title", activity.getString(R.string.scraped_cafe_content));
+                        activity.startActivity(intent);
+                    }
+                }
+                    break;
+                case TownNews:{
+                    try{
+                        Intent intent = new Intent(activity, TownDataListActivity.class);
+                        intent.putExtra("title", activity.getString(R.string.town_news));
+                        activity.startActivity(intent);
+                    }catch (Exception e){
+                        goSplash(activity, receivedIntent);
+                    }
                 }
                     break;
 

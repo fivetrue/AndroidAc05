@@ -115,4 +115,12 @@ public class ScrapContent extends FirebaseData implements MessageData, IBaseItem
         dest.writeString(url);
         dest.writeParcelable(user, flags);
     }
+
+    @Override
+    public boolean equals(Object obj) {
+        if(obj != null && obj instanceof ScrapContent){
+            return this.pageUrl.equals(((ScrapContent) obj).pageUrl);
+        }
+        return super.equals(obj);
+    }
 }

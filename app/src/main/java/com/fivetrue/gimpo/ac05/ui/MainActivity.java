@@ -28,10 +28,10 @@ import com.fivetrue.fivetrueandroid.view.CircleImageView;
 import com.fivetrue.gimpo.ac05.Constants;
 import com.fivetrue.gimpo.ac05.R;
 import com.fivetrue.gimpo.ac05.database.ChatLocalDB;
-import com.fivetrue.gimpo.ac05.database.ScrapLocalDB;
-import com.fivetrue.gimpo.ac05.database.TownNewsLocalDB;
 import com.fivetrue.gimpo.ac05.firebase.database.ImageInfoDatabase;
 import com.fivetrue.gimpo.ac05.firebase.database.RssMessageDatabase;
+import com.fivetrue.gimpo.ac05.firebase.database.ScrapContentDatabase;
+import com.fivetrue.gimpo.ac05.firebase.database.TownNewsDatabase;
 import com.fivetrue.gimpo.ac05.firebase.model.ImageInfo;
 import com.fivetrue.gimpo.ac05.firebase.model.RssMessage;
 import com.fivetrue.gimpo.ac05.firebase.model.ScrapContent;
@@ -56,7 +56,8 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
-import java.util.List;
+
+import jp.wasabeef.recyclerview.animators.FadeInAnimator;
 
 /**
  * Created by kwonojin on 16. 6. 7..
@@ -85,13 +86,14 @@ public class MainActivity extends FirebaseBaseAcitivty implements NavigationView
 
     private MainItemListAdapter mAdapter;
     private BaseItemListAdapter<ScrapContent> mScrapContentAdapter;
+    private BaseItemListAdapter<TownNews> mTownNewsAdapter;
 
+    private TownNewsDatabase mTownNewsDatabase;
+    private ScrapContentDatabase mScrapContentDatabase;
     private RssMessageDatabase mRssDatabase;
     private ImageInfoDatabase mImageInfoDatabase;
 
     private ChatLocalDB mChatLocalDB;
-    private ScrapLocalDB mScrapLocalDB;
-    private TownNewsLocalDB mTownNewsLocalDB;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -100,7 +102,6 @@ public class MainActivity extends FirebaseBaseAcitivty implements NavigationView
         initData();
         initView();
         initAds();
-        loadData();
         /**
          * Check Serivce
          */
@@ -127,6 +128,8 @@ public class MainActivity extends FirebaseBaseAcitivty implements NavigationView
 
         IntentFilter intentFilter = new IntentFilter();
         intentFilter.addAction(Constants.ACTION_UPDATE_CAPTURED_PAGE);
+
+        loadData();
     }
 
     @Override
@@ -146,6 +149,8 @@ public class MainActivity extends FirebaseBaseAcitivty implements NavigationView
         /**
          * Firebase Database
          */
+        mTownNewsDatabase = new TownNewsDatabase();
+        mScrapContentDatabase = new ScrapContentDatabase();
         mRssDatabase = new RssMessageDatabase();
         mImageInfoDatabase = new ImageInfoDatabase();
 
@@ -153,8 +158,6 @@ public class MainActivity extends FirebaseBaseAcitivty implements NavigationView
          * Local Database
          */
         mChatLocalDB = new ChatLocalDB(this);
-        mScrapLocalDB = new ScrapLocalDB(this);
-        mTownNewsLocalDB = new TownNewsLocalDB(this);
 
         mAdapter = new MainItemListAdapter(new ArrayList<MainItem>());
         mAdapter.setOnItemClickListener(new BaseRecyclerAdapter.OnItemClickListener<MainItem, MainItemListAdapter.BaseItemViewHolder>() {
@@ -176,8 +179,23 @@ public class MainActivity extends FirebaseBaseAcitivty implements NavigationView
             }
         });
 
+        mTownNewsAdapter = new BaseItemListAdapter<TownNews>(new ArrayList<TownNews>(), R.layout.item_base_list_item_grid);
+        mTownNewsAdapter.setOnItemClickListener(new BaseRecyclerAdapter.OnItemClickListener<TownNews, BaseItemListAdapter.BaseItemViewHolder>() {
+            @Override
+            public void onClickItem(BaseItemListAdapter.BaseItemViewHolder holder, TownNews data) {
+                if(data != null){
+                    Intent intent = new Intent(MainActivity.this, TownWebViewActivity.class);
+                    intent.putExtra(TownNews.class.getName(), data);
+                    startActivity(intent);
+                }
+            }
+        });
+
         mAdapter.getData().add(new MainItem(getString(R.string.scraped_cafe_content)
                 , null , ScrapContentListActivity.class, mScrapContentAdapter));
+
+        mAdapter.getData().add(new MainItem(getString(R.string.town_news)
+                    , null , TownDataListActivity.class, mTownNewsAdapter));
     }
 
     private void initView() {
@@ -206,6 +224,7 @@ public class MainActivity extends FirebaseBaseAcitivty implements NavigationView
 
         mRecyclerView = (RecyclerView) findViewById(R.id.rv_main_list);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
+        mRecyclerView.setItemAnimator(new FadeInAnimator());
         mRecyclerView.setAdapter(mAdapter);
 
         mNavUserNoti.setOnClickListener(new View.OnClickListener() {
@@ -260,7 +279,83 @@ public class MainActivity extends FirebaseBaseAcitivty implements NavigationView
         /**
          * load ScrapContent
          */
-        mScrapContentAdapter.setData(mScrapLocalDB.getScrapContent(true));
+        mScrapContentDatabase.getReference().addChildEventListener(new ChildEventListener() {
+            @Override
+            public void onChildAdded(DataSnapshot dataSnapshot, String s) {
+                ScrapContent content = dataSnapshot.getValue(ScrapContent.class);
+                content.key = dataSnapshot.getKey();
+                mScrapContentAdapter.getData().add(0, content);
+                mScrapContentAdapter.notifyItemInserted(0);
+            }
+
+            @Override
+            public void onChildChanged(DataSnapshot dataSnapshot, String s) {
+
+            }
+
+            @Override
+            public void onChildRemoved(DataSnapshot dataSnapshot) {
+                if (dataSnapshot != null && dataSnapshot.getValue() != null) {
+                    ScrapContent content = dataSnapshot.getValue(ScrapContent.class);
+                    if(mScrapContentAdapter.getData().contains(content)){
+                        int index = mScrapContentAdapter.getData().indexOf(content);
+                        if(index > -1){
+                            mScrapContentAdapter.getData().remove(index);
+                            mScrapContentAdapter.notifyItemRemoved(index);
+                        }
+                    }
+                }
+            }
+
+            @Override
+            public void onChildMoved(DataSnapshot dataSnapshot, String s) {
+
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+
+        mTownNewsDatabase.getReference().orderByChild("date").addChildEventListener(new ChildEventListener() {
+            @Override
+            public void onChildAdded(DataSnapshot dataSnapshot, String s) {
+                TownNews content = dataSnapshot.getValue(TownNews.class);
+                content.key = dataSnapshot.getKey();
+                mTownNewsAdapter.getData().add(0, content);
+                mTownNewsAdapter.notifyItemInserted(0);
+            }
+
+            @Override
+            public void onChildChanged(DataSnapshot dataSnapshot, String s) {
+
+            }
+
+            @Override
+            public void onChildRemoved(DataSnapshot dataSnapshot) {
+                if (dataSnapshot != null && dataSnapshot.getValue() != null) {
+                    TownNews content = dataSnapshot.getValue(TownNews.class);
+                    if(mTownNewsAdapter.getData().contains(content)){
+                        int index = mTownNewsAdapter.getData().indexOf(content);
+                        if(index > -1){
+                            mTownNewsAdapter.getData().remove(index);
+                            mTownNewsAdapter.notifyItemRemoved(index);
+                        }
+                    }
+                }
+            }
+
+            @Override
+            public void onChildMoved(DataSnapshot dataSnapshot, String s) {
+
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
 
         mRssDatabase.getReference().addChildEventListener(new ChildEventListener() {
             @Override
@@ -320,23 +415,23 @@ public class MainActivity extends FirebaseBaseAcitivty implements NavigationView
             }
         });
 
-        List<TownNews> townNewsList = mTownNewsLocalDB.getTownNews(true);
-        if(townNewsList != null && townNewsList.size() > 0){
-            BaseItemListAdapter<TownNews> adapter = new BaseItemListAdapter<>(townNewsList, R.layout.item_base_list_item_grid);
-            adapter.setOnItemClickListener(new BaseRecyclerAdapter.OnItemClickListener<TownNews, BaseItemListAdapter.BaseItemViewHolder>() {
-                @Override
-                public void onClickItem(BaseItemListAdapter.BaseItemViewHolder holder, TownNews data) {
-                    if(data != null){
-                        Intent intent = new Intent(MainActivity.this, TownWebViewActivity.class);
-                        intent.putExtra(TownNews.class.getName(), data);
-                        startActivity(intent);
-                    }
-                }
-            });
-            mAdapter.getData().add(1, new MainItem(getString(R.string.town_news)
-                    , null , TownDataListActivity.class, adapter));
-            mAdapter.notifyItemInserted(1);
-        }
+//        List<TownNews> townNewsList = mTownNewsLocalDB.getTownNews(true);
+//        if(townNewsList != null && townNewsList.size() > 0){
+//            BaseItemListAdapter<TownNews> adapter = new BaseItemListAdapter<>(townNewsList, R.layout.item_base_list_item_grid);
+//            adapter.setOnItemClickListener(new BaseRecyclerAdapter.OnItemClickListener<TownNews, BaseItemListAdapter.BaseItemViewHolder>() {
+//                @Override
+//                public void onClickItem(BaseItemListAdapter.BaseItemViewHolder holder, TownNews data) {
+//                    if(data != null){
+//                        Intent intent = new Intent(MainActivity.this, TownWebViewActivity.class);
+//                        intent.putExtra(TownNews.class.getName(), data);
+//                        startActivity(intent);
+//                    }
+//                }
+//            });
+//            mAdapter.getData().add(1, new MainItem(getString(R.string.town_news)
+//                    , null , TownDataListActivity.class, adapter));
+//            mAdapter.notifyItemInserted(1);
+//        }
     }
 
     private void updateUserInfo(){
@@ -443,12 +538,12 @@ public class MainActivity extends FirebaseBaseAcitivty implements NavigationView
                 Intent intent = new Intent(this, CafeActivity.class);
                 startActivity(intent);
             }
-                return true;
+            return true;
             case R.id.action_person : {
                 Intent intent = new Intent(this, PersonalActivity.class);
                 startActivity(intent);
             }
-                return true;
+            return true;
         }
         return super.onOptionsItemSelected(item);
     }
@@ -468,7 +563,7 @@ public class MainActivity extends FirebaseBaseAcitivty implements NavigationView
                     intent.putExtra("type", ChattingActivity.TYPE_CHATTING_PUBLIC);
                     startActivity(intent);
                 }
-                    return true;
+                return true;
 
                 case R.id.nav_district_talk :{
                     if(mConfigPref.getUserInfo() != null && mConfigPref.getUserInfo().district > 0){
@@ -481,7 +576,7 @@ public class MainActivity extends FirebaseBaseAcitivty implements NavigationView
                     }
                 }
 
-                    return true;
+                return true;
 
                 case R.id.nav_gallery :{
                     Intent intent = new Intent(this, ImageInfoListActivity.class);
@@ -495,13 +590,13 @@ public class MainActivity extends FirebaseBaseAcitivty implements NavigationView
                     Intent intent = new Intent(this, CafeActivity.class);
                     startActivity(intent);
                 }
-                    return true;
+                return true;
 
                 case R.id.nav_setting:{
                     Intent intent = new Intent(this, SettingActivity.class);
                     startActivity(intent);
                 }
-                    return true;
+                return true;
             }
         }
         return false;
@@ -519,9 +614,9 @@ public class MainActivity extends FirebaseBaseAcitivty implements NavigationView
     @Override
     protected void onRefreshData() {
         super.onRefreshData();
-        if(mScrapContentAdapter != null && mScrapLocalDB != null){
-            mScrapContentAdapter.setData(mScrapLocalDB.getScrapContent(true));
-            mScrapContentAdapter.notifyDataSetChanged();
-        }
+//        if(mScrapContentAdapter != null && mScrapLocalDB != null){
+//            mScrapContentAdapter.setData(mScrapLocalDB.getScrapContent(true));
+//            mScrapContentAdapter.notifyDataSetChanged();
+//        }
     }
 }

@@ -40,7 +40,9 @@ public class ScrapContentListActivity extends BaseListDataActivity<ScrapContent>
             public void onDataChange(DataSnapshot dataSnapshot) {
                 ArrayList<ScrapContent> pages = new ArrayList<ScrapContent>();
                 for (DataSnapshot s : dataSnapshot.getChildren()) {
-                    pages.add(0, s.getValue(ScrapContent.class));
+                    ScrapContent content = s.getValue(ScrapContent.class);
+                    content.key = s.getKey();
+                    pages.add(0, content);
                 }
                 setData(pages);
                 goneProgressBar();

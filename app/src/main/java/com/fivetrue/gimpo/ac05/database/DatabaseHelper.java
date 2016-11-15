@@ -23,16 +23,12 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     @Override
     public void onCreate(SQLiteDatabase db) {
         db.execSQL(ChatLocalDB.DB_CREATE_QUERY);
-        db.execSQL(ScrapLocalDB.DB_CREATE_QUERY);
-        db.execSQL(TownNewsLocalDB.DB_CREATE_QUERY);
     }
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
         if(oldVersion < newVersion){
             db.execSQL(ChatLocalDB.DB_DROP_QUERY);
-            db.execSQL(ScrapLocalDB.DB_DROP_QUERY);
-            db.execSQL(TownNewsLocalDB.DB_DROP_QUERY);
         }
         onCreate(db);
     }

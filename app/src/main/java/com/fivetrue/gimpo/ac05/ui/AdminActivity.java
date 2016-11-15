@@ -10,15 +10,19 @@ import android.widget.Toast;
 import com.fivetrue.fivetrueandroid.ui.BaseActivity;
 import com.fivetrue.fivetrueandroid.ui.adapter.BaseRecyclerAdapter;
 import com.fivetrue.fivetrueandroid.ui.diaglog.LoadingDialog;
+import com.fivetrue.gimpo.ac05.Constants;
 import com.fivetrue.gimpo.ac05.R;
-import com.fivetrue.gimpo.ac05.database.TownNewsLocalDB;
 import com.fivetrue.gimpo.ac05.firebase.database.TownNewsDatabase;
 import com.fivetrue.gimpo.ac05.firebase.model.TownNews;
 import com.fivetrue.gimpo.ac05.preferences.ConfigPreferenceManager;
 import com.fivetrue.gimpo.ac05.service.GcmMessage;
 import com.fivetrue.gimpo.ac05.ui.adapter.AdminListAdapter;
+import com.fivetrue.gimpo.ac05.utils.DeeplinkUtil;
 import com.fivetrue.gimpo.ac05.utils.NotificationSender;
 import com.fivetrue.gimpo.ac05.utils.TownDataParser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -40,7 +44,7 @@ public class AdminActivity extends BaseActivity {
     private LoadingDialog mLoadingDialog;
     private ConfigPreferenceManager mConfig;
 
-    private TownNewsLocalDB mTownNewsLocalDB;
+    private TownNewsDatabase mTownDatabase;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -52,7 +56,7 @@ public class AdminActivity extends BaseActivity {
 
     protected void initData(){
         mConfig = new ConfigPreferenceManager(this);
-        mTownNewsLocalDB = new TownNewsLocalDB(this);
+        mTownDatabase = new TownNewsDatabase();
         mAdapter = new AdminListAdapter(new ArrayList<IAdminItem>());
         mAdapter.setOnItemClickListener(new BaseRecyclerAdapter.OnItemClickListener<IAdminItem, AdminListAdapter.AdminViewHolder>() {
             @Override
@@ -71,28 +75,52 @@ public class AdminActivity extends BaseActivity {
             @Override
             public void doFunction() {
                 mLoadingDialog.show();
-                new TownDataParser(AdminActivity.this
-                        , mConfig.getAppConfig(), new TownDataParser.OnLoadTownDataListener() {
+
+                mTownDatabase.getReference().orderByChild("date").addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
-                    public void onLoad(List<TownNews> list) {
-
-                        GcmMessage message = new GcmMessage();
-                        message.title = getTitle();
-                        message.message = "";
-                        if(list != null && list.size() > 0){
-                            for(TownNews news : list){
-                                if(!mTownNewsLocalDB.existsTownNews(news.url)){
-                                    new TownNewsDatabase().pushData(news);
-                                    message.message += news.title + "\n";
-                                }
+                    public void onDataChange(DataSnapshot dataSnapshot) {
+                        if(dataSnapshot != null){
+                            final ArrayList<TownNews> townNewsArrayList = new ArrayList<TownNews>();
+                            for(DataSnapshot s : dataSnapshot.getChildren()){
+                                townNewsArrayList.add(s.getValue(TownNews.class));
                             }
-                        }
-                        Toast.makeText(AdminActivity.this, getTitle() + " : 완료", Toast.LENGTH_SHORT).show();
-                        NotificationSender.sendNotificationToUsers(message, mConfig.getAppConfig());
-                        mLoadingDialog.dismiss();
-                    }
-                }).execute();
 
+                            new TownDataParser(AdminActivity.this
+                                    , mConfig.getAppConfig(), new TownDataParser.OnLoadTownDataListener() {
+                                @Override
+                                public void onLoad(List<TownNews> list) {
+
+                                    boolean isNew = false;
+                                    GcmMessage message = new GcmMessage();
+                                    message.id = Constants.TOWN_NEWS_CONTENT_ID;
+                                    message.title = getTitle();
+                                    message.message = "";
+                                    message.deeplink = DeeplinkUtil.makeLink(DeeplinkUtil.Host.TownNews);
+                                    if(list != null && list.size() > 0){
+                                        for(TownNews news : list){
+                                            if(!townNewsArrayList.contains(news)){
+                                                isNew = true;
+                                                new TownNewsDatabase().pushData(news);
+                                                message.message += news.title + "\n";
+                                            }
+                                        }
+                                    }
+                                    Toast.makeText(AdminActivity.this, getTitle() + " : 완료", Toast.LENGTH_SHORT).show();
+                                    if(isNew){
+                                        NotificationSender.sendNotificationToUsers(message, mConfig.getAppConfig());
+                                    }
+                                    mLoadingDialog.dismiss();
+                                }
+                            }).execute();
+                        }
+
+                    }
+
+                    @Override
+                    public void onCancelled(DatabaseError databaseError) {
+
+                    }
+                });
             }
         });
     }

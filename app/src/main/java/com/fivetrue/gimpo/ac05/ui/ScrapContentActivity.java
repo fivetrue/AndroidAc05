@@ -35,13 +35,14 @@ import com.fivetrue.gimpo.ac05.R;
 import com.fivetrue.gimpo.ac05.firebase.database.MessageBoxDatabase;
 import com.fivetrue.gimpo.ac05.firebase.database.ScrapContentDatabase;
 import com.fivetrue.gimpo.ac05.firebase.model.ChatMessage;
-import com.fivetrue.gimpo.ac05.firebase.model.NotifyMessage;
 import com.fivetrue.gimpo.ac05.firebase.model.ScrapContent;
 import com.fivetrue.gimpo.ac05.firebase.model.User;
 import com.fivetrue.gimpo.ac05.preferences.ConfigPreferenceManager;
+import com.fivetrue.gimpo.ac05.service.GcmMessage;
 import com.fivetrue.gimpo.ac05.ui.adapter.ChatListAdapter;
 import com.fivetrue.gimpo.ac05.ui.fragment.UserInfoDialogFragment;
 import com.fivetrue.gimpo.ac05.utils.DeeplinkUtil;
+import com.fivetrue.gimpo.ac05.utils.NotificationSender;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.database.ChildEventListener;
@@ -245,21 +246,21 @@ public class ScrapContentActivity extends BaseActivity implements CustomWebViewC
                     dialog.dismiss();
 
                     if(mAdapter != null){
-                        ArrayList<User> targetUsers = new ArrayList<User>();
+                        ArrayList<String> targetUsers = new ArrayList<String>();
                         for(ChatMessage chatMessage : mAdapter.getData()){
                             if(!targetUsers.contains(chatMessage.user)){
-                                targetUsers.add(chatMessage.user);
+                                targetUsers.add(chatMessage.user.gcmId);
                             }
                         }
 
-                        for(User user : targetUsers){
-                            String message = getString(R.string.added_new_comment_to_scrap, mScrapContent.title);
-                            String deeplink = DeeplinkUtil.makeLink(DeeplinkUtil.Host.Scrap, "key=" + mScrapContent.key);
-                            String title = getString(R.string.new_alarm);
-                            NotifyMessage notify = new NotifyMessage(title, message
-                                    , deeplink, mScrapContent.imageUrl, mConfigPref.getUserInfo());
-                            new MessageBoxDatabase(user.uid).getNotifyReference().push().setValue(notify.getValues());
-                        }
+                        GcmMessage message = new GcmMessage();
+                        message.id = Constants.NOTIFY_MESSASGE_ID;
+                        message.title = getString(R.string.new_alarm);
+                        message.message = getString(R.string.added_new_comment_to_scrap, mScrapContent.title);
+                        message.imageUrl = mScrapContent.imageUrl;
+                        message.deeplink = DeeplinkUtil.makeLink(DeeplinkUtil.Host.Scrap, "key=" + mScrapContent.key);
+                        NotificationSender.sendNotification(message, mConfigPref.getAppConfig().gcmKey, targetUsers);
+
                     }
                     Log.d(TAG, "onSuccess() called with: aVoid = [" + aVoid + "]");
                 }

@@ -16,14 +16,17 @@ import com.fivetrue.fivetrueandroid.ui.fragment.BaseDialogFragment;
 import com.fivetrue.fivetrueandroid.utils.CustomWebViewClient;
 import com.fivetrue.gimpo.ac05.Constants;
 import com.fivetrue.gimpo.ac05.R;
-import com.fivetrue.gimpo.ac05.database.ScrapLocalDB;
 import com.fivetrue.gimpo.ac05.firebase.database.ScrapContentDatabase;
 import com.fivetrue.gimpo.ac05.firebase.database.UserInfoDatabase;
 import com.fivetrue.gimpo.ac05.firebase.model.AppConfig;
 import com.fivetrue.gimpo.ac05.firebase.model.ScrapContent;
 import com.fivetrue.gimpo.ac05.firebase.model.User;
 import com.fivetrue.gimpo.ac05.preferences.ConfigPreferenceManager;
+import com.fivetrue.gimpo.ac05.service.GcmMessage;
 import com.fivetrue.gimpo.ac05.ui.fragment.InputDialogFragment;
+import com.fivetrue.gimpo.ac05.utils.DeeplinkUtil;
+import com.fivetrue.gimpo.ac05.utils.NotificationSender;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.ValueEventListener;
@@ -56,8 +59,6 @@ public class CafeActivity extends BaseActivity implements CustomWebViewClient.JS
     private FirebaseStorageManager mFirebaseStorageManager;
     private ScrapContentDatabase mScrapContentDatabase;
 
-    private ScrapLocalDB mScrapLocalDB;
-
     private Pattern mPattern = Pattern.compile("src\\s*=\\s*([\"'])?([^ \"']*)");
 
     private String mHtmlTemplete;
@@ -72,7 +73,6 @@ public class CafeActivity extends BaseActivity implements CustomWebViewClient.JS
 
     private void initData(){
         mConfigPref = new ConfigPreferenceManager(this);
-        mScrapLocalDB = new ScrapLocalDB(this);
 
         mFirebaseStorageManager = new FirebaseStorageManager();
         mScrapContentDatabase = new ScrapContentDatabase();
@@ -160,7 +160,17 @@ public class CafeActivity extends BaseActivity implements CustomWebViewClient.JS
                                                                         , imageUrl
                                                                         , mCustomWebViewClient.getCurrentUrl()
                                                                         , mConfigPref.getUserInfo());
-                                                                mScrapContentDatabase.pushData(page);
+                                                                mScrapContentDatabase.pushData(page).addOnSuccessListener(new OnSuccessListener<Void>() {
+                                                                    @Override
+                                                                    public void onSuccess(Void aVoid) {
+                                                                        GcmMessage message = new GcmMessage();
+                                                                        message.id = Constants.SCRAP_CONTENT_ID;
+                                                                        message.title = getString(R.string.new_scrap_data);
+                                                                        message.message = (String) data;
+                                                                        message.deeplink = DeeplinkUtil.makeLink(DeeplinkUtil.Host.Scrap);
+                                                                        NotificationSender.sendNotificationToUsers(message, mConfigPref.getAppConfig());
+                                                                    }
+                                                                });
                                                                 f.dismiss();
                                                                 mCaptureContentView.setVisibility(View.INVISIBLE);
                                                                 mLoadingDialog.dismiss();
@@ -218,9 +228,20 @@ public class CafeActivity extends BaseActivity implements CustomWebViewClient.JS
                     }
 
                     if(user.isAuthUser){
-                        if(!mScrapLocalDB.existsScrapContent(currentUrl)){
-                            mCaptureContentView.setVisibility(View.VISIBLE);
-                        }
+                        mScrapContentDatabase.isExistCapturedPage(currentUrl).addListenerForSingleValueEvent(new ValueEventListener() {
+                            @Override
+                            public void onDataChange(DataSnapshot dataSnapshot) {
+                                if(dataSnapshot != null && dataSnapshot.getChildrenCount() == 0){
+                                    mCaptureContentView.setVisibility(View.VISIBLE);
+                                }
+
+                            }
+
+                            @Override
+                            public void onCancelled(DatabaseError databaseError) {
+
+                            }
+                        });
                     }
                 }
             }
