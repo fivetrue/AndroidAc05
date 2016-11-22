@@ -182,6 +182,11 @@ public class ScrapContentActivity extends BaseActivity implements CustomWebViewC
         mScrapCommentList.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
         mScrapCommentList.setAdapter(mAdapter);
 
+        if(mConfigPref.isExpiredWebCache()){
+            mWebView.clearCache(true);
+            mConfigPref.updateWebCacheTime();
+        }
+
         mWebView.getSettings().setCacheMode(WebSettings.LOAD_CACHE_ELSE_NETWORK);
         mCustomWebViewClient  = new CustomWebViewClient(this, mWebView, this);
 

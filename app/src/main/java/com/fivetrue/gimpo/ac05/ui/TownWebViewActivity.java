@@ -94,6 +94,12 @@ public class TownWebViewActivity extends BaseActivity implements CustomWebViewCl
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         mWebView = (WebView) findViewById(R.id.webview);
         mWebView.setVisibility(View.INVISIBLE);
+
+        if(mConfigPref.isExpiredWebCache()){
+            mWebView.clearCache(true);
+            mConfigPref.updateWebCacheTime();
+        }
+
         mWebView.getSettings().setCacheMode(WebSettings.LOAD_CACHE_ELSE_NETWORK);
         mCustomWebViewClient = new CustomWebViewClient(this, mWebView, this);
         mWebView.loadUrl(mTownNews.url);

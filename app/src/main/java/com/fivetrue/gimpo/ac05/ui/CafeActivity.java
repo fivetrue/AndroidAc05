@@ -298,7 +298,8 @@ public class CafeActivity extends BaseActivity implements CustomWebViewClient.JS
                 postContentHtml = postContentHtml.replaceAll("\t", "");
                 postContentHtml = postContentHtml.trim();
                 StringBuilder remakeBuilder = new StringBuilder();
-                String[] contentBlock = postContentHtml.split("</p>");
+//                String[] contentBlock = postContentHtml.split("</p>");
+                String[] contentBlock = postContentHtml.split("</div>");
                 String imageClass = "<img class=\"";
                 for(String b : contentBlock){
                     String str = b;
@@ -318,7 +319,7 @@ public class CafeActivity extends BaseActivity implements CustomWebViewClient.JS
                         str = replaceStart + "<img onClick=\"onClickImage('" + imageUrl +
                                 "')\" class=\"" + "img-thumbnail" + replaceEnd;
                     }
-                    remakeBuilder.append(str).append("</p>");
+                    remakeBuilder.append(str).append("</div>");
                 }
                 pageContentHtml = remakeBuilder.toString();
                 updateScrapContentView();

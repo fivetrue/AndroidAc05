@@ -22,6 +22,7 @@ public class ConfigPreferenceManager {
     private static final String GCM_DEVICE = "gcm_dvice_id";
     private static final String APP_CONFIG = "app_config";
     private static final String APP_MESSAGE = "app_message";
+    private static final String APP_WEB_CACHE = "app_web_cache";
 
     private SharedPreferenceHelper mHelper = null;
 
@@ -97,6 +98,13 @@ public class ConfigPreferenceManager {
         return message;
     }
 
+    public boolean isExpiredWebCache(){
+        long lastTime = mHelper.getData(APP_WEB_CACHE, 0);
+        long currentTime = System.currentTimeMillis();
+        return (lastTime + (60000 * 60 * 24 * 7)) < currentTime;
+    }
 
-
+    public void updateWebCacheTime(){
+        mHelper.putData(APP_WEB_CACHE, System.currentTimeMillis());
+    }
 }

@@ -57,8 +57,8 @@ public class ChatLocalDB extends BaseLocalDB{
         insertValues(TABLE_NAME, values);
     }
 
-    public int removeChatMessage(int type, ChatMessage msg){
-        return removeChatMessage(type, msg);
+    public long removeChatMessage(int type, ChatMessage msg){
+        return removeChatMessage(type, msg.key);
     }
 
     public long removeChatMessage(int type, String key){
